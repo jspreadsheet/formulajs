@@ -270,7 +270,17 @@ export function ISODD(value) {
  * @returns
  */
 export function ISREF() {
-  throw new Error('ISREF is not implemented')
+  if (arguments.length < 1) {
+    return error.na
+  } else if (arguments.length > 1) {
+    return error.error
+  }
+
+  if (this.k) {
+    return true
+  }
+
+  return false
 }
 
 /**

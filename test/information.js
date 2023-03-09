@@ -391,9 +391,14 @@ describe('Information', () => {
     ).to.equal(error.value)
   })
 
-  // TODO
   it('ISREF', () => {
-    expect(information.ISREF).to.throw('ISREF is not implemented')
+    expect(information.ISREF.call({ k: 'A1:A3' }, [ 1, 2, 3 ])).to.equal(true)
+    expect(information.ISREF(1)).to.equal(false)
+    expect(information.ISREF('a')).to.equal(false)
+    
+    expect(information.ISREF()).to.equal(error.na)
+    expect(information.ISREF(1, 2)).to.equal(error.error)
+    expect(information.ISREF(1, 2, 3)).to.equal(error.error)
   })
 
   it('ISTEXT', () => {
