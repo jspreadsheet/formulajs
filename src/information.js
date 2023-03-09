@@ -309,7 +309,7 @@ export function ISREF() {
     return error.error
   }
 
-  if (this.k) {
+  if (this.k && this.k[0]) {
     return true
   }
 

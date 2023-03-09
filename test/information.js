@@ -410,9 +410,13 @@ describe('Information', () => {
   })
 
   it('ISREF', () => {
-    expect(information.ISREF.call({ k: 'A1:A3' }, [1, 2, 3])).to.equal(true)
+    expect(information.ISREF.call({ k: ['A1:A3'] }, [1, 2, 3])).to.equal(true)
+    expect(information.ISREF.call({ k: ['A1'] }, 1)).to.equal(true)
     expect(information.ISREF(1)).to.equal(false)
     expect(information.ISREF('a')).to.equal(false)
+    expect(information.ISREF(false)).to.equal(false)
+    expect(information.ISREF(true)).to.equal(false)
+    expect(information.ISREF(undefined)).to.equal(false)
 
     expect(information.ISREF()).to.equal(error.na)
     expect(information.ISREF(1, 2)).to.equal(error.error)
