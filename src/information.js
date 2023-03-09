@@ -3,7 +3,6 @@ import * as error from './utils/error.js'
 
 // TODO
 /**
- * -- Not implemented --
  *
  * Returns information about the formatting, location, or contents of a value.
  *
@@ -11,8 +10,42 @@ import * as error from './utils/error.js'
  *
  * @returns
  */
-export function CELL() {
-  throw new Error('CELL is not implemented')
+export function CELL(infoType, referenceValue) {
+  if (arguments.length !== 2 || (infoType === undefined && referenceValue === undefined)) {
+    return error.na
+  }
+
+  if (typeof infoType !== 'string') {
+    return error.value
+  }
+
+  const reference = this.k[1].split(':')[0]
+  const row = utils.parseNumber(reference.match(/\d+/g)[0])
+  const col = reference.replace(/[^A-Za-z]/g, '')
+
+  switch (infoType.toLowerCase()) {
+    case 'row':
+      return row
+    case 'col':
+      return utils.lettersToNumber(col)
+    case 'address':
+      return `$${col}$${row}`
+    case 'contents':
+      return referenceValue
+    case 'type':
+      if (typeof referenceValue === 'number' || typeof referenceValue === 'boolean') {
+        return 'v'
+      } else if (referenceValue instanceof Error) {
+        return 'e'
+      } else if (typeof referenceValue === 'string') {
+        return 'l'
+      }
+      return 'b'
+    case 'width':
+      return this.instance.getWidth(utils.lettersToNumber(col))
+    default:
+      return error.na
+  }
 }
 
 export const ERROR = {}

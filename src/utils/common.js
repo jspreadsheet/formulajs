@@ -550,3 +550,15 @@ export function getHour(something) {
   }
   return something
 }
+
+export function lettersToNumber(letters) {
+  const alphabet = 'abcdefghijklmnopqrstuvwxyz'
+  letters = letters.toLowerCase()
+  const n = letters.length
+  let result = 0
+  for (let i = 0; i < n; i++) {
+    const letterValue = alphabet.indexOf(letters[i]) + 1
+    result += letterValue * Math.pow(26, n - i - 1)
+  }
+  return result
+}

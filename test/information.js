@@ -4,9 +4,27 @@ import * as error from '../src/utils/error.js'
 import * as information from '../src/information.js'
 
 describe('Information', () => {
-  // TODO
   it('CELL', () => {
-    expect(information.CELL).to.throw('CELL is not implemented')
+    expect(information.CELL.call({ k: [undefined, 'A1'] }, 'row', '')).to.equal(1)
+    expect(information.CELL.call({ k: [undefined, 'C6'] }, 'row', '')).to.equal(6)
+    expect(information.CELL.call({ k: [undefined, 'A1'] }, 'col', '')).to.equal(1)
+    expect(information.CELL.call({ k: [undefined, 'C6'] }, 'col', '')).to.equal(3)
+    expect(information.CELL.call({ k: [undefined, 'A1'] }, 'address', '')).to.equal('$A$1')
+    expect(information.CELL.call({ k: [undefined, 'B2:C4'] }, 'address', '')).to.equal('$B$2')
+    expect(information.CELL.call({ k: [undefined, 'B1'] }, 'contents', 5)).to.equal(5)
+    expect(information.CELL.call({ k: [undefined, 'B1'] }, 'contents', 'test')).to.equal('test')
+    expect(information.CELL.call({ k: [undefined, 'B1'] }, 'type', 1)).to.equal('v')
+    expect(information.CELL.call({ k: [undefined, 'B1'] }, 'type', true)).to.equal('v')
+    expect(information.CELL.call({ k: [undefined, 'B1'] }, 'type', 'teste')).to.equal('l')
+    expect(information.CELL.call({ k: [undefined, 'B1'] }, 'type', error.error)).to.equal('e')
+    expect(information.CELL.call({ k: [undefined, 'B1'] }, 'type', undefined)).to.equal('b')
+    expect(information.CELL.call({ k: [undefined, 'B1'] }, 'type', null)).to.equal('b')
+
+    expect(information.CELL()).to.equal(error.na)
+    expect(information.CELL.call({ k: [undefined, 'B1'] }, 'nonexistant')).to.equal(error.na)
+    expect(information.CELL.call({ k: [undefined, 'B1'] }, 'type')).to.equal(error.na)
+    expect(information.CELL.call({ k: [undefined, 'B1'] }, 1, '')).to.equal(error.value)
+    expect(information.CELL(undefined, undefined)).to.equal(error.na)
   })
 
   it('ERROR.TYPE', () => {
@@ -392,10 +410,10 @@ describe('Information', () => {
   })
 
   it('ISREF', () => {
-    expect(information.ISREF.call({ k: 'A1:A3' }, [ 1, 2, 3 ])).to.equal(true)
+    expect(information.ISREF.call({ k: 'A1:A3' }, [1, 2, 3])).to.equal(true)
     expect(information.ISREF(1)).to.equal(false)
     expect(information.ISREF('a')).to.equal(false)
-    
+
     expect(information.ISREF()).to.equal(error.na)
     expect(information.ISREF(1, 2)).to.equal(error.error)
     expect(information.ISREF(1, 2, 3)).to.equal(error.error)
