@@ -19,6 +19,10 @@ export function CELL(infoType, referenceValue) {
     return error.value
   }
 
+  if (!this.k || this.k.length < 1) {
+    return error.value
+  }
+
   const reference = this.k[1].split(':')[0]
   const row = utils.parseNumber(reference.match(/\d+/g)[0])
   const col = reference.replace(/[^A-Za-z]/g, '')
@@ -309,7 +313,7 @@ export function ISREF() {
     return error.error
   }
 
-  if (this.k && this.k[0]) {
+  if (this.k && this.k.length > 0) {
     return true
   }
 
@@ -393,7 +397,7 @@ export function NA() {
  * @returns
  */
 export function SHEET() {
-  if (!this.k) {
+  if (!this.k || this.k.length < 1) {
     return error.value
   }
 
@@ -422,7 +426,7 @@ export function SHEET() {
  * @returns
  */
 export function SHEETS(value) {
-  if (this.k) {
+  if (this.k && this.k.length > 0) {
     return this.k.length
   }
 
