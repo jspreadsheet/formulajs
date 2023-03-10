@@ -429,7 +429,7 @@ export function SHEETS(value) {
   if (value) {
     return error.value
   }
-  
+
   return this.instance.parent.worksheets.length
 }
 
