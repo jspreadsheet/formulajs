@@ -383,9 +383,7 @@ export function NA() {
   return error.na
 }
 
-// TODO
 /**
- * -- Not implemented --
  *
  * Returns the sheet number of the referenced sheet.
  *
@@ -395,7 +393,23 @@ export function NA() {
  * @returns
  */
 export function SHEET() {
-  throw new Error('SHEET is not implemented')
+  if (!this.k) {
+    return error.value
+  }
+
+  if (this.k[0].split('!').length > 1) {
+    const referencedWorksheetName = this.k[0].split('!')[0]
+    const spreadsheet = this.instance.parent
+
+    for (let i = 0; i < spreadsheet.worksheets.length; i++) {
+      if (spreadsheet.worksheets[i].options.worksheetName.toUpperCase() === referencedWorksheetName) {
+        return i
+      }
+    }
+    return error.ref
+  }
+
+  return this.instance.getWorksheetActive()
 }
 
 // TODO

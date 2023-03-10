@@ -495,7 +495,8 @@ describe('Information', () => {
 
   // TODO
   it('SHEET', () => {
-    expect(information.SHEET).to.throw('SHEET is not implemented')
+    expect(information.SHEET('a')).to.equal(error.value)
+    expect(information.SHEET(1)).to.equal(error.value)
   })
 
   // TODO
