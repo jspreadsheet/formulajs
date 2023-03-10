@@ -2346,8 +2346,11 @@ describe('Lookup Reference', () => {
     expect(lookup.AREAS(1)).to.equal(error.na)
   })
 
-  xit('FORMULATEXT', () => {
-    expect(lookup.FORMULATEXT).to.throw('FORMULATEXT is not implemented')
+  it('FORMULATEXT', () => {
+    expect(lookup.FORMULATEXT()).to.equal(error.na)
+    expect(lookup.FORMULATEXT(1)).to.equal(error.na)
+    expect(lookup.FORMULATEXT('string')).to.equal(error.na)
+    expect(lookup.FORMULATEXT.call({ k: ['A1', 'B2'] }, 1, 2)).to.equal(error.na)
   })
 
   xit('GETPIVOTDATA', () => {

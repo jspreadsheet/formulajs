@@ -733,8 +733,25 @@ export function AREAS() {
   return this.k.length
 }
 
+/**
+ * Returns the formula of a cell as a string.
+ *
+ * Category: Lookup and reference
+ *
+ * @returns
+ */
 export function FORMULATEXT() {
-  throw new Error('FORMULATEXT is not implemented')
+  if (arguments.length !== 1) {
+    return error.na
+  }
+
+  if (!this.k || this.k.length < 1) {
+    return error.na
+  }
+  const firstCell = this.k[0].split(':')[0]
+  const cellValue = this.instance.getValue(firstCell)
+
+  return cellValue.startsWith('=') ? cellValue : error.na
 }
 
 export function GETPIVOTDATA() {
