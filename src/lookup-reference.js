@@ -718,8 +718,19 @@ export function ADDRESS(row, column, absoluteNum = 1, a1Style = true, sheetName)
   return result + r1c1Absolute[absoluteNum](row, column)
 }
 
+/**
+ * Returns the number of areas in the reference string. An area can be asingle cell or a set of cells.
+ *
+ * Category: Lookup and reference
+ *
+ * @returns
+ */
 export function AREAS() {
-  throw new Error('AREAS is not implemented')
+  if (!this.k || this.k.length === 0) {
+    return error.na
+  }
+
+  return this.k.length
 }
 
 export function FORMULATEXT() {

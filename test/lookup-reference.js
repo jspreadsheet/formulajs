@@ -2326,8 +2326,24 @@ describe('Lookup Reference', () => {
     })
   })
 
-  xit('AREAS', () => {
-    expect(lookup.AREAS).to.throw('AREAS is not implemented')
+  it('AREAS', () => {
+    expect(
+      lookup.AREAS.call({ k: [['A1:B2']] }, [
+        [1, 2],
+        [3, 4]
+      ])
+    ).to.equal(1)
+    expect(lookup.AREAS.call({ k: [['A1:B2'], ['C4:D6']] }, [], [])).to.equal(2)
+
+    expect(lookup.AREAS()).to.equal(error.na)
+    expect(
+      lookup.AREAS([
+        [1, 2],
+        [3, 4]
+      ])
+    ).to.equal(error.na)
+    expect(lookup.AREAS('string')).to.equal(error.na)
+    expect(lookup.AREAS(1)).to.equal(error.na)
   })
 
   xit('FORMULATEXT', () => {
