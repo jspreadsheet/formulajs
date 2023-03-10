@@ -412,9 +412,7 @@ export function SHEET() {
   return this.instance.getWorksheetActive()
 }
 
-// TODO
 /**
- * -- Not implemented --
  *
  * Returns the number of sheets in a reference.
  *
@@ -423,8 +421,16 @@ export function SHEET() {
  * @param {*} reference Optional. Reference is a reference for which you want to know the number of sheets it contains. If Reference is omitted, SHEETS returns the number of sheets in the workbook that contains the function.
  * @returns
  */
-export function SHEETS() {
-  throw new Error('SHEETS is not implemented')
+export function SHEETS(value) {
+  if (this.k) {
+    return this.k.length
+  }
+
+  if (value) {
+    return error.value
+  }
+  
+  return this.instance.parent.worksheets.length
 }
 
 /**

@@ -493,15 +493,14 @@ describe('Information', () => {
     expect(information.NA()).to.equal(error.na)
   })
 
-  // TODO
   it('SHEET', () => {
     expect(information.SHEET('a')).to.equal(error.value)
     expect(information.SHEET(1)).to.equal(error.value)
   })
 
-  // TODO
   it('SHEETS', () => {
-    expect(information.SHEETS).to.throw('SHEETS is not implemented')
+    expect(information.SHEETS('a')).to.equal(error.value)
+    expect(information.SHEETS(1)).to.equal(error.value)
   })
 
   it('TYPE', () => {
