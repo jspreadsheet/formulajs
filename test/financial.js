@@ -852,7 +852,6 @@ describe('Financial', () => {
   })
 
   it('FVSCHEDULE', () => {
-    expect(financial.FVSCHEDULE(100, [0.09, 0.1, 0.11])).to.approximately(133.08900000000003, 1e-9)
     expect(financial.FVSCHEDULE(100, [[0.09], [0.1], [0.11]])).to.approximately(133.08900000000003, 1e-9)
     expect(financial.FVSCHEDULE(100, [[0.09, 0.1, 0.11]])).to.approximately(133.08900000000003, 1e-9)
     expect(financial.FVSCHEDULE(100, [[0.09, 0.1], [0.11]])).to.approximately(133.08900000000003, 1e-9)
@@ -861,7 +860,7 @@ describe('Financial', () => {
     expect(financial.FVSCHEDULE(100, [[true], [0.11]])).to.equal(error.value)
     expect(financial.FVSCHEDULE(100, true)).to.equal(error.value)
     expect(financial.FVSCHEDULE(100, 'true')).to.equal(error.value)
-    expect(financial.FVSCHEDULE(100, ['Hello World!', 0.1, 0.11])).to.equal(error.value)
+    expect(financial.FVSCHEDULE(100, [['Hello World!', 0.1, 0.11]])).to.equal(error.value)
     expect(financial.FVSCHEDULE()).to.equal(error.na)
     expect(financial.FVSCHEDULE(100)).to.equal(error.na)
     expect(financial.FVSCHEDULE(100, 1, 1)).to.equal(error.na)
@@ -926,8 +925,8 @@ describe('Financial', () => {
   })
 
   it('IRR', () => {
-    expect(financial.IRR([-75000, 12000, 15000, 18000, 21000, 24000])).to.approximately(0.05715142887178467, 1e-9)
-    expect(financial.IRR(['-75000', 12000, 15000, 18000, 21000, '24000'])).to.approximately(0.05715142887178467, 1e-9)
+    expect(financial.IRR([[-75000, 12000, 15000, 18000, 21000, 24000]])).to.approximately(0.05715142887178467, 1e-9)
+    expect(financial.IRR([['-75000', 12000, 15000, 18000, 21000, '24000']])).to.approximately(0.05715142887178467, 1e-9)
     expect(
       financial.IRR([
         [-75000, 12000],
@@ -939,21 +938,27 @@ describe('Financial', () => {
       0.05715142887178467,
       1e-9
     )
-    expect(financial.IRR([-75000, 12000, 15000, 18000, 21000, 24000], 0.1)).to.approximately(0.05715142887178467, 1e-9)
-    expect(financial.IRR([-75000, 12000, 15000, 18000, 21000, 24000], 0.075)).to.approximately(
+    expect(financial.IRR([[-75000, 12000, 15000, 18000, 21000, 24000]], 0.1)).to.approximately(
+      0.05715142887178467,
+      1e-9
+    )
+    expect(financial.IRR([[-75000, 12000, 15000, 18000, 21000, 24000]], 0.075)).to.approximately(
       0.05715142887178447,
       1e-9
     )
-    expect(financial.IRR([-75000, 12000, 15000, 18000, 21000, 24000], 0.05)).to.approximately(0.05715142887178453, 1e-9)
+    expect(financial.IRR([[-75000, 12000, 15000, 18000, 21000, 24000]], 0.05)).to.approximately(
+      0.05715142887178453,
+      1e-9
+    )
 
-    expect(financial.IRR([-75000, 12000, 15000, 18000, 'string', 24000], 0.05)).to.equal(error.value)
-    expect(financial.IRR([-75000, 12000, 15000, 18000, true, 24000], 0.05)).to.equal(error.num)
-    expect(financial.IRR([-75000, 12000, 15000, 18000, true, 24000], 0.05)).to.equal(error.num)
-    expect(financial.IRR([-75000, 12000, 15000, 18000, 21000, 24000], 0.1, 1)).to.equal(error.na)
-    expect(financial.IRR([12000, 15000, 18000, 21000, 24000])).to.equal(error.num)
-    expect(financial.IRR([-12000, -15000, -18000, -21000, -24000])).to.equal(error.num)
-    expect(financial.IRR([-12000, -15000, -18000, -21000, -24000], 'invalid')).to.equal(error.value)
-    expect(financial.IRR([-75000, 12000, 15000, 18000], true)).to.equal(error.num)
+    expect(financial.IRR([[-75000, 12000, 15000, 18000, 'string', 24000]], 0.05)).to.equal(error.value)
+    expect(financial.IRR([[-75000, 12000, 15000, 18000, true, 24000]], 0.05)).to.equal(error.num)
+    expect(financial.IRR([[-75000, 12000, 15000, 18000, true, 24000]], 0.05)).to.equal(error.num)
+    expect(financial.IRR([[-75000, 12000, 15000, 18000, 21000, 24000]], 0.1, 1)).to.equal(error.na)
+    expect(financial.IRR([[12000, 15000, 18000, 21000, 24000]])).to.equal(error.num)
+    expect(financial.IRR([[-12000, -15000, -18000, -21000, -24000]])).to.equal(error.num)
+    expect(financial.IRR([[-12000, -15000, -18000, -21000, -24000]], 'invalid')).to.equal(error.value)
+    expect(financial.IRR([[-75000, 12000, 15000, 18000]], true)).to.equal(error.num)
     expect(financial.IRR()).to.equal(error.na)
     expect(financial.IRR('invalid')).to.equal(error.num)
     expect(financial.IRR(-7500)).to.equal(error.num)
@@ -1016,17 +1021,17 @@ describe('Financial', () => {
       0.07971710360838036,
       1e-9
     )
-    expect(financial.MIRR([-120000, 39000, 30000, 21000, 37000, 46000], 0.1, 0.12)).to.approximately(0.12609413, 1e-9)
-    expect(financial.MIRR([-75000], 0.1, 0.12)).to.equal(error.num)
-    expect(financial.MIRR([-75000, 12000, 15000, 18000, 21000, 24000], 'invalid', 0.12)).to.equal(error.value)
-    expect(financial.MIRR([-75000, 12000, 15000, 18000, 21000, 24000], 0.1, 'invalid')).to.equal(error.value)
-    expect(financial.MIRR([-75000, 12000, 15000, 18000, 'string', 24000], 0.1, 0.12)).to.equal(error.value)
-    expect(financial.MIRR([-75000, 12000, 15000, 18000, true, 24000], 0.1, 0.12)).to.equal(error.num)
-    expect(financial.MIRR([-75000, 12000, 15000, 18000, true, 24000], 0.1, 0.12)).to.equal(error.num)
-    expect(financial.MIRR([-75000, 12000, 15000, 18000, 21000, 24000], 0.1, 0.12, 1)).to.equal(error.na)
-    expect(financial.MIRR([12000, 15000, 18000, 21000, 24000], 0.1, 0.12)).to.equal(error.num)
-    expect(financial.MIRR([-12000, -15000, -18000, -21000, -24000], 0.1, 0.12)).to.equal(error.num)
-    expect(financial.MIRR([-75000, 12000, 15000, 18000], true, 0.12)).to.equal(error.num)
+    expect(financial.MIRR([[-120000, 39000, 30000, 21000, 37000, 46000]], 0.1, 0.12)).to.approximately(0.12609413, 1e-9)
+    expect(financial.MIRR([[-75000]], 0.1, 0.12)).to.equal(error.num)
+    expect(financial.MIRR([[-75000, 12000, 15000, 18000, 21000, 24000]], 'invalid', 0.12)).to.equal(error.value)
+    expect(financial.MIRR([[-75000, 12000, 15000, 18000, 21000, 24000]], 0.1, 'invalid')).to.equal(error.value)
+    expect(financial.MIRR([[-75000, 12000, 15000, 18000, 'string', 24000]], 0.1, 0.12)).to.equal(error.value)
+    expect(financial.MIRR([[-75000, 12000, 15000, 18000, true, 24000]], 0.1, 0.12)).to.equal(error.num)
+    expect(financial.MIRR([[-75000, 12000, 15000, 18000, true, 24000]], 0.1, 0.12)).to.equal(error.num)
+    expect(financial.MIRR([[-75000, 12000, 15000, 18000, 21000, 24000]], 0.1, 0.12, 1)).to.equal(error.na)
+    expect(financial.MIRR([[12000, 15000, 18000, 21000, 24000]], 0.1, 0.12)).to.equal(error.num)
+    expect(financial.MIRR([[-12000, -15000, -18000, -21000, -24000]], 0.1, 0.12)).to.equal(error.num)
+    expect(financial.MIRR([[-75000, 12000, 15000, 18000]], true, 0.12)).to.equal(error.num)
     expect(financial.MIRR()).to.equal(error.na)
     expect(financial.MIRR('invalid', 0.1, 0.12)).to.equal(error.value)
     expect(financial.MIRR(-7500, 0.1, 0.12)).to.equal(error.num)
@@ -1036,9 +1041,9 @@ describe('Financial', () => {
 
     Object.values(error).forEach((err) => {
       expect(financial.MIRR(err, 0.1, 0.12)).to.equal(err)
-      expect(financial.MIRR([-75000, 12000, 15000, 18000, 21000, 24000], err, 0.12)).to.equal(err)
-      expect(financial.MIRR([-75000, 12000, 15000, 18000, 21000, 24000], 0.1, err)).to.equal(err)
-      expect(financial.MIRR([-75000, 12000, 15000, 18000, 21000, err], 0.1, 0.12)).to.equal(err)
+      expect(financial.MIRR([[-75000, 12000, 15000, 18000, 21000, 24000]], err, 0.12)).to.equal(err)
+      expect(financial.MIRR([[-75000, 12000, 15000, 18000, 21000, 24000]], 0.1, err)).to.equal(err)
+      expect(financial.MIRR([[-75000, 12000, 15000, 18000, 21000, err]], 0.1, 0.12)).to.equal(err)
     })
   })
 
@@ -1123,17 +1128,16 @@ describe('Financial', () => {
   it('NPV', () => {
     expect(financial.NPV(0.1, -10000, 2000, 4000, 8000)).to.approximately(1031.3503176012546, 1e-9)
     expect(financial.NPV('0.1', -10000, '2000', '4000', 8000)).to.approximately(1031.3503176012546, 1e-9)
-    expect(financial.NPV(0.1, [-10000, 2000, 4000, 8000])).to.approximately(1031.3503176012546, 1e-9)
     expect(financial.NPV(0.1, [[-10000, 2000, 4000, 8000]])).to.approximately(1031.3503176012546, 1e-9)
     expect(financial.NPV(0.1, [[-10000], [2000], [4000], [8000]])).to.approximately(1031.3503176012546, 1e-9)
-    expect(financial.NPV(0.1, [-75000])).to.approximately(-68181.81818181818, 1e-9)
-    expect(financial.NPV(0.12, [12000, 15000, 18000, 21000, 24000])).to.approximately(62448.362521940246, 1e-9)
-    expect(financial.NPV(undefined, [-10000, 2000, 4000, 8000])).to.approximately(4000, 1e-9)
-    expect(financial.NPV(null, [-10000, 2000, 4000, 8000])).to.approximately(4000, 1e-9)
-    expect(financial.NPV(false, [-10000, 2000, 4000, 8000])).to.approximately(4000, 1e-9)
-    expect(financial.NPV(true, [-10000, 2000, 4000, 8000])).to.approximately(-3500, 1e-9)
-    expect(financial.NPV('true', [-10000, 2000, 4000, 8000])).to.equal(error.value)
-    expect(financial.NPV('invalid', [12000, 15000, 18000, 21000, 24000])).to.equal(error.value)
+    expect(financial.NPV(0.1, [[-75000]])).to.approximately(-68181.81818181818, 1e-9)
+    expect(financial.NPV(0.12, [[12000, 15000, 18000, 21000, 24000]])).to.approximately(62448.362521940246, 1e-9)
+    expect(financial.NPV(undefined, [[-10000, 2000, 4000, 8000]])).to.approximately(4000, 1e-9)
+    expect(financial.NPV(null, [[-10000, 2000, 4000, 8000]])).to.approximately(4000, 1e-9)
+    expect(financial.NPV(false, [[-10000, 2000, 4000, 8000]])).to.approximately(4000, 1e-9)
+    expect(financial.NPV(true, [[-10000, 2000, 4000, 8000]])).to.approximately(-3500, 1e-9)
+    expect(financial.NPV('true', [[-10000, 2000, 4000, 8000]])).to.equal(error.value)
+    expect(financial.NPV('invalid', [[12000, 15000, 18000, 21000, 24000]])).to.equal(error.value)
     expect(financial.NPV(0.1, [[-10000], [2000], [4000], ['string']])).to.equal(error.value)
     expect(financial.NPV(0.1, [[-10000], [2000], [4000], [true]])).not.to.be.NaN
     expect(financial.NPV(0.1, [[-10000], [2000], [4000], [false]])).not.to.be.NaN
@@ -1695,13 +1699,6 @@ describe('Financial', () => {
   it('XIRR', () => {
     expect(
       financial.XIRR(
-        [-10000, 2750, 4250, 3250, 2750],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'],
-        0.1
-      )
-    ).to.approximately(0.373362535, 1e-4)
-    expect(
-      financial.XIRR(
         [[-10000], [2750], [4250], [3250], [2750]],
         [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']],
         0.1
@@ -1709,198 +1706,198 @@ describe('Financial', () => {
     ).to.approximately(0.373362535, 1e-4)
     expect(
       financial.XIRR(
-        [-10000, '2750', '4250', '3250', '2750'],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'],
+        [[-10000, '2750', '4250', '3250', '2750']],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']],
         '0.1'
       )
     ).to.approximately(0.373362535, 1e-4)
     expect(
       financial.XIRR(
-        [-10000, 2750, 4250, 3250, 2750],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'],
+        [[-10000, 2750, 4250, 3250, 2750]],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']],
         [[0.1, 0.2]]
       )
     ).to.equal(error.value)
     expect(
       financial.XIRR(
-        [10000, 2750, 4250, 3250, 2750],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'],
+        [[10000, 2750, 4250, 3250, 2750]],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']],
         0.1
       )
     ).to.equal(error.num)
     expect(
       financial.XIRR(
-        [-10000, 2750, 4250, 3250, 2750],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'],
+        [[-10000, 2750, 4250, 3250, 2750]],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']],
         'invalid'
       )
     ).to.equal(error.value)
     expect(
       typeof financial.XIRR(
-        [-10000, 2750, 4250, 3250, 2750],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'],
+        [[-10000, 2750, 4250, 3250, 2750]],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']],
         undefined
       )
     ).to.equal('number')
     expect(
       typeof financial.XIRR(
-        [-10000, 2750, 4250, 3250, 2750],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'],
+        [[-10000, 2750, 4250, 3250, 2750]],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']],
         null
       )
     ).to.equal('number')
     expect(
       financial.XIRR(
-        [-10000, 2750, 4250, 3250, 2750],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'],
+        [[-10000, 2750, 4250, 3250, 2750]],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']],
         true
       )
     ).to.equal(error.value)
     expect(
       financial.XIRR(
-        [-10000, 2750, 4250, 3250, 2750],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'],
+        [[-10000, 2750, 4250, 3250, 2750]],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']],
         false
       )
     ).to.equal(error.value)
     expect(
       financial.XIRR(
-        [-10000, 2750, 4250, 3250, 2750],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'],
+        [[-10000, 2750, 4250, 3250, 2750]],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']],
         'true'
       )
     ).to.equal(error.value)
     expect(
-      financial.XIRR('invalid', ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'], 0.1)
+      financial.XIRR('invalid', [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']], 0.1)
     ).to.equal(error.value)
     expect(
-      financial.XIRR(undefined, ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'], 0.1)
+      financial.XIRR(undefined, [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']], 0.1)
     ).to.equal(error.na)
-    expect(financial.XIRR(null, ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'], 0.1)).to.equal(
-      error.num
-    )
-    expect(financial.XIRR(true, ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'], 0.1)).to.equal(
-      error.value
-    )
     expect(
-      financial.XIRR('true', ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'], 0.1)
+      financial.XIRR(null, [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']], 0.1)
+    ).to.equal(error.num)
+    expect(
+      financial.XIRR(true, [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']], 0.1)
+    ).to.equal(error.value)
+    expect(
+      financial.XIRR('true', [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']], 0.1)
     ).to.equal(error.value)
     expect(
       financial.XIRR(
-        [-10000, 'invalid', 4250, 3250, 2750],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'],
+        [[-10000, 'invalid', 4250, 3250, 2750]],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']],
         0.1
       )
     ).to.equal(error.value)
     expect(
       financial.XIRR(
-        [-10000, true, 4250, 3250, 2750],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'],
+        [[-10000, true, 4250, 3250, 2750]],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']],
         0.1
       )
     ).to.equal(error.value)
     expect(
       financial.XIRR(
-        [-10000, 'true', 4250, 3250, 2750],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'],
+        [[-10000, 'true', 4250, 3250, 2750]],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']],
         0.1
       )
     ).to.equal(error.value)
     expect(
       financial.XIRR(
-        [-10000, false, 4250, 3250, 2750],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'],
+        [[-10000, false, 4250, 3250, 2750]],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']],
         0.1
       )
     ).to.equal(error.value)
     expect(
       financial.XIRR(
-        [-10000, 2750, 4250, 3250, 2750],
-        ['invalid', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'],
+        [[-10000, 2750, 4250, 3250, 2750]],
+        [['invalid', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']],
         0.1
       )
     ).to.equal(error.value)
     expect(
       financial.XIRR(
-        [-10000, 2750, 4250, 3250, 2750],
-        [true, '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'],
+        [[-10000, 2750, 4250, 3250, 2750]],
+        [[true, '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']],
         0.1
       )
     ).to.equal(error.value)
     expect(
       financial.XIRR(
-        [-10000, 2750, 4250, 3250, 2750],
-        ['true', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'],
+        [[-10000, 2750, 4250, 3250, 2750]],
+        [['true', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']],
         0.1
       )
     ).to.equal(error.value)
     expect(
       financial.XIRR(
-        [-10000, 2750, 4250, 3250, 2750],
-        [false, '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'],
+        [[-10000, 2750, 4250, 3250, 2750]],
+        [[false, '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']],
         0.1
       )
     ).to.equal(error.value)
     expect(
       financial.XIRR(
-        [-10000, 2750, 4250, 3250, 2750],
-        [undefined, '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'],
+        [[-10000, 2750, 4250, 3250, 2750]],
+        [[undefined, '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']],
         0.1
       )
     ).to.equal(error.value)
     expect(
       financial.XIRR(
-        [-10000, 2750, 4250, 3250, 2750],
-        [null, '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'],
+        [[-10000, 2750, 4250, 3250, 2750]],
+        [[null, '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']],
         0.1
       )
     ).to.equal(error.num)
-    expect(financial.XIRR([-10000, 2750, 4250, 3250, 2750], 'invalid')).to.equal(error.value)
-    expect(financial.XIRR([-10000, 2750, 4250, 3250, 2750], true)).to.equal(error.value)
-    expect(financial.XIRR([-10000, 2750, 4250, 3250, 2750], false)).to.equal(error.value)
-    expect(financial.XIRR([-10000, 2750, 4250, 3250, 2750], null)).to.equal(error.num)
-    expect(financial.XIRR([-10000, 2750, 4250, 3250, 2750], undefined)).to.equal(error.na)
+    expect(financial.XIRR([[-10000, 2750, 4250, 3250, 2750]], 'invalid')).to.equal(error.value)
+    expect(financial.XIRR([[-10000, 2750, 4250, 3250, 2750]], true)).to.equal(error.value)
+    expect(financial.XIRR([[-10000, 2750, 4250, 3250, 2750]], false)).to.equal(error.value)
+    expect(financial.XIRR([[-10000, 2750, 4250, 3250, 2750]], null)).to.equal(error.num)
+    expect(financial.XIRR([[-10000, 2750, 4250, 3250, 2750]], undefined)).to.equal(error.na)
     expect(
       typeof financial.XIRR(
-        [-10000, undefined, 4250, 3250, 2750],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'],
+        [[-10000, undefined, 4250, 3250, 2750]],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']],
         0.1
       )
     ).to.equal('number')
     expect(
       typeof financial.XIRR(
-        [-10000, null, 4250, 3250, 2750],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'],
+        [[-10000, null, 4250, 3250, 2750]],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']],
         0.1
       )
     ).to.equal('number')
     expect(
       financial.XIRR(
-        [-10000, 2750, 4250, 3250, 2750],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'],
+        [[-10000, 2750, 4250, 3250, 2750]],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']],
         0.1,
         1
       )
     ).to.equal(error.na)
-    expect(financial.XIRR([-10000, 2750, 4250, 3250, 2750])).to.equal(error.na)
+    expect(financial.XIRR([[-10000, 2750, 4250, 3250, 2750]])).to.equal(error.na)
     expect(financial.XIRR()).to.equal(error.na)
 
     Object.values(error).forEach((err) => {
-      expect(financial.XIRR(err, ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'], 0.1)).to.equal(
-        err
-      )
-      expect(financial.XIRR([-10000, 2750, 4250, 3250, 2750], err, 0.1)).to.equal(err)
+      expect(
+        financial.XIRR(err, [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']], 0.1)
+      ).to.equal(err)
+      expect(financial.XIRR([[-10000, 2750, 4250, 3250, 2750]], err, 0.1)).to.equal(err)
       expect(
         financial.XIRR(
-          [-10000, 2750, 4250, 3250, 2750],
-          ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'],
+          [[-10000, 2750, 4250, 3250, 2750]],
+          [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']],
           err
         )
       ).to.equal(err)
       expect(
         financial.XIRR(
-          [-10000, 2750, 4250, 3250, err],
-          ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', err],
+          [[-10000, 2750, 4250, 3250, err]],
+          [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', err]],
           0.1
         )
       ).to.equal(err)
@@ -1911,173 +1908,173 @@ describe('Financial', () => {
     expect(
       financial.XNPV(
         0.09,
-        [-10000, 2750, 4250, 3250, 2750],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']
+        [[-10000, 2750, 4250, 3250, 2750]],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']]
       )
     ).to.approximately(2086.647602031535, 1e-1)
     expect(
       financial.XNPV(
         '0.09',
-        ['-10000', '2750', '4250', '3250', '2750'],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']
+        [['-10000', '2750', '4250', '3250', '2750']],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']]
       )
     ).to.approximately(2086.647602031535, 1e-1)
     expect(
       financial.XNPV(
         'invalid',
-        [-10000, 2750, 4250, 3250, 2750],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']
+        [[-10000, 2750, 4250, 3250, 2750]],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']]
       )
     ).to.equal(error.value)
     expect(
       financial.XNPV(
         undefined,
-        [-10000, 2750, 4250, 3250, 2750],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']
+        [[-10000, 2750, 4250, 3250, 2750]],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']]
       )
     ).to.equal(error.na)
     expect(
       financial.XNPV(
         null,
-        [-10000, 2750, 4250, 3250, 2750],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']
+        [[-10000, 2750, 4250, 3250, 2750]],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']]
       )
     ).to.equal(error.num)
     expect(
       financial.XNPV(
         true,
-        [-10000, 2750, 4250, 3250, 2750],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']
+        [[-10000, 2750, 4250, 3250, 2750]],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']]
       )
     ).to.equal(error.value)
     expect(
       financial.XNPV(
         'true',
-        [-10000, 2750, 4250, 3250, 2750],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']
+        [[-10000, 2750, 4250, 3250, 2750]],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']]
       )
     ).to.equal(error.value)
     expect(
       financial.XNPV(
         false,
-        [-10000, 2750, 4250, 3250, 2750],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']
+        [[-10000, 2750, 4250, 3250, 2750]],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']]
       )
     ).to.equal(error.value)
     expect(
       financial.XNPV(
         [[1], [2]],
-        [-10000, 2750, 4250, 3250, 2750],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']
+        [[-10000, 2750, 4250, 3250, 2750]],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']]
       )
     ).to.equal(error.value)
     expect(
       financial.XNPV(
         0.1,
-        [-10000, 2750, 4250, 3250, 'invalid'],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']
+        [[-10000, 2750, 4250, 3250, 'invalid']],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']]
       )
     ).to.equal(error.value)
     expect(
-      financial.XNPV(0.1, 'invalid', ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'])
+      financial.XNPV(0.1, 'invalid', [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']])
     ).to.equal(error.value)
-    expect(financial.XNPV(0.1, true, ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'])).to.equal(
-      error.value
-    )
-    expect(financial.XNPV(0.1, false, ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'])).to.equal(
-      error.value
-    )
-    expect(financial.XNPV(0.1, null, ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'])).to.equal(
-      error.num
-    )
     expect(
-      financial.XNPV(0.1, undefined, ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'])
+      financial.XNPV(0.1, true, [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']])
+    ).to.equal(error.value)
+    expect(
+      financial.XNPV(0.1, false, [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']])
+    ).to.equal(error.value)
+    expect(
+      financial.XNPV(0.1, null, [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']])
+    ).to.equal(error.num)
+    expect(
+      financial.XNPV(0.1, undefined, [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']])
     ).to.equal(error.na)
     expect(
       typeof financial.XNPV(
         0.1,
-        [-10000, 2750, 4250, 3250, undefined],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']
+        [[-10000, 2750, 4250, 3250, undefined]],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']]
       )
     ).to.equal('number')
     expect(
       financial.XNPV(
         0.1,
-        [-10000, 2750, 4250, 3250, null],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']
+        [[-10000, 2750, 4250, 3250, null]],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']]
       )
     ).to.equal(error.num)
     expect(
       financial.XNPV(
         0.1,
-        [-10000, 2750, 4250, 3250, true],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']
+        [[-10000, 2750, 4250, 3250, true]],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']]
       )
     ).to.equal(error.value)
     expect(
       financial.XNPV(
         0.1,
-        [-10000, 2750, 4250, 3250, false],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']
+        [[-10000, 2750, 4250, 3250, false]],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']]
       )
     ).to.equal(error.value)
     expect(
       financial.XNPV(
         0.1,
-        [-10000, 2750, 4250, 3250, 'true'],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']
+        [[-10000, 2750, 4250, 3250, 'true']],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']]
       )
     ).to.equal(error.value)
 
-    expect(financial.XNPV(0.1, [-10000, 2750, 4250, 3250, 2750], 'invalid')).to.equal(error.value)
-    expect(financial.XNPV(0.1, [-10000, 2750, 4250, 3250, 2750], true)).to.equal(error.value)
-    expect(financial.XNPV(0.1, [-10000, 2750, 4250, 3250, 2750], false)).to.equal(error.value)
-    expect(financial.XNPV(0.1, [-10000, 2750, 4250, 3250, 2750], null)).to.equal(error.num)
-    expect(financial.XNPV(0.1, [-10000, 2750, 4250, 3250, 2750], undefined)).to.equal(error.na)
+    expect(financial.XNPV(0.1, [[-10000, 2750, 4250, 3250, 2750]], 'invalid')).to.equal(error.value)
+    expect(financial.XNPV(0.1, [[-10000, 2750, 4250, 3250, 2750]], true)).to.equal(error.value)
+    expect(financial.XNPV(0.1, [[-10000, 2750, 4250, 3250, 2750]], false)).to.equal(error.value)
+    expect(financial.XNPV(0.1, [[-10000, 2750, 4250, 3250, 2750]], null)).to.equal(error.num)
+    expect(financial.XNPV(0.1, [[-10000, 2750, 4250, 3250, 2750]], undefined)).to.equal(error.na)
     expect(
       financial.XNPV(
         0.1,
-        [-10000, 2750, 4250, 3250, 2750],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', undefined]
+        [[-10000, 2750, 4250, 3250, 2750]],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', undefined]]
       )
     ).to.equal(error.value)
     expect(
       financial.XNPV(
         0.1,
-        [-10000, 2750, 4250, 3250, 2750],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', null]
+        [[-10000, 2750, 4250, 3250, 2750]],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', null]]
       )
     ).to.equal(error.num)
     expect(
       financial.XNPV(
         0.1,
-        [-10000, 2750, 4250, 3250, 2750],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', true]
+        [[-10000, 2750, 4250, 3250, 2750]],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', true]]
       )
     ).to.equal(error.value)
     expect(
       financial.XNPV(
         0.1,
-        [-10000, 2750, 4250, 3250, 2750],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', false]
+        [[-10000, 2750, 4250, 3250, 2750]],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', false]]
       )
     ).to.equal(error.value)
     expect(
       financial.XNPV(
         0.1,
-        [-10000, 2750, 4250, 3250, 2750],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', 'true']
+        [[-10000, 2750, 4250, 3250, 2750]],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', 'true']]
       )
     ).to.equal(error.value)
     expect(
       financial.XNPV(
         0.09,
-        [-10000, 2750, 4250, 3250, 2750],
-        ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'],
+        [[-10000, 2750, 4250, 3250, 2750]],
+        [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']],
         1
       )
     ).to.equal(error.na)
-    expect(financial.XNPV(0.09, [-10000, 2750, 4250, 3250, 2750])).to.equal(error.na)
+    expect(financial.XNPV(0.09, [[-10000, 2750, 4250, 3250, 2750]])).to.equal(error.na)
     expect(financial.XNPV(0.09)).to.equal(error.na)
     expect(financial.XNPV()).to.equal(error.na)
 
@@ -2085,26 +2082,26 @@ describe('Financial', () => {
       expect(
         financial.XNPV(
           err,
-          [-10000, 2750, 4250, 3250, 2750],
-          ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']
+          [[-10000, 2750, 4250, 3250, 2750]],
+          [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']]
         )
       ).to.equal(err)
       expect(
-        financial.XNPV(0.09, err, ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009'])
+        financial.XNPV(0.09, err, [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']])
       ).to.equal(err)
-      expect(financial.XNPV(0.09, [-10000, 2750, 4250, 3250, 2750], err)).to.equal(err)
+      expect(financial.XNPV(0.09, [[-10000, 2750, 4250, 3250, 2750]], err)).to.equal(err)
       expect(
         financial.XNPV(
           0.09,
-          [-10000, 2750, 4250, 3250, err],
-          ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']
+          [[-10000, 2750, 4250, 3250, err]],
+          [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', '04/01/2009']]
         )
       ).to.equal(err)
       expect(
         financial.XNPV(
           0.09,
-          [-10000, 2750, 4250, 3250, 2750],
-          ['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', err]
+          [[-10000, 2750, 4250, 3250, 2750]],
+          [['01/01/2008', '03/01/2008', '10/30/2008', '02/15/2009', err]]
         )
       ).to.equal(err)
     })
