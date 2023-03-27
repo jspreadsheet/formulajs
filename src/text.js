@@ -1005,3 +1005,91 @@ export function VALUE(text) {
 
   return output
 }
+
+/**
+ * Returns text that occurs after given character or string.
+ *
+ * Category: Text
+ *
+ * @param {*} text The text you are searching within. Wildcard characters not allowed.
+ * @param {*} delimiter The text that marks the point after which you want to extract.
+ * @param {*} instanceNum The instance of the delimiter after which you want to extract the text. A negative number starts searching text from the end.
+ * @param {*} matchMode  Determines whether the text search is case-sensitive. The default is case-sensitive.
+ * @param {*} matchEnd  Treats the end of text as a delimiter. By default, the text is an exact match.
+ * @param {*} ifNotFound  Value returned if no match is found. By default, #N/A is returned.
+ * @returns
+ */
+export function TEXTAFTER(text, delimiter, instanceNum = 1, matchMode = 0, matchEnd = 0, ifNotFound = error.na) {
+  if (arguments.length < 2 || arguments.length > 6 || utils.anyIsUndefined(text, delimiter)) {
+    return error.na
+  }
+
+  
+  const anyError = utils.anyError(...arguments)
+  
+  if (anyError) {
+    return anyError
+  }
+
+  if (utils.getVariableType(text) !== 'single') {
+    return error.value
+  }
+
+  text = utils.parseString(text)
+  delimiter = utils.parseString(delimiter)
+  instanceNum = utils.parseNumber(instanceNum)
+  matchMode = utils.parseNumber(matchMode)
+  matchEnd = utils.parseNumber(matchEnd)
+
+  if (utils.anyIsError(text, delimiter, instanceNum, matchMode, matchEnd)) {
+    return error.value
+  }
+  
+  const token = '|'
+  let tokenizedText = token + text.split('').join(token) + token
+  let tokenizedDelimiter = token + delimiter.split('').join(token)
+
+  if (text.length < instanceNum || instanceNum === 0) {
+    return error.value
+  }
+
+  if (matchMode) {
+    tokenizedText = tokenizedText.toLowerCase()
+    tokenizedDelimiter = tokenizedDelimiter.toLowerCase()
+  }
+
+  let lastInstancePos = 0
+  let instanceLoops = 0
+
+  if (instanceNum < 0) {
+    instanceLoops = -instanceNum
+
+    for (let i = 0; i < instanceLoops; i++) {
+      if (tokenizedText.includes(tokenizedDelimiter)) {
+        lastInstancePos = tokenizedText.lastIndexOf(tokenizedDelimiter)
+        tokenizedText = tokenizedText.substring(0, tokenizedText.lastIndexOf(tokenizedDelimiter))
+      } else {
+        if (matchEnd) {
+          return text
+        }
+        return ifNotFound
+      }
+    }
+  } else {
+    instanceLoops = instanceNum
+
+    for (let i = 0; i < instanceLoops; i++) {
+      if (tokenizedText.includes(tokenizedDelimiter)) {
+        lastInstancePos = tokenizedText.indexOf(tokenizedDelimiter)
+        tokenizedText = tokenizedText.replace(tokenizedDelimiter, new Array(tokenizedDelimiter.length + 1).join(token))
+      } else {
+        if (matchEnd) {
+          return ''
+        }
+        return ifNotFound
+      }
+    }
+  }
+
+  return (token + text.split('').join(token) + token).slice(lastInstancePos + tokenizedDelimiter.length).replaceAll(token, '')
+}
