@@ -1081,7 +1081,7 @@ describe('Text', () => {
       expect(text.VALUE('EUR1000')).to.equal(1000)
     })
   })
-  
+
   it('TEXTAFTER', () => {
     expect(text.TEXTAFTER('Red riding hoods, red hood', 'hood')).to.equal('s, red hood')
     expect(text.TEXTAFTER('Red riding hoods, red hood', '')).to.equal('Red riding hoods, red hood')
@@ -1098,7 +1098,9 @@ describe('Text', () => {
     expect(text.TEXTAFTER('Socrates', ' ', -1, undefined, 1)).to.equal('Socrates')
     expect(text.TEXTAFTER('Immanuel Kant', ' ', undefined, undefined, 1)).to.equal('Kant')
     expect(text.TEXTAFTER('Little red Riding Hoods red hood', 'Red', undefined, false)).to.equal(error.na)
-    expect(text.TEXTAFTER('Little red Riding Hoods red hood', 'Red', undefined, false, undefined, 'Not found')).to.equal('Not found')
+    expect(
+      text.TEXTAFTER('Little red Riding Hoods red hood', 'Red', undefined, false, undefined, 'Not found')
+    ).to.equal('Not found')
     expect(text.TEXTAFTER('Socrates', ' ', undefined, undefined, 0)).to.equal(error.na)
     expect(text.TEXTAFTER('Little Red Riding Hoods red hood', 'basket')).to.equal(error.na)
     expect(text.TEXTAFTER('Text', 'T', 10)).to.equal(error.value)
@@ -1127,10 +1129,80 @@ describe('Text', () => {
 
     Object.values(error).forEach((err) => {
       expect(text.TEXTAFTER(err, 'red', undefined, false, undefined, 'Not found')).to.equal(err)
-      expect(text.TEXTAFTER('Little red Riding Hoods red hood', err, undefined, false, undefined, 'Not found')).to.equal(err)
-      expect(text.TEXTAFTER('Little red Riding Hoods red hood', 'red', err, false, undefined, 'Not found')).to.equal(err)
-      expect(text.TEXTAFTER('Little red Riding Hoods red hood', 'red', undefined, err, undefined, 'Not found')).to.equal(err)
-      expect(text.TEXTAFTER('Little red Riding Hoods red hood', 'red', undefined, false, err, 'Not found')).to.equal(err)
+      expect(
+        text.TEXTAFTER('Little red Riding Hoods red hood', err, undefined, false, undefined, 'Not found')
+      ).to.equal(err)
+      expect(text.TEXTAFTER('Little red Riding Hoods red hood', 'red', err, false, undefined, 'Not found')).to.equal(
+        err
+      )
+      expect(
+        text.TEXTAFTER('Little red Riding Hoods red hood', 'red', undefined, err, undefined, 'Not found')
+      ).to.equal(err)
+      expect(text.TEXTAFTER('Little red Riding Hoods red hood', 'red', undefined, false, err, 'Not found')).to.equal(
+        err
+      )
+    })
+  })
+
+  it('TEXTBEFORE', () => {
+    expect(text.TEXTBEFORE('Red riding hoods, red hood', 'hood')).to.equal('Red riding ')
+    expect(text.TEXTBEFORE('Red riding hoods, red hood', '')).to.equal('')
+    expect(text.TEXTBEFORE('Little red Riding Hoods red hood', 'red', -2)).to.equal('Little ')
+    expect(text.TEXTBEFORE('Red riding hoods, red hood', '', -1)).to.equal('Red riding hoods, red hood')
+    expect(text.TEXTBEFORE('Little Red Riding Hoods red hood', 'Red')).to.equal('Little ')
+    expect(text.TEXTBEFORE('Little red Riding Hoods red hood', 'red', 2)).to.equal('Little red Riding Hoods ')
+    expect(text.TEXTBEFORE('Little red Riding Hoods red hood', 'Red', 2, 1)).to.equal('Little red Riding Hoods ')
+    expect(text.TEXTBEFORE(123, 1, undefined, false, undefined, 'Not found')).to.equal('')
+    expect(text.TEXTBEFORE('Little red Riding Hoods red hood', 'Red', 2, 0)).to.equal(error.na)
+    expect(text.TEXTBEFORE('Little Red Riding Hoods red hood', 'Red', 3)).to.equal(error.na)
+    expect(text.TEXTBEFORE('Marcus Aurelius', ' ', undefined, undefined, 1)).to.equal('Marcus')
+    expect(text.TEXTBEFORE('Socrates', ' ', undefined, undefined, 1)).to.equal('Socrates')
+    expect(text.TEXTBEFORE('Socrates', ' ', -1, undefined, 1)).to.equal('')
+    expect(text.TEXTBEFORE('Immanuel Kant', ' ', undefined, undefined, 1)).to.equal('Immanuel')
+    expect(text.TEXTBEFORE('Little red Riding Hoods red hood', 'Red', undefined, false)).to.equal(error.na)
+    expect(
+      text.TEXTBEFORE('Little red Riding Hoods red hood', 'Red', undefined, false, undefined, 'Not found')
+    ).to.equal('Not found')
+    expect(text.TEXTBEFORE('Socrates', ' ', undefined, undefined, 0)).to.equal(error.na)
+    expect(text.TEXTBEFORE('Little Red Riding Hoods red hood', 'basket')).to.equal(error.na)
+    expect(text.TEXTBEFORE('Text', 'T', 10)).to.equal(error.value)
+    expect(text.TEXTBEFORE('Text', 'T', 0)).to.equal(error.value)
+    expect(text.TEXTBEFORE('Text', 'T', 2)).to.equal(error.na)
+    expect(text.TEXTBEFORE('Text', 'T', 2, undefined, undefined, undefined, 1)).to.equal(error.na)
+    expect(text.TEXTBEFORE('Text')).to.equal(error.na)
+    expect(text.TEXTBEFORE()).to.equal(error.na)
+    expect(text.TEXTBEFORE(true, true, undefined, false, undefined, 'Not found')).to.equal('')
+    expect(text.TEXTBEFORE('true', true, undefined, false, undefined, 'Not found')).to.equal('')
+    expect(text.TEXTBEFORE(false, false, undefined, false, undefined, 'Not found')).to.equal('')
+    expect(text.TEXTBEFORE(true, false, undefined, false, undefined, 'Not found')).to.equal('Not found')
+    expect(text.TEXTBEFORE(true, false, undefined, false, undefined, null)).to.equal(null)
+    expect(text.TEXTBEFORE(undefined, 'text', undefined, false, undefined, 'Not found')).to.equal(error.na)
+    expect(text.TEXTBEFORE(null, 'text', undefined, false, undefined, 'Not found')).to.equal(error.value)
+    expect(text.TEXTBEFORE([[1], [2]], 'text', undefined, false, undefined, 'Not found')).to.equal(error.value)
+    expect(text.TEXTBEFORE('abc', 'b', null, false, undefined, 'Not found')).to.equal(error.value)
+    expect(text.TEXTBEFORE('abc', 'b', true, null, undefined, 'Not found')).to.equal('a')
+    expect(text.TEXTBEFORE('abc', 'b', true, undefined, null, 'Not found')).to.equal('a')
+    expect(text.TEXTBEFORE('abc', [[1], [2]], undefined, undefined, null, 'Not found')).to.equal('Not found')
+    expect(text.TEXTBEFORE('abc', 'b', [[1], [2]], undefined, null, 'Not found')).to.equal(error.value)
+    expect(text.TEXTBEFORE('abc', 'b', false, undefined, null, 'Not found')).to.equal(error.value)
+    expect(text.TEXTBEFORE('abc', 'b', 1, [[1], [2]], null, 'Not found')).to.equal(error.value)
+    expect(text.TEXTBEFORE('abc', 'b', 1, 1, [[1], [2]], 'Not found')).to.equal(error.value)
+    expect(text.TEXTBEFORE('abc', 'b', 1, 1, 1, [[1], [2]])).to.equal('a')
+
+    Object.values(error).forEach((err) => {
+      expect(text.TEXTBEFORE(err, 'red', undefined, false, undefined, 'Not found')).to.equal(err)
+      expect(
+        text.TEXTBEFORE('Little red Riding Hoods red hood', err, undefined, false, undefined, 'Not found')
+      ).to.equal(err)
+      expect(text.TEXTBEFORE('Little red Riding Hoods red hood', 'red', err, false, undefined, 'Not found')).to.equal(
+        err
+      )
+      expect(
+        text.TEXTBEFORE('Little red Riding Hoods red hood', 'red', undefined, err, undefined, 'Not found')
+      ).to.equal(err)
+      expect(text.TEXTBEFORE('Little red Riding Hoods red hood', 'red', undefined, false, err, 'Not found')).to.equal(
+        err
+      )
     })
   })
 })
