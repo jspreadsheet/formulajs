@@ -1205,4 +1205,84 @@ describe('Text', () => {
       )
     })
   })
+
+  it('TEXTSPLIT', () => {
+    expect(text.TEXTSPLIT('abcabc', 'a', undefined, true)).to.eql([['bc', 'bc']])
+    expect(text.TEXTSPLIT('Dakota Lennon Sanchez', ' ')).to.eql([['Dakota', 'Lennon', 'Sanchez']])
+    expect(text.TEXTSPLIT('To be or not to be', ' ')).to.eql([['To', 'be', 'or', 'not', 'to', 'be']])
+    expect(text.TEXTSPLIT('1,2,3;4,5,6', ',', ';')).to.eql([
+      ['1', '2', '3'],
+      ['4', '5', '6']
+    ])
+    expect(text.TEXTSPLIT('abcabc;abcabcabc', 'a', ';', true)).to.eql([
+      ['bc', 'bc', error.na],
+      ['bc', 'bc', 'bc']
+    ])
+    expect(text.TEXTSPLIT('abcabc', 'a')).to.eql([['', 'bc', 'bc']])
+    expect(text.TEXTSPLIT('abcabc', 'A', undefined, true, true)).to.eql([['bc', 'bc']])
+    expect(text.TEXTSPLIT('Do. Or do not. There is no try. -Anonymous', '.')).to.eql([
+      ['Do', ' Or do not', ' There is no try', ' -Anonymous']
+    ])
+    expect(text.TEXTSPLIT('Do. Or do not. There is no try. -Anonymous', undefined, '. ')).to.eql([
+      ['Do'],
+      ['Or do not'],
+      ['There is no try'],
+      ['-Anonymous']
+    ])
+    expect(text.TEXTSPLIT('Do. Or do not. There is no try. -Anonymous', ' ', '. ', true)).to.eql([
+      ['Do', error.na, error.na, error.na],
+      ['Or', 'do', 'not', error.na],
+      ['There', 'is', 'no', 'try'],
+      ['-Anonymous', error.na, error.na, error.na]
+    ])
+    expect(text.TEXTSPLIT('Do. Or do not. There is no try. -Anonymous', ' ', '. ', true, false, error.error)).to.eql([
+      ['Do', error.error, error.error, error.error],
+      ['Or', 'do', 'not', error.error],
+      ['There', 'is', 'no', 'try'],
+      ['-Anonymous', error.error, error.error, error.error]
+    ])
+    expect(text.TEXTSPLIT('Do. Or do not. There is no try. -Anonymous', ' ', '. ', true, false, '')).to.eql([
+      ['Do', '', '', ''],
+      ['Or', 'do', 'not', ''],
+      ['There', 'is', 'no', 'try'],
+      ['-Anonymous', '', '', '']
+    ])
+    expect(text.TEXTSPLIT(true, 'a')).to.eql('true')
+    expect(text.TEXTSPLIT(false, 'a')).to.eql([['f', 'lse']])
+    expect(text.TEXTSPLIT(undefined, 'a')).to.eql(error.na)
+    expect(text.TEXTSPLIT(null, 'a')).to.eql(error.value)
+    expect(text.TEXTSPLIT([[1], [2]], 'a')).to.eql(error.value)
+    expect(text.TEXTSPLIT(123, 2)).to.eql([['1', '3']])
+    expect(text.TEXTSPLIT(123, 2)).to.eql([['1', '3']])
+    expect(text.TEXTSPLIT(123, true)).to.eql('123')
+    expect(text.TEXTSPLIT(123, false)).to.eql('123')
+    expect(text.TEXTSPLIT(123, undefined)).to.eql(error.value)
+    expect(text.TEXTSPLIT(123, null)).to.eql(error.value)
+    expect(text.TEXTSPLIT(123, [[1, 3]])).to.eql(error.value)
+    expect(text.TEXTSPLIT(123, undefined, 2)).to.eql([['1'], ['3']])
+    expect(text.TEXTSPLIT(123, undefined, 2)).to.eql([['1'], ['3']])
+    expect(text.TEXTSPLIT(123, undefined, true)).to.eql('123')
+    expect(text.TEXTSPLIT(123, undefined, false)).to.eql('123')
+    expect(text.TEXTSPLIT(123, undefined, undefined)).to.eql(error.value)
+    expect(text.TEXTSPLIT(123, undefined, null)).to.eql(error.value)
+    expect(text.TEXTSPLIT(123, undefined, [[1, 3]])).to.eql(error.value)
+    expect(text.TEXTSPLIT(123, undefined, '2', 2)).to.eql([['1'], ['3']])
+    expect(text.TEXTSPLIT(123, undefined, '2', 2)).to.eql([['1'], ['3']])
+    expect(text.TEXTSPLIT(123, undefined, '2', undefined)).to.eql([['1'], ['3']])
+    expect(text.TEXTSPLIT(123, undefined, '2', null)).to.eql([['1'], ['3']])
+    expect(text.TEXTSPLIT(123, undefined, '2', [[1, 3]])).to.eql(error.value)
+    expect(text.TEXTSPLIT(123, undefined, '2', undefined, 2)).to.eql([['1'], ['3']])
+    expect(text.TEXTSPLIT(123, undefined, '2', undefined, 2)).to.eql([['1'], ['3']])
+    expect(text.TEXTSPLIT(123, undefined, '2', undefined, undefined)).to.eql([['1'], ['3']])
+    expect(text.TEXTSPLIT(123, undefined, '2', undefined, null)).to.eql([['1'], ['3']])
+    expect(text.TEXTSPLIT(123, undefined, '2', undefined, [[1, 3]])).to.eql(error.value)
+
+    Object.values(error).forEach((err) => {
+      expect(text.TEXTSPLIT(err, 'A', undefined, true, true)).to.equal(err)
+      expect(text.TEXTSPLIT('abcabc', err, undefined, true, true)).to.equal(err)
+      expect(text.TEXTSPLIT('abcabc', 'A', err, true, true)).to.equal(err)
+      expect(text.TEXTSPLIT('abcabc', 'A', undefined, err, true)).to.equal(err)
+      expect(text.TEXTSPLIT('abcabc', 'A', undefined, true, err)).to.equal(err)
+    })
+  })
 })

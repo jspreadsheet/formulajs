@@ -1181,3 +1181,100 @@ export function TEXTBEFORE(text, delimiter, instanceNum = 1, matchMode = 0, matc
 
   return (token + text.split('').join(token) + token).slice(0, lastInstancePos).replaceAll(token, '')
 }
+
+/**
+ * Returns text that occurs before given character or string.
+ *
+ * Category: Text
+ *
+ * @param {*} text The text you are searching within. Wildcard characters not allowed.
+ * @param {*} col_delimiter   The text that marks the point where to spill the text across columns.
+ * @param {*} row_delimiter The text that marks the point where to spill the text down rows. Optional.
+ * @param {*} ignoreEmpty  Specify TRUE to ignore consecutive delimiters. Defaults to FALSE, which creates an empty cell. Optional.
+ * @param {*} matchMode  Specify 1 to perform a case-insensitive match. Defaults to 0, which does a case-sensitive match. Optional.
+ * @param {*} padWidth  The value with which to pad the result. The default is #N/A.
+ * @returns
+ */
+export function TEXTSPLIT(text, colDelimiter, rowDelimiter, ignoreEmpty = false, matchMode = 0, padWidth = error.na) {
+  if (arguments.length < 2 || arguments.length > 6 || utils.anyIsUndefined(text)) {
+    return error.na
+  }
+
+  if (
+    utils.anyIsNull(text, colDelimiter) ||
+    utils.getVariableType(text) !== 'single' ||
+    utils.getVariableType(colDelimiter) !== 'single' ||
+    utils.getVariableType(rowDelimiter) !== 'single' ||
+    (!utils.isDefined(colDelimiter) && !utils.isDefined(rowDelimiter))
+  ) {
+    return error.value
+  }
+
+  const anyError = utils.anyError(text, colDelimiter, rowDelimiter, ignoreEmpty, matchMode)
+
+  if (anyError) {
+    return anyError
+  }
+
+  text = utils.parseString(text)
+  ignoreEmpty = utils.parseBool(ignoreEmpty)
+  matchMode = utils.parseBool(matchMode)
+
+  if (utils.anyIsError(text, ignoreEmpty, matchMode)) {
+    return error.value
+  }
+
+  if (matchMode) {
+    colDelimiter = colDelimiter ? new RegExp(colDelimiter, 'i') : colDelimiter
+    rowDelimiter = rowDelimiter ? new RegExp(rowDelimiter, 'i') : rowDelimiter
+  }
+
+  let rows = text.split(rowDelimiter)
+  let maxSize = 0
+
+  let rowsLength = rows.length
+
+  for (let i = 0; i < rowsLength; i++) {
+    rows[i] = rows[i].split(colDelimiter)
+    if (rows[i].length > maxSize) {
+      maxSize = rows[i].length
+    }
+  }
+
+  if (ignoreEmpty) {
+    let filteredResult = []
+    let newSize = 0
+    let rowLength = undefined
+
+    for (let i = 0; i < rowsLength; i++) {
+      filteredResult[i] = []
+      for (let j = 0; j < maxSize; j++) {
+        if (rows[i][j] !== '') {
+          filteredResult[i].push(rows[i][j])
+        }
+      }
+      rowLength = filteredResult[i].length
+      if (rowLength > newSize) {
+        newSize = rowLength
+      }
+    }
+
+    maxSize = newSize
+    rows = filteredResult
+  }
+
+  let result = []
+
+  for (let i = 0; i < rowsLength; i++) {
+    result[i] = []
+    for (let j = 0; j < maxSize; j++) {
+      result[i][j] = utils.isDefined(rows[i][j]) ? rows[i][j] : padWidth
+    }
+  }
+
+  if (result.length === 1 && result[0].length === 1) {
+    return result[0][0]
+  }
+
+  return result
+}
