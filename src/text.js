@@ -1183,7 +1183,7 @@ export function TEXTBEFORE(text, delimiter, instanceNum = 1, matchMode = 0, matc
 }
 
 /**
- * Returns text that occurs before given character or string.
+ * Splits text strings by using column and row delimiters.
  *
  * Category: Text
  *
