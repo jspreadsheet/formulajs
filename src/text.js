@@ -1225,8 +1225,9 @@ export function TEXTSPLIT(text, colDelimiter, rowDelimiter, ignoreEmpty = false,
   }
 
   if (matchMode) {
-    colDelimiter = colDelimiter ? new RegExp(colDelimiter, 'i') : colDelimiter
-    rowDelimiter = rowDelimiter ? new RegExp(rowDelimiter, 'i') : rowDelimiter
+    const regEscape = v => v.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+    colDelimiter = colDelimiter ? new RegExp(regEscape(colDelimiter), 'ig') : colDelimiter
+    rowDelimiter = rowDelimiter ? new RegExp(regEscape(rowDelimiter), 'ig') : rowDelimiter
   }
 
   let rows = text.split(rowDelimiter)

@@ -1275,6 +1275,7 @@ describe('Text', () => {
     expect(text.TEXTSPLIT(123, undefined, '2', [[1, 3]])).to.eql(error.value)
     expect(text.TEXTSPLIT(123, undefined, '2', undefined, 2)).to.eql([['1'], ['3']])
     expect(text.TEXTSPLIT(123, undefined, '2', undefined, 2)).to.eql([['1'], ['3']])
+    expect(text.TEXTSPLIT('12?3', undefined, '2?', undefined, 2)).to.eql([['1'], ['3']])
     expect(text.TEXTSPLIT(123, undefined, '2', undefined, undefined)).to.eql([['1'], ['3']])
     expect(text.TEXTSPLIT(123, undefined, '2', undefined, null)).to.eql([['1'], ['3']])
     expect(text.TEXTSPLIT(123, undefined, '2', undefined, [[1, 3]])).to.eql(error.value)
