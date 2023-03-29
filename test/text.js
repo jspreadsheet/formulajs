@@ -1288,4 +1288,61 @@ describe('Text', () => {
       expect(text.TEXTSPLIT('abcabc', 'A', undefined, true, err)).to.equal(err)
     })
   })
+
+  it('TEXTSPLIT', () => {
+    expect(text.VALUETOTEXT(true, 0)).to.equal('true')
+    expect(text.VALUETOTEXT(false, 0)).to.equal('false')
+    expect(text.VALUETOTEXT(1234.01234, 0)).to.equal('1234.01234')
+    expect(text.VALUETOTEXT('Hello', 0)).to.equal('Hello')
+    expect(text.VALUETOTEXT(error.value, 0)).to.equal(error.value.message)
+    expect(text.VALUETOTEXT('Seattle', 0)).to.equal('Seattle')
+    expect(text.VALUETOTEXT(1234, 0)).to.equal('1234')
+    expect(text.VALUETOTEXT(true, 1)).to.equal('true')
+    expect(text.VALUETOTEXT(1234.01234, 1)).to.equal('1234.01234')
+    expect(text.VALUETOTEXT('Hello', 1)).to.equal(`"Hello"`)
+    expect(text.VALUETOTEXT(error.value, 1)).to.equal(error.value.message)
+    expect(text.VALUETOTEXT('Seattle', 1)).to.equal(`"Seattle"`)
+    expect(text.VALUETOTEXT(1234, 1)).to.equal('1234')
+    expect(text.VALUETOTEXT(undefined, 0)).to.equal('')
+    expect(text.VALUETOTEXT(null, 0)).to.equal('')
+    expect(text.VALUETOTEXT(undefined, 1)).to.equal('')
+    expect(text.VALUETOTEXT(null, 1)).to.equal('')
+    expect(text.VALUETOTEXT('Hello', true)).to.equal(`"Hello"`)
+    expect(text.VALUETOTEXT('Hello', false)).to.equal('Hello')
+    expect(text.VALUETOTEXT([['Hello', 'Seattle', 123]], false)).to.eql([['Hello', 'Seattle', '123']])
+    expect(
+      text.VALUETOTEXT(
+        [
+          ['Hello', 'Seattle'],
+          [123, 456],
+          [null, undefined]
+        ],
+        false
+      )
+    ).to.eql([
+      ['Hello', 'Seattle'],
+      ['123', '456'],
+      ['', '']
+    ])
+    expect(
+      text.VALUETOTEXT(
+        [
+          ['Hello', 'Seattle'],
+          [123, 456],
+          [null, undefined]
+        ],
+        true
+      )
+    ).to.eql([
+      [`"Hello"`, `"Seattle"`],
+      ['123', '456'],
+      ['', '']
+    ])
+
+    Object.values(error).forEach((err) => {
+      expect(text.VALUETOTEXT(err, 0)).to.equal(err.message)
+      expect(text.VALUETOTEXT(err, 1)).to.equal(err.message)
+      expect(text.VALUETOTEXT('Hello', err)).to.equal(err)
+    })
+  })
 })

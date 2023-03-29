@@ -1225,7 +1225,7 @@ export function TEXTSPLIT(text, colDelimiter, rowDelimiter, ignoreEmpty = false,
   }
 
   if (matchMode) {
-    const regEscape = v => v.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+    const regEscape = (v) => v.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
     colDelimiter = colDelimiter ? new RegExp(regEscape(colDelimiter), 'ig') : colDelimiter
     rowDelimiter = rowDelimiter ? new RegExp(regEscape(rowDelimiter), 'ig') : rowDelimiter
   }
@@ -1278,4 +1278,56 @@ export function TEXTSPLIT(text, colDelimiter, rowDelimiter, ignoreEmpty = false,
   }
 
   return result
+}
+
+function valueToText(value, format) {
+  if (format && typeof value === 'string') {
+    return `"${value}"`
+  }
+
+  value = utils.parseString(value)
+
+  if (value && value.formulaError) {
+    return value.message
+  }
+
+  return `${value}`
+}
+
+/**
+ * Returns text from any specified value. It passes text values unchanged, and converts non-text values to text.
+ *
+ * Category: Text
+ *
+ * @param {*} value The value to return as text. Required.
+ * @param {*} format The format of the returned data. Optional. It can be one of two values: 0 or 1.
+ * @returns
+ */
+export function VALUETOTEXT(value, format = 0) {
+  if (arguments.length < 1 || arguments.length > 2) {
+    return error.na
+  }
+
+  if (format && format.formulaError) {
+    return format
+  }
+
+  format = utils.parseBool(format)
+
+  if (utils.getVariableType(value) !== 'single') {
+    let result = []
+    const rows = value.length
+    const columns = value[0].length
+
+    for (let i = 0; i < rows; i++) {
+      result[i] = []
+      for (let j = 0; j < columns; j++) {
+        result[i][j] = valueToText(value[i][j], format)
+      }
+    }
+
+    return result
+  }
+
+  return valueToText(...arguments)
 }
