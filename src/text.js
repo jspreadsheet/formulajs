@@ -1349,7 +1349,7 @@ export function ARRAYTOTEXT(array, format = 0) {
   if (!utils.isDefined(array)) {
     return error.value
   }
-  
+
   if (format && format.formulaError) {
     return format
   }
@@ -1359,12 +1359,12 @@ export function ARRAYTOTEXT(array, format = 0) {
   if (utils.getVariableType(array) === 'single') {
     return format ? `{${valueToText(array, format)}}` : valueToText(array, format)
   }
-  
+
   const rows = array.length
   const columns = array[0].length
   let result = []
   let columnDivisor = format ? '\\' : ', '
-  
+
   for (let i = 0; i < rows; i++) {
     let temp = []
     for (let j = 0; j < columns; j++) {
@@ -1373,7 +1373,7 @@ export function ARRAYTOTEXT(array, format = 0) {
     result[i] = temp.join(columnDivisor)
   }
 
-  result = format ? '{'+result.join(',')+'}' : result.join(', ')
+  result = format ? '{' + result.join(',') + '}' : result.join(', ')
 
   return result
 }

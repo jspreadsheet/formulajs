@@ -2598,4 +2598,172 @@ describe('Lookup Reference', () => {
   xit('RTD', () => {
     expect(lookup.RTD).to.throw('RTD is not implemented')
   })
+
+  it('DROP', () => {
+    expect(
+      lookup.DROP(
+        [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9]
+        ],
+        2
+      )
+    ).to.eql([[7, 8, 9]])
+    expect(
+      lookup.DROP(
+        [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9]
+        ],
+        undefined,
+        2
+      )
+    ).to.eql([[3], [6], [9]])
+    expect(
+      lookup.DROP(
+        [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9]
+        ],
+        -2
+      )
+    ).to.eql([[1, 2, 3]])
+    expect(
+      lookup.DROP(
+        [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9]
+        ],
+        2,
+        2
+      )
+    ).to.eql(9)
+    expect(
+      lookup.DROP(
+        [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9]
+        ],
+        3,
+        0
+      )
+    ).to.eql(error.calc)
+    expect(
+      lookup.DROP(
+        [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9]
+        ],
+        -3,
+        0
+      )
+    ).to.eql(error.calc)
+    expect(
+      lookup.DROP(
+        [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9]
+        ],
+        -2,
+        0
+      )
+    ).not.to.eql(error.calc)
+    expect(
+      lookup.DROP(
+        [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9]
+        ],
+        4,
+        0
+      )
+    ).to.eql(error.calc)
+    expect(
+      lookup.DROP(
+        [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9]
+        ],
+        0,
+        3
+      )
+    ).to.eql(error.calc)
+    expect(
+      lookup.DROP(
+        [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9]
+        ],
+        0,
+        -2
+      )
+    ).not.to.eql(error.calc)
+    expect(
+      lookup.DROP(
+        [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9]
+        ],
+        0,
+        -3
+      )
+    ).to.eql(error.calc)
+    expect(
+      lookup.DROP(
+        [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9]
+        ],
+        0,
+        4
+      )
+    ).to.eql(error.calc)
+    expect(lookup.DROP('a', 0)).to.eql('a')
+    expect(lookup.DROP(555, 0)).to.eql(555)
+    expect(lookup.DROP('true', 0)).to.eql('true')
+    expect(lookup.DROP(true, 0)).to.eql(true)
+    expect(lookup.DROP(false, 0)).to.eql(false)
+    expect(lookup.DROP('a', 1)).to.eql(error.calc)
+    expect(lookup.DROP(555, 1)).to.eql(error.calc)
+    expect(lookup.DROP('true', 1)).to.eql(error.calc)
+    expect(lookup.DROP(true, 1)).to.eql(error.calc)
+    expect(lookup.DROP(false, 1)).to.eql(error.calc)
+    expect(lookup.DROP('a', -1)).to.eql(error.calc)
+    expect(lookup.DROP(555, -1)).to.eql(error.calc)
+    expect(lookup.DROP('true', -1)).to.eql(error.calc)
+    expect(lookup.DROP(true, -1)).to.eql(error.calc)
+    expect(lookup.DROP(false, -1)).to.eql(error.calc)
+    expect(
+      lookup.DROP(
+        [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9]
+        ],
+        2,
+        2,
+        1
+      )
+    ).to.eql(error.na)
+    expect(
+      lookup.DROP([
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9]
+      ])
+    ).to.eql(error.na)
+    expect(lookup.DROP()).to.eql(error.na)
+  })
 })

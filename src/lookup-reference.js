@@ -855,3 +855,59 @@ export function GETPIVOTDATA() {
 export function RTD() {
   throw new Error('RTD is not implemented')
 }
+
+/**
+ * Excludes a specified number of rows or columns from the start or end of an array.
+ *
+ * Category: Lookup and reference
+ *
+ * @param {*} array The array from which to drop rows or columns.
+ * @param {*} rows The number of rows to drop. A negative value drops from the end of the array.
+ * @param {*} columns The number of columns to exclude. A negative value drops from the end of the array.
+ * @returns
+ */
+export function DROP(array, rows = 0, columns = 0) {
+  if (arguments.length < 2 || arguments.length > 3) {
+    return error.na
+  }
+
+  const arrayVarType = utils.getVariableType(array)
+
+  if (arrayVarType === 'single' && rows === 0 && columns === 0) {
+    return array
+  } else if (arrayVarType === 'single') {
+    return error.calc
+  }
+
+  let arrayRows = array.length
+  let arrayColumns = array[0].length
+
+  if (arrayRows > 64 || arrayColumns > 64) {
+    return error.num
+  }
+
+  if (rows < 0) {
+    arrayRows = arrayRows + rows
+    rows = 0
+  }
+
+  if (columns < 0) {
+    arrayColumns = arrayColumns + columns
+    columns = 0
+  }
+
+  if (arrayRows <= rows || arrayColumns <= columns) {
+    return error.calc
+  }
+
+  let result = []
+  for (let i = rows; i < arrayRows; i++) {
+    result.push(array[i].slice(columns))
+  }
+
+  if (result.length === 1 && result[0].length === 1) {
+    return result[0][0]
+  }
+
+  return result
+}

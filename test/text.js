@@ -1352,8 +1352,26 @@ describe('Text', () => {
   })
 
   it('ARRAYTOTEXT', () => {
-    expect(text.ARRAYTOTEXT([[true, error.value], [1234.01234, 'Seattle'], ['Hello', '1,123']], 0)).to.equal('true, #VALUE!, 1234.01234, Seattle, Hello, 1,123')
-    expect(text.ARRAYTOTEXT([[true, error.value], [1234.01234, 'Seattle'], ['Hello', '1,123']], 1)).to.equal(`{true\\#VALUE!,1234.01234\\"Seattle","Hello"\\"1,123"}`)
+    expect(
+      text.ARRAYTOTEXT(
+        [
+          [true, error.value],
+          [1234.01234, 'Seattle'],
+          ['Hello', '1,123']
+        ],
+        0
+      )
+    ).to.equal('true, #VALUE!, 1234.01234, Seattle, Hello, 1,123')
+    expect(
+      text.ARRAYTOTEXT(
+        [
+          [true, error.value],
+          [1234.01234, 'Seattle'],
+          ['Hello', '1,123']
+        ],
+        1
+      )
+    ).to.equal(`{true\\#VALUE!,1234.01234\\"Seattle","Hello"\\"1,123"}`)
     expect(text.ARRAYTOTEXT('Hello', 0)).to.equal('Hello')
     expect(text.ARRAYTOTEXT(true, 0)).to.equal('true')
     expect(text.ARRAYTOTEXT(true, 1)).to.equal('{true}')
