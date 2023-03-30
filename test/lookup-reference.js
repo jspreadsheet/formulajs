@@ -2766,4 +2766,110 @@ describe('Lookup Reference', () => {
     ).to.eql(error.na)
     expect(lookup.DROP()).to.eql(error.na)
   })
+
+  it('EXPAND', () => {
+    expect(
+      lookup.EXPAND(
+        [
+          [1, 2],
+          [3, 4]
+        ],
+        3,
+        3
+      )
+    ).to.eql([
+      [1, 2, error.na],
+      [3, 4, error.na],
+      [error.na, error.na, error.na]
+    ])
+    expect(
+      lookup.EXPAND(
+        [
+          [1, 2],
+          [3, 4]
+        ],
+        3,
+        3,
+        ''
+      )
+    ).to.eql([
+      [1, 2, ''],
+      [3, 4, ''],
+      ['', '', '']
+    ])
+    expect(lookup.EXPAND(1, 3, 3, '-')).to.eql([
+      [1, '-', '-'],
+      ['-', '-', '-'],
+      ['-', '-', '-']
+    ])
+    expect(lookup.EXPAND(1, 3, 3, '-')).to.eql([
+      [1, '-', '-'],
+      ['-', '-', '-'],
+      ['-', '-', '-']
+    ])
+    expect(lookup.EXPAND('hello', 2)).to.eql([['hello'], [error.na]])
+    expect(lookup.EXPAND('hello', 2, 2)).to.eql([
+      ['hello', error.na],
+      [error.na, error.na]
+    ])
+    expect(lookup.EXPAND(true, 2, 2)).to.eql([
+      [true, error.na],
+      [error.na, error.na]
+    ])
+    expect(lookup.EXPAND(false, 2, 2)).to.eql([
+      [false, error.na],
+      [error.na, error.na]
+    ])
+    expect(lookup.EXPAND('hello', true, 2)).to.eql([['hello', error.na]])
+    expect(lookup.EXPAND('hello', false, 2)).to.eql(error.value)
+    expect(lookup.EXPAND('hello', [[1, 2]], 2)).to.eql(error.value)
+    expect(lookup.EXPAND('hello', 1, [[1, 2]])).to.eql(error.value)
+    expect(lookup.EXPAND('hello', 1, 1, [[1, 2]])).to.eql(error.value)
+    expect(lookup.EXPAND('hello', 2, true)).to.eql([['hello'], [error.na]])
+    expect(lookup.EXPAND('hello', 2, false)).to.eql(error.value)
+    expect(lookup.EXPAND(-1, 2, 2)).to.eql([
+      [-1, error.na],
+      [error.na, error.na]
+    ])
+    expect(lookup.EXPAND(undefined, 2)).to.equal(error.value)
+    expect(lookup.EXPAND(1, undefined)).to.equal(1)
+    expect(lookup.EXPAND(1, undefined, undefined)).to.equal(1)
+    expect(lookup.EXPAND(1, 2, 2, undefined)[1][1]).to.equal(error.na)
+    expect(lookup.EXPAND(null, 2)).to.equal(error.value)
+    expect(lookup.EXPAND(1, null)).to.equal(error.value)
+    expect(lookup.EXPAND(1, 1, null)).to.equal(error.value)
+    expect(lookup.EXPAND(1, 2, 2, null)[1][1]).to.equal(null)
+    expect(lookup.EXPAND()).to.eql(error.na)
+    expect(
+      lookup.EXPAND([
+        [1, 2],
+        [3, 4]
+      ])
+    ).to.eql(error.na)
+    expect(
+      lookup.EXPAND(
+        [
+          [1, 2],
+          [3, 4]
+        ],
+        3,
+        3,
+        'pad',
+        1
+      )
+    ).to.eql(error.na)
+
+    Object.values(error).forEach((err) => {
+      expect(lookup.EXPAND(err, 2, 2)).to.eql([
+        [err, error.na],
+        [error.na, error.na]
+      ])
+      expect(lookup.EXPAND(1, err)).to.equal(err)
+      expect(lookup.EXPAND(1, 1, err)).to.equal(err)
+      expect(lookup.EXPAND(1, 2, 2, err)).to.eql([
+        [1, err],
+        [err, err]
+      ])
+    })
+  })
 })
