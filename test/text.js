@@ -1269,7 +1269,9 @@ describe('Text', () => {
     expect(text.TEXTSPLIT(123, undefined, null)).to.eql(error.value)
     expect(text.TEXTSPLIT(123, undefined, [[1, 3]])).to.eql(error.value)
     expect(text.TEXTSPLIT(123, undefined, '2', 2)).to.eql([['1'], ['3']])
-    expect(text.TEXTSPLIT(123, undefined, '2', 2)).to.eql([['1'], ['3']])
+    expect(text.TEXTSPLIT(123, undefined, '2', undefined, 2, 1, 1)).to.equal(error.na)
+    expect(text.TEXTSPLIT(123)).to.equal(error.na)
+    expect(text.TEXTSPLIT()).to.equal(error.na)
     expect(text.TEXTSPLIT(123, undefined, '2', undefined)).to.eql([['1'], ['3']])
     expect(text.TEXTSPLIT(123, undefined, '2', null)).to.eql([['1'], ['3']])
     expect(text.TEXTSPLIT(123, undefined, '2', [[1, 3]])).to.eql(error.value)
@@ -1278,6 +1280,7 @@ describe('Text', () => {
     expect(text.TEXTSPLIT('12?3', undefined, '2?', undefined, 2)).to.eql([['1'], ['3']])
     expect(text.TEXTSPLIT(123, undefined, '2', undefined, undefined)).to.eql([['1'], ['3']])
     expect(text.TEXTSPLIT(123, undefined, '2', undefined, null)).to.eql([['1'], ['3']])
+    expect(text.TEXTSPLIT(123, undefined, '2', undefined, 2)).to.eql([['1'], ['3']])
     expect(text.TEXTSPLIT(123, undefined, '2', undefined, [[1, 3]])).to.eql(error.value)
 
     Object.values(error).forEach((err) => {
@@ -1289,7 +1292,7 @@ describe('Text', () => {
     })
   })
 
-  it('TEXTSPLIT', () => {
+  it('VALUETOTEXT', () => {
     expect(text.VALUETOTEXT(true, 0)).to.equal('true')
     expect(text.VALUETOTEXT(false, 0)).to.equal('false')
     expect(text.VALUETOTEXT(1234.01234, 0)).to.equal('1234.01234')
@@ -1309,6 +1312,8 @@ describe('Text', () => {
     expect(text.VALUETOTEXT(null, 1)).to.equal('')
     expect(text.VALUETOTEXT('Hello', true)).to.equal(`"Hello"`)
     expect(text.VALUETOTEXT('Hello', false)).to.equal('Hello')
+    expect(text.VALUETOTEXT()).to.equal(error.na)
+    expect(text.VALUETOTEXT('Hello', false, 1)).to.equal(error.na)
     expect(text.VALUETOTEXT([['Hello', 'Seattle', 123]], false)).to.eql([['Hello', 'Seattle', '123']])
     expect(
       text.VALUETOTEXT(
@@ -1343,6 +1348,32 @@ describe('Text', () => {
       expect(text.VALUETOTEXT(err, 0)).to.equal(err.message)
       expect(text.VALUETOTEXT(err, 1)).to.equal(err.message)
       expect(text.VALUETOTEXT('Hello', err)).to.equal(err)
+    })
+  })
+
+  it('ARRAYTOTEXT', () => {
+    expect(text.ARRAYTOTEXT([[true, error.value], [1234.01234, 'Seattle'], ['Hello', '1,123']], 0)).to.equal('true, #VALUE!, 1234.01234, Seattle, Hello, 1,123')
+    expect(text.ARRAYTOTEXT([[true, error.value], [1234.01234, 'Seattle'], ['Hello', '1,123']], 1)).to.equal(`{true\\#VALUE!,1234.01234\\"Seattle","Hello"\\"1,123"}`)
+    expect(text.ARRAYTOTEXT('Hello', 0)).to.equal('Hello')
+    expect(text.ARRAYTOTEXT(true, 0)).to.equal('true')
+    expect(text.ARRAYTOTEXT(true, 1)).to.equal('{true}')
+    expect(text.ARRAYTOTEXT(123, 0)).to.equal('123')
+    expect(text.ARRAYTOTEXT('Hello', 1)).to.equal(`{"Hello"}`)
+    expect(text.ARRAYTOTEXT(undefined, 0)).to.equal(error.value)
+    expect(text.ARRAYTOTEXT(undefined, 1)).to.equal(error.value)
+    expect(text.ARRAYTOTEXT(undefined, undefined)).to.equal(error.value)
+    expect(text.ARRAYTOTEXT(null, 0)).to.equal(error.value)
+    expect(text.ARRAYTOTEXT(null, 1)).to.equal(error.value)
+    expect(text.ARRAYTOTEXT(null, null)).to.equal(error.value)
+    expect(text.ARRAYTOTEXT('Hello', undefined)).to.equal('Hello')
+    expect(text.ARRAYTOTEXT('Hello', null)).to.equal('Hello')
+    expect(text.ARRAYTOTEXT()).to.equal(error.na)
+    expect(text.ARRAYTOTEXT('Hello', 1, 1)).to.equal(error.na)
+
+    Object.values(error).forEach((err) => {
+      expect(text.ARRAYTOTEXT(err, 0)).to.equal(err.message)
+      expect(text.ARRAYTOTEXT(err, 1)).to.equal(`{${err.message}}`)
+      expect(text.ARRAYTOTEXT('Hello', err)).to.equal(err)
     })
   })
 })
