@@ -2745,6 +2745,23 @@ describe('Lookup Reference', () => {
     expect(lookup.DROP('true', -1)).to.eql(error.calc)
     expect(lookup.DROP(true, -1)).to.eql(error.calc)
     expect(lookup.DROP(false, -1)).to.eql(error.calc)
+    expect(lookup.DROP(undefined, -1)).to.equal(error.value)
+    expect(lookup.DROP(undefined, 0)).to.equal(error.value)
+    expect(lookup.DROP(undefined, 1)).to.equal(error.value)
+    expect(lookup.DROP(null, -1)).to.equal(error.calc)
+    expect(lookup.DROP(null, 0)).to.equal(0)
+    expect(lookup.DROP(null, 1)).to.equal(error.calc)
+    expect(lookup.DROP([[5], [5]], true)).to.eql(5)
+    expect(lookup.DROP([[5], [5]], false)).to.eql([[5], [5]])
+    expect(lookup.DROP([[5, 5]], undefined, 0)).to.eql([[5, 5]])
+    expect(lookup.DROP([[5, 5]], null, 0)).to.eql([[5, 5]])
+    expect(lookup.DROP([[5, 5]], 0, true)).to.eql(5)
+    expect(lookup.DROP([[5, 5]], 0, false)).to.eql([[5, 5]])
+    expect(lookup.DROP([[5, 5]], 0, undefined)).to.eql([[5, 5]])
+    expect(lookup.DROP([[5, 5]], 0, null)).to.eql([[5, 5]])
+    expect(lookup.DROP([[5, 5]], undefined, 0)).to.eql([[5, 5]])
+    expect(lookup.DROP([[5, 5]], null, 0)).to.eql([[5, 5]])
+    expect(lookup.DROP([[5, 5]], 'hello', 0)).to.eql(error.value)
     expect(
       lookup.DROP(
         [
@@ -2765,6 +2782,12 @@ describe('Lookup Reference', () => {
       ])
     ).to.eql(error.na)
     expect(lookup.DROP()).to.eql(error.na)
+
+    Object.values(error).forEach((err) => {
+      expect(lookup.DROP(err, 2, 2)).to.eql(error.calc)
+      expect(lookup.DROP([[5, 5]], err, 0)).to.equal(err)
+      expect(lookup.DROP([[5, 5]], 0, err)).to.equal(err)
+    })
   })
 
   it('EXPAND', () => {

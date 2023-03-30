@@ -871,10 +871,27 @@ export function DROP(array, rows = 0, columns = 0) {
     return error.na
   }
 
+  if (array === undefined) {
+    return error.value
+  }
+
+  const anyError = utils.anyError(rows, columns)
+
+  if (anyError) {
+    return anyError
+  }
+
+  rows = utils.parseNumber(rows)
+  columns = utils.parseNumber(columns)
+
+  if (utils.anyIsError(rows, columns)) {
+    return error.value
+  }
+
   const arrayVarType = utils.getVariableType(array)
 
   if (arrayVarType === 'single' && rows === 0 && columns === 0) {
-    return array
+    return utils.isDefined(array) ? array : 0
   } else if (arrayVarType === 'single') {
     return error.calc
   }
