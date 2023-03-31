@@ -2895,4 +2895,80 @@ describe('Lookup Reference', () => {
       ])
     })
   })
+
+  it('HSTACK', () => {
+    expect(
+      lookup.HSTACK(
+        [
+          ['A', 'B', 'C'],
+          ['D', 'E', 'F']
+        ],
+        [
+          ['AA', 'BB', 'CC'],
+          ['DD', 'EE', 'FF']
+        ]
+      )
+    ).to.eql([
+      ['A', 'B', 'C', 'AA', 'BB', 'CC'],
+      ['D', 'E', 'F', 'DD', 'EE', 'FF']
+    ])
+    expect(
+      lookup.HSTACK(
+        [
+          [1, 2],
+          [3, 4],
+          [5, 6]
+        ],
+        [
+          ['A', 'B'],
+          ['C', 'D']
+        ],
+        [['X', 'Y']]
+      )
+    ).to.eql([
+      [1, 2, 'A', 'B', 'X', 'Y'],
+      [3, 4, 'C', 'D', error.na, error.na],
+      [5, 6, error.na, error.na, error.na, error.na]
+    ])
+    expect(
+      lookup.HSTACK(
+        [
+          [1, 2],
+          [3, 4],
+          [5, 6]
+        ],
+        [
+          ['A', 'B'],
+          ['D', 'E']
+        ],
+        [
+          ['C', error.value],
+          ['F', null]
+        ]
+      )
+    ).to.eql([
+      [1, 2, 'A', 'B', 'C', error.value],
+      [3, 4, 'D', 'E', 'F', 0],
+      [5, 6, error.na, error.na, error.na, error.na]
+    ])
+    expect(lookup.HSTACK('Hello')).to.eql('Hello')
+    expect(lookup.HSTACK('Hello', 'World')).to.eql([['Hello', 'World']])
+    expect(lookup.HSTACK(true)).to.eql(true)
+    expect(lookup.HSTACK(true, false)).to.eql([[true, false]])
+    expect(lookup.HSTACK(null)).to.eql(0)
+    expect(lookup.HSTACK(null, null)).to.eql([[0, 0]])
+    expect(lookup.HSTACK(undefined, undefined)).to.eql(error.value)
+    expect(lookup.HSTACK(1)).to.eql(1)
+    expect(lookup.HSTACK(1, 2)).to.eql([[1, 2]])
+    expect(lookup.HSTACK(1, 2, 3)).to.eql([[1, 2, 3]])
+    expect(lookup.HSTACK(1, [['A'], ['A']], 2)).to.eql([
+      [1, 'A', 2],
+      [error.na, 'A', error.na]
+    ])
+
+    Object.values(error).forEach((err) => {
+      expect(lookup.HSTACK(err)).to.eql(err)
+      expect(lookup.HSTACK(err, err)).to.eql([[err, err]])
+    })
+  })
 })

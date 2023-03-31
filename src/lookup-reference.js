@@ -1000,3 +1000,73 @@ export function EXPAND(array, rows, columns, padWith = error.na) {
 
   return result
 }
+
+/**
+ * Appends arrays horizontally and in sequence to return a larger array.
+ *
+ * Category: Lookup and reference
+ *
+ * @param {*} arrays The arrays to append.
+ * @returns
+ */
+export function HSTACK(...arrays) {
+  if (!arrays.length) {
+    return error.na
+  }
+
+  if (utils.anyIsUndefined(...arrays)) {
+    return error.value
+  }
+
+  let result = [],
+    maxRows = 0,
+    arraysLength = arrays.length
+
+  for (let a = 0; a < arraysLength; a++) {
+    let current = arrays[a]
+
+    if (!utils.isArrayLike(current)) {
+      current = [[current]]
+    }
+
+    if (maxRows < current.length) {
+      maxRows = current.length
+    }
+  }
+
+  for (let a = 0; a < arraysLength; a++) {
+    let current = arrays[a]
+
+    if (!utils.isArrayLike(current)) {
+      current = [[current]]
+    }
+
+    let currentRows = current.length
+
+    for (let i = 0; i < maxRows; i++) {
+      if (!result[i]) {
+        result[i] = []
+      }
+      if (i >= currentRows) {
+        result[i] = result[i].concat(new Array(current[0].length).fill(error.na))
+      } else {
+        result[i] = result[i].concat(current[i])
+      }
+    }
+  }
+
+  if (~utils.flatten(result).indexOf(null)) {
+    let rows = result.length
+    let columns = result[0].length
+
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < columns; j++) {
+        if (result[i][j] === null) {
+          result[i][j] = 0
+        }
+      }
+    }
+  }
+
+  return result.length === 1 && result[0].length === 1 ? result[0][0] : result
+}
