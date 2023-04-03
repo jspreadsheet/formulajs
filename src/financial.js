@@ -18,10 +18,24 @@ import * as utils from './utils/common.js'
  * @returns
  */
 export function ACCRINT(issue, first_interest, settlement, rate, par, frequency, basis) {
+  if (arguments.length > 8 || arguments.length < 6) {
+    return error.na
+  }
+
+  const anyError = utils.anyError(issue, first_interest, settlement, rate, par, frequency, basis)
+
+  if (anyError) {
+    return anyError
+  }
+
   // Return error if either date is invalid
   issue = utils.parseDate(issue)
   first_interest = utils.parseDate(first_interest)
   settlement = utils.parseDate(settlement)
+  rate = utils.parseNumber(rate)
+  par = utils.parseNumber(par)
+  frequency = utils.parseNumber(frequency)
+  basis = utils.parseNumber(basis)
 
   if (utils.anyIsError(issue, first_interest, settlement)) {
     return error.value
@@ -241,11 +255,32 @@ export function COUPPCD() {
  * @returns
  */
 export function CUMIPMT(rate, nper, pv, start_period, end_period, type) {
+  if (arguments.length !== 6 || utils.anyIsUndefined(rate, nper, pv, start_period, end_period, type)) {
+    return error.na
+  }
+
+  if (utils.anyIsNull(rate, nper, pv, start_period, end_period, type)) {
+    return error.num
+  }
+
+  if (utils.anyIsBoolean(rate, nper, pv, start_period, end_period, type)) {
+    return error.value
+  }
+
+  const anyError = utils.anyError(rate, nper, pv, start_period, end_period, type)
+
+  if (anyError) {
+    return anyError
+  }
+
   rate = utils.parseNumber(rate)
   nper = utils.parseNumber(nper)
   pv = utils.parseNumber(pv)
+  start_period = utils.parseNumber(start_period)
+  end_period = utils.parseNumber(end_period)
+  type = utils.parseNumber(type)
 
-  if (utils.anyIsError(rate, nper, pv)) {
+  if (utils.anyIsError(rate, nper, pv, start_period, end_period, type)) {
     return error.value
   }
 
@@ -297,11 +332,33 @@ export function CUMIPMT(rate, nper, pv, start_period, end_period, type) {
 export function CUMPRINC(rate, nper, pv, start_period, end, type) {
   // Credits: algorithm inspired by Apache OpenOffice
   // Credits: Hannes Stiebitzhofer for the translations of function and variable names
+
+  if (arguments.length !== 6 || utils.anyIsUndefined(rate, nper, pv, start_period, end, type)) {
+    return error.na
+  }
+
+  if (utils.anyIsNull(rate, nper, pv, start_period, end, type)) {
+    return error.num
+  }
+
+  if (utils.anyIsBoolean(rate, nper, pv, start_period, end, type)) {
+    return error.value
+  }
+
+  const anyError = utils.anyError(rate, nper, pv, start_period, end, type)
+
+  if (anyError) {
+    return anyError
+  }
+
   rate = utils.parseNumber(rate)
   nper = utils.parseNumber(nper)
   pv = utils.parseNumber(pv)
+  start_period = utils.parseNumber(start_period)
+  end = utils.parseNumber(end)
+  type = utils.parseNumber(type)
 
-  if (utils.anyIsError(rate, nper, pv)) {
+  if (utils.anyIsError(rate, nper, pv, start_period, end, type)) {
     return error.value
   }
 
@@ -354,6 +411,28 @@ export function CUMPRINC(rate, nper, pv, start_period, end, type) {
  * @returns
  */
 export function DB(cost, salvage, life, period, month) {
+  if (arguments.length < 4 || arguments.length > 5) {
+    return error.na
+  }
+
+  if (utils.anyIsBoolean(cost, salvage, life, period, month)) {
+    return error.value
+  }
+
+  if (utils.anyIsNull(life, period, month)) {
+    return error.num
+  }
+
+  if (utils.anyIsUndefined(cost, salvage, life, period)) {
+    return error.na
+  }
+
+  const anyError = utils.anyError(cost, salvage, life, period, month)
+
+  if (anyError) {
+    return anyError
+  }
+
   // Initialize month
   month = month === undefined ? 12 : month
 
@@ -429,6 +508,28 @@ export function DB(cost, salvage, life, period, month) {
  * @returns
  */
 export function DDB(cost, salvage, life, period, factor) {
+  if (arguments.length < 4 || arguments.length > 5) {
+    return error.na
+  }
+
+  if (utils.anyIsBoolean(cost, salvage, life, period, factor)) {
+    return error.value
+  }
+
+  if (utils.anyIsNull(life, period, factor)) {
+    return error.num
+  }
+
+  if (utils.anyIsUndefined(cost, salvage, life, period)) {
+    return error.na
+  }
+
+  const anyError = utils.anyError(cost, salvage, life, period, factor)
+
+  if (anyError) {
+    return anyError
+  }
+
   // Initialize factor
   factor = factor === undefined ? 2 : factor
 
@@ -483,6 +584,30 @@ export function DDB(cost, salvage, life, period, factor) {
  * @returns
  */
 export function DISC(settlement, maturity, pr, redemption, basis) {
+  if (arguments.length < 4 || arguments.length > 5 || utils.anyIsUndefined(settlement, maturity, pr, redemption)) {
+    return error.na
+  }
+
+  if (utils.anyIsNull(settlement, maturity, pr, redemption)) {
+    return error.num
+  }
+
+  if (
+    utils.anyIsBoolean(settlement, maturity, pr, redemption, basis) ||
+    utils.getVariableType(settlement) !== 'single' ||
+    utils.getVariableType(maturity) !== 'single' ||
+    utils.getVariableType(pr) !== 'single' ||
+    utils.getVariableType(redemption) !== 'single'
+  ) {
+    return error.value
+  }
+
+  const anyError = utils.anyError(settlement, maturity, pr, redemption, basis)
+
+  if (anyError) {
+    return anyError
+  }
+
   settlement = utils.parseDate(settlement)
   maturity = utils.parseDate(maturity)
   pr = utils.parseNumber(pr)
@@ -546,6 +671,20 @@ export function DISC(settlement, maturity, pr, redemption, basis) {
  */
 export function DOLLARDE(fractional_dollar, fraction) {
   // Credits: algorithm inspired by Apache OpenOffice
+  if (arguments.length !== 2 || utils.anyIsUndefined(fractional_dollar, fraction)) {
+    return error.na
+  }
+
+  if (utils.anyIsBoolean(fractional_dollar, fraction)) {
+    return error.value
+  }
+
+  const anyError = utils.anyError(fractional_dollar, fraction)
+
+  if (anyError) {
+    return anyError
+  }
+
   fractional_dollar = utils.parseNumber(fractional_dollar)
   fraction = utils.parseNumber(fraction)
 
@@ -591,6 +730,20 @@ export function DOLLARDE(fractional_dollar, fraction) {
  */
 export function DOLLARFR(decimal_dollar, fraction) {
   // Credits: algorithm inspired by Apache OpenOffice
+  if (arguments.length !== 2 || utils.anyIsUndefined(decimal_dollar, fraction)) {
+    return error.na
+  }
+
+  if (utils.anyIsBoolean(decimal_dollar, fraction)) {
+    return error.value
+  }
+
+  const anyError = utils.anyError(decimal_dollar, fraction)
+
+  if (anyError) {
+    return anyError
+  }
+
   decimal_dollar = utils.parseNumber(decimal_dollar)
   fraction = utils.parseNumber(fraction)
 
@@ -651,6 +804,20 @@ export function DURATION() {
  * @returns
  */
 export function EFFECT(nominal_rate, npery) {
+  if (arguments.length !== 2 || utils.anyIsUndefined(nominal_rate, npery)) {
+    return error.na
+  }
+
+  if (utils.anyIsBoolean(nominal_rate, npery)) {
+    return error.value
+  }
+
+  const anyError = utils.anyError(nominal_rate, npery)
+
+  if (anyError) {
+    return anyError
+  }
+
   nominal_rate = utils.parseNumber(nominal_rate)
   npery = utils.parseNumber(npery)
 
@@ -682,10 +849,21 @@ export function EFFECT(nominal_rate, npery) {
  * @param {*} type Optional. The number 0 or 1 and indicates when payments are due. If type is omitted, it is assumed to be 0.
  * @returns
  */
-export function FV(rate, nper, payment, value, type) {
+export function FV(rate, nper, payment, value = 0, type = 0) {
   // Credits: algorithm inspired by Apache OpenOffice
-  value = value || 0
-  type = type || 0
+  if (arguments.length < 3 || arguments.length > 5 || utils.anyIsUndefined(rate, nper, payment)) {
+    return error.na
+  }
+
+  if (utils.anyIsNull(rate, nper, payment)) {
+    return error.value
+  }
+
+  const anyError = utils.anyError(rate, nper, payment, value, type)
+
+  if (anyError) {
+    return anyError
+  }
 
   rate = utils.parseNumber(rate)
   nper = utils.parseNumber(nper)
@@ -724,6 +902,20 @@ export function FV(rate, nper, payment, value, type) {
  * @returns
  */
 export function FVSCHEDULE(principal, schedule) {
+  if (arguments.length !== 2 || utils.anyIsUndefined(principal, ...utils.flatten(schedule))) {
+    return error.na
+  }
+
+  if (utils.anyIsBoolean(principal, ...utils.flatten(schedule))) {
+    return error.value
+  }
+
+  const anyError = utils.anyError(principal, ...utils.flatten(schedule))
+
+  if (anyError) {
+    return anyError
+  }
+
   principal = utils.parseNumber(principal)
   schedule = utils.parseNumberArray(utils.flatten(schedule))
 
@@ -777,10 +969,21 @@ export function INTRATE() {
  * @param {*} type Optional. The number 0 or 1 and indicates when payments are due. If type is omitted, it is assumed to be 0.
  * @returns
  */
-export function IPMT(rate, per, nper, pv, fv, type) {
+export function IPMT(rate, per, nper, pv, fv = 0, type = 0) {
   // Credits: algorithm inspired by Apache OpenOffice
-  fv = fv || 0
-  type = type || 0
+  if (arguments.length < 4 || arguments.length > 6 || utils.anyIsUndefined(rate, per, nper, pv)) {
+    return error.na
+  }
+
+  if (utils.anyIsNull(rate, per, nper, pv) || utils.anyIsBoolean(...arguments)) {
+    return error.value
+  }
+
+  const anyError = utils.anyError(...arguments)
+
+  if (anyError) {
+    return anyError
+  }
 
   rate = utils.parseNumber(rate)
   per = utils.parseNumber(per)
@@ -825,9 +1028,25 @@ export function IPMT(rate, per, nper, pv, fv, type) {
  - If IRR gives the #NUM! error value, or if the result is not close to what you expected, try again with a different value for guess.
  * @returns
  */
-export function IRR(values, guess) {
+export function IRR(values, guess = 0) {
   // Credits: algorithm inspired by Apache OpenOffice
-  guess = guess || 0
+  if (arguments.length < 1 || arguments.length > 2 || utils.anyIsUndefined(...utils.flatten(values), guess)) {
+    return error.na
+  }
+
+  if (utils.anyIsBoolean(...utils.flatten(values), guess)) {
+    return error.num
+  }
+
+  const anyError = utils.anyError(...utils.flatten(values), guess)
+
+  if (anyError) {
+    return anyError
+  }
+
+  if (utils.getVariableType(values) === 'single') {
+    return error.num
+  }
 
   values = utils.parseNumberArray(utils.flatten(values))
   guess = utils.parseNumber(guess)
@@ -918,6 +1137,20 @@ export function IRR(values, guess) {
  * @returns
  */
 export function ISPMT(rate, per, nper, pv) {
+  if (arguments.length !== 4 || utils.anyIsUndefined(...arguments)) {
+    return error.na
+  }
+
+  if (utils.anyIsNull(...arguments)) {
+    return error.value
+  }
+
+  const anyError = utils.anyError(...arguments)
+
+  if (anyError) {
+    return anyError
+  }
+
   rate = utils.parseNumber(rate)
   per = utils.parseNumber(per)
   nper = utils.parseNumber(nper)
@@ -925,6 +1158,10 @@ export function ISPMT(rate, per, nper, pv) {
 
   if (utils.anyIsError(rate, per, nper, pv)) {
     return error.value
+  }
+
+  if (nper === 0) {
+    return error.div0
   }
 
   // Return interest
@@ -964,6 +1201,20 @@ export function MDURATION() {
  * @returns
  */
 export function MIRR(values, finance_rate, reinvest_rate) {
+  if (arguments.length !== 3 || utils.anyIsUndefined(...utils.flatten(values), finance_rate, reinvest_rate)) {
+    return error.na
+  }
+
+  if (utils.anyIsBoolean(...utils.flatten(values), finance_rate, reinvest_rate)) {
+    return error.num
+  }
+
+  const anyError = utils.anyError(...utils.flatten(values), finance_rate, reinvest_rate)
+
+  if (anyError) {
+    return anyError
+  }
+
   values = utils.parseNumberArray(utils.flatten(values))
   finance_rate = utils.parseNumber(finance_rate)
   reinvest_rate = utils.parseNumber(reinvest_rate)
@@ -987,6 +1238,24 @@ export function MIRR(values, finance_rate, reinvest_rate) {
     }
   }
 
+  let valuesLength = values.length
+  let positive = false
+  let negative = false
+
+  for (let i = 0; i < valuesLength; i++) {
+    if (values[i] > 0) {
+      positive = true
+    }
+
+    if (values[i] < 0) {
+      negative = true
+    }
+  }
+
+  // Return error if values does not contain at least one positive value and one negative value
+  if (!positive || !negative) {
+    return error.num
+  }
   // Return modified internal rate of return
   const num = -NPV(reinvest_rate, incomes) * Math.pow(1 + reinvest_rate, n - 1)
   const den = NPV(finance_rate, payments) * (1 + finance_rate)
@@ -1004,6 +1273,20 @@ export function MIRR(values, finance_rate, reinvest_rate) {
  * @returns
  */
 export function NOMINAL(effect_rate, npery) {
+  if (arguments.length !== 2 || utils.anyIsUndefined(effect_rate, npery)) {
+    return error.na
+  }
+
+  if (utils.anyIsNull(effect_rate, npery) || utils.anyIsBoolean(effect_rate, npery)) {
+    return error.value
+  }
+
+  const anyError = utils.anyError(effect_rate, npery)
+
+  if (anyError) {
+    return anyError
+  }
+
   effect_rate = utils.parseNumber(effect_rate)
   npery = utils.parseNumber(npery)
 
@@ -1035,27 +1318,38 @@ export function NOMINAL(effect_rate, npery) {
  * @param {*} type Optional. The number 0 or 1 and indicates when payments are due.
  * @returns
  */
-export function NPER(rate, pmt, pv, fv, type) {
-  type = type === undefined ? 0 : type
-  fv = fv === undefined ? 0 : fv
+export function NPER(rate, pmt, pv, fv = 0, type = 0) {
+  if (arguments.length < 3 || arguments.length > 5) {
+    return error.na
+  }
+
+  const anyError = utils.anyError(...arguments)
+
+  if (anyError) {
+    return anyError
+  }
 
   rate = utils.parseNumber(rate)
   pmt = utils.parseNumber(pmt)
   pv = utils.parseNumber(pv)
   fv = utils.parseNumber(fv)
   type = utils.parseNumber(type)
+  let result = undefined
 
   if (utils.anyIsError(rate, pmt, pv, fv, type)) {
     return error.value
   }
 
   if (rate === 0) {
-    return -(pv + fv) / pmt
+    result = -(pv + fv) / pmt
+
+    return isFinite(result) ? result : error.num
   } else {
     const num = pmt * (1 + rate * type) - fv * rate
     const den = pv * rate + pmt * (1 + rate * type)
+    result = Math.log(num / den) / Math.log(1 + rate)
 
-    return Math.log(num / den) / Math.log(1 + rate)
+    return isFinite(result) ? result : error.num
   }
 }
 
@@ -1072,21 +1366,31 @@ export function NPER(rate, pmt, pv, fv, type) {
  - If an argument is an array or reference, only numbers in that array or reference are counted. Empty values, logical values, text, or error values in the array or reference are ignored.
  * @returns
  */
-export function NPV() {
-  const args = utils.parseNumberArray(utils.flatten(arguments))
-
-  if (args instanceof Error) {
-    return args
+export function NPV(rate) {
+  if (arguments.length < 2) {
+    return error.na
   }
 
-  // Lookup rate
-  const rate = args[0]
+  if (utils.getVariableType(rate) !== 'single') {
+    return error.value
+  }
+
+  const args = utils.parseNumberArray(utils.flatten(arguments))
+
+  const anyError = utils.anyError(rate, args)
+
+  if (anyError) {
+    return anyError
+  }
+
+  rate = utils.parseNumber(rate)
 
   // Initialize net present value
   let value = 0
+  let argsLenth = args.length
 
   // Loop on all values
-  for (let j = 1; j < args.length; j++) {
+  for (let j = 1; j < argsLenth; j++) {
     value += args[j] / Math.pow(1 + rate, j)
   }
 
@@ -1195,6 +1499,16 @@ export function ODDLYIELD() {
  * @returns
  */
 export function PDURATION(rate, pv, fv) {
+  if (arguments.length !== 3) {
+    return error.na
+  }
+
+  const anyError = utils.anyError(...arguments)
+
+  if (anyError) {
+    return anyError
+  }
+
   rate = utils.parseNumber(rate)
   pv = utils.parseNumber(pv)
   fv = utils.parseNumber(fv)
@@ -1203,8 +1517,7 @@ export function PDURATION(rate, pv, fv) {
     return error.value
   }
 
-  // Return error if rate <=0
-  if (rate <= 0) {
+  if (rate <= 0 || pv <= 0 || fv <= 0) {
     return error.num
   }
 
@@ -1224,10 +1537,16 @@ export function PDURATION(rate, pv, fv) {
  * @param {*} type Optional. The number 0 (zero) or 1 and indicates when payments are due.
  * @returns
  */
-export function PMT(rate, nper, pv, fv, type) {
-  // Credits: algorithm inspired by Apache OpenOffice
-  fv = fv || 0
-  type = type || 0
+export function PMT(rate, nper, pv, fv = 0, type = 0) {
+  if (arguments.length < 3 || arguments.length > 5) {
+    return error.na
+  }
+
+  const anyError = utils.anyError(...arguments)
+
+  if (anyError) {
+    return anyError
+  }
 
   rate = utils.parseNumber(rate)
   nper = utils.parseNumber(nper)
@@ -1253,7 +1572,7 @@ export function PMT(rate, nper, pv, fv, type) {
         : (fv * rate) / (term - 1) + (pv * rate) / (1 - 1 / term)
   }
 
-  return -result
+  return isFinite(result) ? -result : error.num
 }
 
 /**
@@ -1269,21 +1588,31 @@ export function PMT(rate, nper, pv, fv, type) {
  * @param {*} type Optional. The number 0 or 1 and indicates when payments are due.
  * @returns
  */
-export function PPMT(rate, per, nper, pv, fv, type) {
-  fv = fv || 0
-  type = type || 0
+export function PPMT(rate, per, nper, pv, fv = 0, type = 0) {
+  if (arguments.length < 4 || arguments.length > 6) {
+    return error.na
+  }
+
+  const anyError = utils.anyError(...arguments)
+
+  if (anyError) {
+    return anyError
+  }
 
   rate = utils.parseNumber(rate)
+  per = utils.parseNumber(per)
   nper = utils.parseNumber(nper)
   pv = utils.parseNumber(pv)
   fv = utils.parseNumber(fv)
   type = utils.parseNumber(type)
 
-  if (utils.anyIsError(rate, nper, pv, fv, type)) {
+  if (utils.anyIsError(rate, nper, pv, fv, type, per)) {
     return error.value
   }
 
-  return PMT(rate, nper, pv, fv, type) - IPMT(rate, per, nper, pv, fv, type)
+  let result = PMT(rate, nper, pv, fv, type) - IPMT(rate, per, nper, pv, fv, type)
+
+  return isFinite(result) ? result : error.num
 }
 
 // TODO
@@ -1319,14 +1648,26 @@ export function PRICE() {
  * @param {*} basis Optional. The type of day count basis to use.
  * @returns
  */
-export function PRICEDISC(settlement, maturity, discount, redemption, basis) {
+export function PRICEDISC(settlement, maturity, discount, redemption, basis = 0) {
+  if (arguments.length < 4 || arguments.length > 5) {
+    return error.na
+  }
+
+  if (utils.anyIsNull(settlement, maturity) || utils.anyIsBoolean(settlement, maturity)) {
+    return error.value
+  }
+
+  const anyError = utils.anyError(...arguments)
+
+  if (anyError) {
+    return anyError
+  }
+
   settlement = utils.parseDate(settlement)
   maturity = utils.parseDate(maturity)
   discount = utils.parseNumber(discount)
   redemption = utils.parseNumber(redemption)
   basis = utils.parseNumber(basis)
-
-  basis = basis || 0
 
   if (utils.anyIsError(settlement, maturity, discount, redemption, basis)) {
     return error.value
@@ -1404,9 +1745,16 @@ export function PRICEMAT() {
  * @param {*} type Optional. The number 0 or 1 and indicates when payments are due.
  * @returns
  */
-export function PV(rate, per, pmt, fv, type) {
-  fv = fv || 0
-  type = type || 0
+export function PV(rate, per, pmt, fv = 0, type = 0) {
+  if (arguments.length < 3 || arguments.length > 5) {
+    return error.na
+  }
+
+  const anyError = utils.anyError(...arguments)
+
+  if (anyError) {
+    return anyError
+  }
 
   rate = utils.parseNumber(rate)
   per = utils.parseNumber(per)
@@ -1439,10 +1787,20 @@ export function PV(rate, per, pmt, fv, type) {
  - If RATE does not converge, try different values for guess. RATE usually converges if guess is between 0 and 1.
  * @returns
  */
-export function RATE(nper, pmt, pv, fv, type, guess) {
-  guess = guess === undefined ? 0.01 : guess
-  fv = fv === undefined ? 0 : fv
-  type = type === undefined ? 0 : type
+export function RATE(nper, pmt, pv, fv = 0, type = 0, guess = 0.01) {
+  if (arguments.length < 3 || arguments.length > 6 || utils.anyIsUndefined(nper, pv)) {
+    return error.na
+  }
+
+  if (utils.anyIsNull(nper, pmt, pv)) {
+    return error.num
+  }
+
+  const anyError = utils.anyError(...arguments)
+
+  if (anyError) {
+    return anyError
+  }
 
   nper = utils.parseNumber(nper)
   pmt = utils.parseNumber(pmt)
@@ -1525,6 +1883,16 @@ export function RECEIVED() {
  * @returns
  */
 export function RRI(nper, pv, fv) {
+  if (arguments.length !== 3 || utils.anyIsUndefined(...arguments)) {
+    return error.na
+  }
+
+  const anyError = utils.anyError(...arguments)
+
+  if (anyError) {
+    return anyError
+  }
+
   nper = utils.parseNumber(nper)
   pv = utils.parseNumber(pv)
   fv = utils.parseNumber(fv)
@@ -1553,6 +1921,16 @@ export function RRI(nper, pv, fv) {
  * @returns
  */
 export function SLN(cost, salvage, life) {
+  if (arguments.length !== 3 || utils.anyIsUndefined(...arguments)) {
+    return error.na
+  }
+
+  const anyError = utils.anyError(...arguments)
+
+  if (anyError) {
+    return anyError
+  }
+
   cost = utils.parseNumber(cost)
   salvage = utils.parseNumber(salvage)
   life = utils.parseNumber(life)
@@ -1582,6 +1960,16 @@ export function SLN(cost, salvage, life) {
  * @returns
  */
 export function SYD(cost, salvage, life, per) {
+  if (arguments.length !== 4) {
+    return error.na
+  }
+
+  const anyError = utils.anyError(...arguments)
+
+  if (anyError) {
+    return anyError
+  }
+
   // Return error if any of the parameters is not a number
   cost = utils.parseNumber(cost)
   salvage = utils.parseNumber(salvage)
@@ -1620,6 +2008,20 @@ export function SYD(cost, salvage, life, per) {
  * @returns
  */
 export function TBILLEQ(settlement, maturity, discount) {
+  if (arguments.length !== 3 || utils.anyIsUndefined(...arguments)) {
+    return error.na
+  }
+
+  if (utils.anyIsNull(settlement, maturity) || utils.anyIsBoolean(settlement, maturity)) {
+    return error.value
+  }
+
+  const anyError = utils.anyError(...arguments)
+
+  if (anyError) {
+    return anyError
+  }
+
   settlement = utils.parseDate(settlement)
   maturity = utils.parseDate(maturity)
   discount = utils.parseNumber(discount)
@@ -1647,7 +2049,7 @@ export function TBILLEQ(settlement, maturity, discount) {
   }
 
   // Return bond-equivalent yield
-  return (365 * discount) / (360 - discount * dateTime.DAYS360(settlement, maturity, false))
+  return (365 * discount) / (360 - discount * (dateTime.DAYS360(settlement, maturity, false) + 1))
 }
 
 /**
@@ -1661,6 +2063,20 @@ export function TBILLEQ(settlement, maturity, discount) {
  * @returns
  */
 export function TBILLPRICE(settlement, maturity, discount) {
+  if (arguments.length !== 3 || utils.anyIsUndefined(...arguments)) {
+    return error.na
+  }
+
+  if (utils.anyIsNull(settlement, maturity) || utils.anyIsBoolean(settlement, maturity)) {
+    return error.value
+  }
+
+  const anyError = utils.anyError(...arguments)
+
+  if (anyError) {
+    return anyError
+  }
+
   settlement = utils.parseDate(settlement)
   maturity = utils.parseDate(maturity)
   discount = utils.parseNumber(discount)
@@ -1688,7 +2104,7 @@ export function TBILLPRICE(settlement, maturity, discount) {
   }
 
   // Return bond-equivalent yield
-  return 100 * (1 - (discount * dateTime.DAYS360(settlement, maturity, false)) / 360)
+  return 100 * (1 - (discount * (dateTime.DAYS360(settlement, maturity, false) + 1)) / 360)
 }
 
 /**
@@ -1702,6 +2118,20 @@ export function TBILLPRICE(settlement, maturity, discount) {
  * @returns
  */
 export function TBILLYIELD(settlement, maturity, pr) {
+  if (arguments.length !== 3 || utils.anyIsUndefined(...arguments)) {
+    return error.na
+  }
+
+  if (utils.anyIsNull(settlement, maturity) || utils.anyIsBoolean(settlement, maturity)) {
+    return error.value
+  }
+
+  const anyError = utils.anyError(...arguments)
+
+  if (anyError) {
+    return anyError
+  }
+
   settlement = utils.parseDate(settlement)
   maturity = utils.parseDate(maturity)
   pr = utils.parseNumber(pr)
@@ -1729,7 +2159,7 @@ export function TBILLYIELD(settlement, maturity, pr) {
   }
 
   // Return bond-equivalent yield
-  return ((100 - pr) * 360) / (pr * dateTime.DAYS360(settlement, maturity, false))
+  return ((100 - pr) * 360) / (pr * (dateTime.DAYS360(settlement, maturity, false) + 1))
 }
 
 // TODO
@@ -1765,10 +2195,35 @@ export function VDB() {
  * @param {*} guess Optional. A number that you guess is close to the result of XIRR.
  * @returns
  */
-export function XIRR(values, dates, guess) {
+export function XIRR(values, dates, guess = 0.1) {
   // Credits: algorithm inspired by Apache OpenOffice
-  values = utils.parseNumberArray(utils.flatten(values))
-  dates = utils.parseDateArray(utils.flatten(dates))
+  if (arguments.length < 2 || arguments.length > 3 || utils.anyIsUndefined(values, dates)) {
+    return error.na
+  }
+
+  if (utils.anyIsNull(values, dates)) {
+    return error.num
+  }
+
+  values = utils.flatten(values)
+  dates = utils.flatten(dates)
+
+  if (utils.anyIsBoolean(...values, ...dates, guess)) {
+    return error.value
+  }
+
+  if (utils.anyIsNull(...dates)) {
+    return error.num
+  }
+
+  const anyError = utils.anyError(...values, ...dates, guess)
+
+  if (anyError) {
+    return anyError
+  }
+
+  values = utils.parseNumberArray(values)
+  dates = utils.parseDateArray(dates)
   guess = utils.parseNumber(guess)
 
   if (utils.anyIsError(values, dates, guess)) {
@@ -1822,7 +2277,6 @@ export function XIRR(values, dates, guess) {
   }
 
   // Initialize guess and resultRate
-  guess = guess || 0.1
   let resultRate = guess
 
   // Set maximum epsilon for end of iteration
@@ -1855,9 +2309,34 @@ export function XIRR(values, dates, guess) {
  * @returns
  */
 export function XNPV(rate, values, dates) {
+  if (arguments.length !== 3 || utils.anyIsUndefined(rate, values, dates)) {
+    return error.na
+  }
+
+  if (utils.anyIsNull(dates, values)) {
+    return error.num
+  }
+
+  values = utils.flatten(values)
+  dates = utils.flatten(dates)
+
+  if (utils.anyIsBoolean(...values, ...dates, rate)) {
+    return error.value
+  }
+
+  if (utils.anyIsNull(...dates, ...values, rate)) {
+    return error.num
+  }
+
+  const anyError = utils.anyError(...values, ...dates, rate)
+
+  if (anyError) {
+    return anyError
+  }
+
   rate = utils.parseNumber(rate)
-  values = utils.parseNumberArray(utils.flatten(values))
-  dates = utils.parseDateArray(utils.flatten(dates))
+  values = utils.parseNumberArray(values)
+  dates = utils.parseDateArray(dates)
 
   if (utils.anyIsError(rate, values, dates)) {
     return error.value
