@@ -1207,11 +1207,52 @@ describe('Text', () => {
       )
     })
   })
-
   it('TEXTSPLIT', () => {
+    expect(text.TEXTSPLIT('abcabc', [['a', 'b']], undefined, true)).to.eql([['c', 'c']])
+    expect(text.TEXTSPLIT('abcabc', undefined, [['a', 'b']], true)).to.eql([['c'], ['c']])
     expect(text.TEXTSPLIT('abcabc', 'a', undefined, true)).to.eql([['bc', 'bc']])
     expect(text.TEXTSPLIT('Dakota Lennon Sanchez', ' ')).to.eql([['Dakota', 'Lennon', 'Sanchez']])
     expect(text.TEXTSPLIT('To be or not to be', ' ')).to.eql([['To', 'be', 'or', 'not', 'to', 'be']])
+    expect(text.TEXTSPLIT('zab.xac.yad.ae', [['.', 'a']])).to.eql([['z', 'b', 'x', 'c', 'y', 'd', '', 'e']])
+    expect(text.TEXTSPLIT('zab.xac.yad.ae', [['.'], ['a']])).to.eql([['z', 'b', 'x', 'c', 'y', 'd', '', 'e']])
+    expect(text.TEXTSPLIT('zab.xac.yad.ae', undefined, [['.', 'a']])).to.eql([
+      ['z'],
+      ['b'],
+      ['x'],
+      ['c'],
+      ['y'],
+      ['d'],
+      [''],
+      ['e']
+    ])
+    expect(text.TEXTSPLIT('zab.xac.yad.ae', undefined, [['.'], ['a']])).to.eql([
+      ['z'],
+      ['b'],
+      ['x'],
+      ['c'],
+      ['y'],
+      ['d'],
+      [''],
+      ['e']
+    ])
+    expect(text.TEXTSPLIT('zab.xAc.yad.Ae', undefined, [['.'], ['a']], true, true)).to.eql([
+      ['z'],
+      ['b'],
+      ['x'],
+      ['c'],
+      ['y'],
+      ['d'],
+      ['e']
+    ])
+    expect(text.TEXTSPLIT('za?b.xa?c.ya?d.A?e', undefined, [['.'], ['A?']], true, true)).to.eql([
+      ['z'],
+      ['b'],
+      ['x'],
+      ['c'],
+      ['y'],
+      ['d'],
+      ['e']
+    ])
     expect(text.TEXTSPLIT('1,2,3;4,5,6', ',', ';')).to.eql([
       ['1', '2', '3'],
       ['4', '5', '6']
@@ -1260,14 +1301,12 @@ describe('Text', () => {
     expect(text.TEXTSPLIT(123, false)).to.eql('123')
     expect(text.TEXTSPLIT(123, undefined)).to.eql(error.value)
     expect(text.TEXTSPLIT(123, null)).to.eql(error.value)
-    expect(text.TEXTSPLIT(123, [[1, 3]])).to.eql(error.value)
     expect(text.TEXTSPLIT(123, undefined, 2)).to.eql([['1'], ['3']])
     expect(text.TEXTSPLIT(123, undefined, 2)).to.eql([['1'], ['3']])
     expect(text.TEXTSPLIT(123, undefined, true)).to.eql('123')
     expect(text.TEXTSPLIT(123, undefined, false)).to.eql('123')
     expect(text.TEXTSPLIT(123, undefined, undefined)).to.eql(error.value)
     expect(text.TEXTSPLIT(123, undefined, null)).to.eql(error.value)
-    expect(text.TEXTSPLIT(123, undefined, [[1, 3]])).to.eql(error.value)
     expect(text.TEXTSPLIT(123, undefined, '2', 2)).to.eql([['1'], ['3']])
     expect(text.TEXTSPLIT(123, undefined, '2', undefined, 2, 1, 1)).to.equal(error.na)
     expect(text.TEXTSPLIT(123)).to.equal(error.na)

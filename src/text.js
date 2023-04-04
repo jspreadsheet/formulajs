@@ -1182,6 +1182,20 @@ export function TEXTBEFORE(text, delimiter, instanceNum = 1, matchMode = 0, matc
   return (token + text.split('').join(token) + token).slice(0, lastInstancePos).replaceAll(token, '')
 }
 
+function applyInsensitiveCaseRegex(array) {
+  const size = array.length
+  let result = [],
+    arrayValue
+  const regEscape = (v) => v.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
+
+  for (let i = 0; i < size; i++) {
+    arrayValue = array[i]
+    result[i] = arrayValue ? new RegExp(regEscape(arrayValue), 'ig') : arrayValue
+  }
+
+  return result
+}
+
 /**
  * Splits text strings by using column and row delimiters.
  *
@@ -1203,8 +1217,6 @@ export function TEXTSPLIT(text, colDelimiter, rowDelimiter, ignoreEmpty = false,
   if (
     utils.anyIsNull(text, colDelimiter) ||
     utils.getVariableType(text) !== 'single' ||
-    utils.getVariableType(colDelimiter) !== 'single' ||
-    utils.getVariableType(rowDelimiter) !== 'single' ||
     (!utils.isDefined(colDelimiter) && !utils.isDefined(rowDelimiter))
   ) {
     return error.value
@@ -1219,26 +1231,47 @@ export function TEXTSPLIT(text, colDelimiter, rowDelimiter, ignoreEmpty = false,
   text = utils.parseString(text)
   ignoreEmpty = utils.parseBool(ignoreEmpty)
   matchMode = utils.parseBool(matchMode)
+  colDelimiter = utils.flatten(colDelimiter)
+  rowDelimiter = utils.flatten(rowDelimiter)
 
   if (utils.anyIsError(text, ignoreEmpty, matchMode)) {
     return error.value
   }
 
   if (matchMode) {
-    const regEscape = (v) => v.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
-    colDelimiter = colDelimiter ? new RegExp(regEscape(colDelimiter), 'ig') : colDelimiter
-    rowDelimiter = rowDelimiter ? new RegExp(regEscape(rowDelimiter), 'ig') : rowDelimiter
+    colDelimiter = applyInsensitiveCaseRegex(colDelimiter)
+    rowDelimiter = applyInsensitiveCaseRegex(rowDelimiter)
   }
 
-  let rows = text.split(rowDelimiter)
-  let maxSize = 0
+  let rows = text.split(rowDelimiter[0])
+  let rowDelimiterLength = utils.isArrayLike(rowDelimiter) ? rowDelimiter.length : 0
+
+  for (let i = 1; i < rowDelimiterLength; i++) {
+    let rowsLength = rows.length
+    for (let j = 0; j < rowsLength; j++) {
+      rows[j] = rows[j].split(rowDelimiter[i])
+    }
+    rows = utils.flatten(rows)
+  }
+
+  let maxSize = 1
 
   let rowsLength = rows.length
 
   for (let i = 0; i < rowsLength; i++) {
-    rows[i] = rows[i].split(colDelimiter)
-    if (rows[i].length > maxSize) {
-      maxSize = rows[i].length
+    let colDelimiterLength = colDelimiter.length
+    rows[i] = rows[i].split(colDelimiter[0])
+    let thisRowLength = rows[i].length
+
+    for (let d = 1; d < colDelimiterLength; d++) {
+      for (let j = 0; j < thisRowLength; j++) {
+        rows[i][j] = rows[i][j].split(colDelimiter[d])
+      }
+      rows[i] = utils.flatten(rows[i])
+    }
+    thisRowLength = rows[i].length
+    if (thisRowLength > maxSize) {
+      maxSize = thisRowLength
     }
   }
 
@@ -1266,16 +1299,36 @@ export function TEXTSPLIT(text, colDelimiter, rowDelimiter, ignoreEmpty = false,
 
   let result = []
 
+  const isPaddable = rowsLength > 1 && maxSize > 1 ? true : false
+
   for (let i = 0; i < rowsLength; i++) {
-    result[i] = []
+    if (rows[i].length > 0) {
+      result[i] = []
+    }
+
     for (let j = 0; j < maxSize; j++) {
-      result[i][j] = utils.isDefined(rows[i][j]) ? rows[i][j] : padWidth
+      let value = rows[i][j]
+      const isDefined = utils.isDefined(value)
+
+      if (isDefined) {
+        result[i][j] = value
+      } else if (isPaddable) {
+        result[i][j] = padWidth
+      }
     }
   }
 
-  if (result.length === 1 && result[0].length === 1) {
-    return result[0][0]
+  const compactedArr = []
+
+  for (let i = 0; i < result.length; i++) {
+    if (result[i] !== undefined) {
+      compactedArr.push(result[i])
+    }
   }
+
+  result = compactedArr
+
+  if (result.length === 1 && result[0].length === 1) return result[0][0]
 
   return result
 }
