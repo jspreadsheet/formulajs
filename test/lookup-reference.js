@@ -2843,6 +2843,16 @@ describe('Lookup Reference', () => {
       [false, error.na],
       [error.na, error.na]
     ])
+    expect(
+      lookup.EXPAND(
+        [
+          [1, 2],
+          [3, 4]
+        ],
+        1,
+        1
+      )
+    ).to.eql(error.value)
     expect(lookup.EXPAND('hello', true, 2)).to.eql([['hello', error.na]])
     expect(lookup.EXPAND('hello', false, 2)).to.eql(error.value)
     expect(lookup.EXPAND('hello', [[1, 2]], 2)).to.eql(error.value)
