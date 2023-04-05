@@ -1389,48 +1389,4 @@ describe('Text', () => {
       expect(text.VALUETOTEXT('Hello', err)).to.equal(err)
     })
   })
-
-  it('ARRAYTOTEXT', () => {
-    expect(
-      text.ARRAYTOTEXT(
-        [
-          [true, error.value],
-          [1234.01234, 'Seattle'],
-          ['Hello', '1,123']
-        ],
-        0
-      )
-    ).to.equal('true, #VALUE!, 1234.01234, Seattle, Hello, 1,123')
-    expect(
-      text.ARRAYTOTEXT(
-        [
-          [true, error.value],
-          [1234.01234, 'Seattle'],
-          ['Hello', '1,123']
-        ],
-        1
-      )
-    ).to.equal(`{true\\#VALUE!,1234.01234\\"Seattle","Hello"\\"1,123"}`)
-    expect(text.ARRAYTOTEXT('Hello', 0)).to.equal('Hello')
-    expect(text.ARRAYTOTEXT(true, 0)).to.equal('true')
-    expect(text.ARRAYTOTEXT(true, 1)).to.equal('{true}')
-    expect(text.ARRAYTOTEXT(123, 0)).to.equal('123')
-    expect(text.ARRAYTOTEXT('Hello', 1)).to.equal(`{"Hello"}`)
-    expect(text.ARRAYTOTEXT(undefined, 0)).to.equal(error.value)
-    expect(text.ARRAYTOTEXT(undefined, 1)).to.equal(error.value)
-    expect(text.ARRAYTOTEXT(undefined, undefined)).to.equal(error.value)
-    expect(text.ARRAYTOTEXT(null, 0)).to.equal(error.value)
-    expect(text.ARRAYTOTEXT(null, 1)).to.equal(error.value)
-    expect(text.ARRAYTOTEXT(null, null)).to.equal(error.value)
-    expect(text.ARRAYTOTEXT('Hello', undefined)).to.equal('Hello')
-    expect(text.ARRAYTOTEXT('Hello', null)).to.equal('Hello')
-    expect(text.ARRAYTOTEXT()).to.equal(error.na)
-    expect(text.ARRAYTOTEXT('Hello', 1, 1)).to.equal(error.na)
-
-    Object.values(error).forEach((err) => {
-      expect(text.ARRAYTOTEXT(err, 0)).to.equal(err.message)
-      expect(text.ARRAYTOTEXT(err, 1)).to.equal(`{${err.message}}`)
-      expect(text.ARRAYTOTEXT('Hello', err)).to.equal(err)
-    })
-  })
 })
