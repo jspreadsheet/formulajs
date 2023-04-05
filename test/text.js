@@ -1081,4 +1081,312 @@ describe('Text', () => {
       expect(text.VALUE('EUR1000')).to.equal(1000)
     })
   })
+
+  it('TEXTAFTER', () => {
+    expect(text.TEXTAFTER('Red riding hoods, red hood', 'hood')).to.equal('s, red hood')
+    expect(text.TEXTAFTER('Red riding hoods, red hood', '')).to.equal('Red riding hoods, red hood')
+    expect(text.TEXTAFTER('Little red Riding Hoods red hood', 'red', -2)).to.equal(' Riding Hoods red hood')
+    expect(text.TEXTAFTER('Red riding hoods, red hood', '', -1)).to.equal('')
+    expect(text.TEXTAFTER('Little Red Riding Hoods red hood', 'Red')).to.equal(' Riding Hoods red hood')
+    expect(text.TEXTAFTER('Little red Riding Hoods red hood', 'red', 2)).to.equal(' hood')
+    expect(text.TEXTAFTER('Little red Riding Hoods red hood', 'Red', 2, 1)).to.equal(' hood')
+    expect(text.TEXTAFTER(123, 1, undefined, false, undefined, 'Not found')).to.equal('23')
+    expect(text.TEXTAFTER('Little red Riding Hoods red hood', 'Red', 2, 0)).to.equal(error.na)
+    expect(text.TEXTAFTER('Little Red Riding Hoods red hood', 'Red', 3)).to.equal(error.na)
+    expect(text.TEXTAFTER('Marcus Aurelius', ' ', undefined, undefined, 1)).to.equal('Aurelius')
+    expect(text.TEXTAFTER('Socrates', ' ', undefined, undefined, 1)).to.equal('')
+    expect(text.TEXTAFTER('Socrates', ' ', -1, undefined, 1)).to.equal('Socrates')
+    expect(text.TEXTAFTER('Immanuel Kant', ' ', undefined, undefined, 1)).to.equal('Kant')
+    expect(text.TEXTAFTER('Little red Riding Hoods red hood', 'Red', undefined, false)).to.equal(error.na)
+    expect(
+      text.TEXTAFTER('Little red Riding Hoods red hood', 'Red', undefined, false, undefined, 'Not found')
+    ).to.equal('Not found')
+    expect(text.TEXTAFTER('Socrates', ' ', undefined, undefined, 0)).to.equal(error.na)
+    expect(text.TEXTAFTER('Little Red Riding Hoods red hood', 'basket')).to.equal(error.na)
+    expect(text.TEXTAFTER('Text', 'T', 10)).to.equal(error.value)
+    expect(text.TEXTAFTER('Text', 'T', 0)).to.equal(error.value)
+    expect(text.TEXTAFTER('Text', 'T', 2)).to.equal(error.na)
+    expect(text.TEXTAFTER('Text', 'T', 2, undefined, undefined, undefined, 1)).to.equal(error.na)
+    expect(text.TEXTAFTER('Text')).to.equal(error.na)
+    expect(text.TEXTAFTER()).to.equal(error.na)
+    expect(text.TEXTAFTER(true, true, undefined, false, undefined, 'Not found')).to.equal('')
+    expect(text.TEXTAFTER('true', true, undefined, false, undefined, 'Not found')).to.equal('')
+    expect(text.TEXTAFTER(false, false, undefined, false, undefined, 'Not found')).to.equal('')
+    expect(text.TEXTAFTER(true, false, undefined, false, undefined, 'Not found')).to.equal('Not found')
+    expect(text.TEXTAFTER(true, false, undefined, false, undefined, error.error)).to.equal(error.error)
+    expect(text.TEXTAFTER(true, false, undefined, false, undefined, null)).to.equal(null)
+    expect(text.TEXTAFTER(undefined, 'text', undefined, false, undefined, 'Not found')).to.equal(error.na)
+    expect(text.TEXTAFTER(null, 'text', undefined, false, undefined, 'Not found')).to.equal(error.value)
+    expect(text.TEXTAFTER([[1], [2]], 'text', undefined, false, undefined, 'Not found')).to.equal(error.value)
+    expect(text.TEXTAFTER('abc', 'b', null, false, undefined, 'Not found')).to.equal(error.value)
+    expect(text.TEXTAFTER('abc', 'b', true, null, undefined, 'Not found')).to.equal('c')
+    expect(text.TEXTAFTER('abc', 'b', true, undefined, null, 'Not found')).to.equal('c')
+    expect(text.TEXTAFTER('abc', [[1], [2]], undefined, undefined, null, 'Not found')).to.equal('Not found')
+    expect(text.TEXTAFTER('abc', 'b', [[1], [2]], undefined, null, 'Not found')).to.equal(error.value)
+    expect(text.TEXTAFTER('abc', 'b', false, undefined, null, 'Not found')).to.equal(error.value)
+    expect(text.TEXTAFTER('abc', 'b', 1, [[1], [2]], null, 'Not found')).to.equal(error.value)
+    expect(text.TEXTAFTER('abc', 'b', 1, 1, [[1], [2]], 'Not found')).to.equal(error.value)
+    expect(text.TEXTAFTER('abc', 'b', 1, 1, 1, [[1], [2]])).to.equal('c')
+
+    Object.values(error).forEach((err) => {
+      expect(text.TEXTAFTER(err, 'red', undefined, false, undefined, 'Not found')).to.equal(err)
+      expect(
+        text.TEXTAFTER('Little red Riding Hoods red hood', err, undefined, false, undefined, 'Not found')
+      ).to.equal(err)
+      expect(text.TEXTAFTER('Little red Riding Hoods red hood', 'red', err, false, undefined, 'Not found')).to.equal(
+        err
+      )
+      expect(
+        text.TEXTAFTER('Little red Riding Hoods red hood', 'red', undefined, err, undefined, 'Not found')
+      ).to.equal(err)
+      expect(text.TEXTAFTER('Little red Riding Hoods red hood', 'red', undefined, false, err, 'Not found')).to.equal(
+        err
+      )
+    })
+  })
+
+  it('TEXTBEFORE', () => {
+    expect(text.TEXTBEFORE('Red riding hoods, red hood', 'hood')).to.equal('Red riding ')
+    expect(text.TEXTBEFORE('Red riding hoods, red hood', '')).to.equal('')
+    expect(text.TEXTBEFORE('Little red Riding Hoods red hood', 'red', -2)).to.equal('Little ')
+    expect(text.TEXTBEFORE('Red riding hoods, red hood', '', -1)).to.equal('Red riding hoods, red hood')
+    expect(text.TEXTBEFORE('Little Red Riding Hoods red hood', 'Red')).to.equal('Little ')
+    expect(text.TEXTBEFORE('Little red Riding Hoods red hood', 'red', 2)).to.equal('Little red Riding Hoods ')
+    expect(text.TEXTBEFORE('Little red Riding Hoods red hood', 'Red', 2, 1)).to.equal('Little red Riding Hoods ')
+    expect(text.TEXTBEFORE(123, 1, undefined, false, undefined, 'Not found')).to.equal('')
+    expect(text.TEXTBEFORE('Little red Riding Hoods red hood', 'Red', 2, 0)).to.equal(error.na)
+    expect(text.TEXTBEFORE('Little Red Riding Hoods red hood', 'Red', 3)).to.equal(error.na)
+    expect(text.TEXTBEFORE('Marcus Aurelius', ' ', undefined, undefined, 1)).to.equal('Marcus')
+    expect(text.TEXTBEFORE('Socrates', ' ', undefined, undefined, 1)).to.equal('Socrates')
+    expect(text.TEXTBEFORE('Socrates', ' ', -1, undefined, 1)).to.equal('')
+    expect(text.TEXTBEFORE('Immanuel Kant', ' ', undefined, undefined, 1)).to.equal('Immanuel')
+    expect(text.TEXTBEFORE('Little red Riding Hoods red hood', 'Red', undefined, false)).to.equal(error.na)
+    expect(
+      text.TEXTBEFORE('Little red Riding Hoods red hood', 'Red', undefined, false, undefined, 'Not found')
+    ).to.equal('Not found')
+    expect(text.TEXTBEFORE('Socrates', ' ', undefined, undefined, 0)).to.equal(error.na)
+    expect(text.TEXTBEFORE('Little Red Riding Hoods red hood', 'basket')).to.equal(error.na)
+    expect(text.TEXTBEFORE('Text', 'T', 10)).to.equal(error.value)
+    expect(text.TEXTBEFORE('Text', 'T', 0)).to.equal(error.value)
+    expect(text.TEXTBEFORE('Text', 'T', 2)).to.equal(error.na)
+    expect(text.TEXTBEFORE('Text', 'T', 2, undefined, undefined, undefined, 1)).to.equal(error.na)
+    expect(text.TEXTBEFORE('Text')).to.equal(error.na)
+    expect(text.TEXTBEFORE()).to.equal(error.na)
+    expect(text.TEXTBEFORE(true, true, undefined, false, undefined, 'Not found')).to.equal('')
+    expect(text.TEXTBEFORE('true', true, undefined, false, undefined, 'Not found')).to.equal('')
+    expect(text.TEXTBEFORE(false, false, undefined, false, undefined, 'Not found')).to.equal('')
+    expect(text.TEXTBEFORE(true, false, undefined, false, undefined, 'Not found')).to.equal('Not found')
+    expect(text.TEXTBEFORE(true, false, undefined, false, undefined, error.error)).to.equal(error.error)
+    expect(text.TEXTBEFORE(true, false, undefined, false, undefined, null)).to.equal(null)
+    expect(text.TEXTBEFORE(undefined, 'text', undefined, false, undefined, 'Not found')).to.equal(error.na)
+    expect(text.TEXTBEFORE(null, 'text', undefined, false, undefined, 'Not found')).to.equal(error.value)
+    expect(text.TEXTBEFORE([[1], [2]], 'text', undefined, false, undefined, 'Not found')).to.equal(error.value)
+    expect(text.TEXTBEFORE('abc', 'b', null, false, undefined, 'Not found')).to.equal(error.value)
+    expect(text.TEXTBEFORE('abc', 'b', true, null, undefined, 'Not found')).to.equal('a')
+    expect(text.TEXTBEFORE('abc', 'b', true, undefined, null, 'Not found')).to.equal('a')
+    expect(text.TEXTBEFORE('abc', [[1], [2]], undefined, undefined, null, 'Not found')).to.equal('Not found')
+    expect(text.TEXTBEFORE('abc', 'b', [[1], [2]], undefined, null, 'Not found')).to.equal(error.value)
+    expect(text.TEXTBEFORE('abc', 'b', false, undefined, null, 'Not found')).to.equal(error.value)
+    expect(text.TEXTBEFORE('abc', 'b', 1, [[1], [2]], null, 'Not found')).to.equal(error.value)
+    expect(text.TEXTBEFORE('abc', 'b', 1, 1, [[1], [2]], 'Not found')).to.equal(error.value)
+    expect(text.TEXTBEFORE('abc', 'b', 1, 1, 1, [[1], [2]])).to.equal('a')
+
+    Object.values(error).forEach((err) => {
+      expect(text.TEXTBEFORE(err, 'red', undefined, false, undefined, 'Not found')).to.equal(err)
+      expect(
+        text.TEXTBEFORE('Little red Riding Hoods red hood', err, undefined, false, undefined, 'Not found')
+      ).to.equal(err)
+      expect(text.TEXTBEFORE('Little red Riding Hoods red hood', 'red', err, false, undefined, 'Not found')).to.equal(
+        err
+      )
+      expect(
+        text.TEXTBEFORE('Little red Riding Hoods red hood', 'red', undefined, err, undefined, 'Not found')
+      ).to.equal(err)
+      expect(text.TEXTBEFORE('Little red Riding Hoods red hood', 'red', undefined, false, err, 'Not found')).to.equal(
+        err
+      )
+    })
+  })
+  it('TEXTSPLIT', () => {
+    expect(text.TEXTSPLIT('abcabc', [['a', 'b']], undefined, true)).to.eql([['c', 'c']])
+    expect(text.TEXTSPLIT('abcabc', undefined, [['a', 'b']], true)).to.eql([['c'], ['c']])
+    expect(text.TEXTSPLIT('abcabc', 'a', undefined, true)).to.eql([['bc', 'bc']])
+    expect(text.TEXTSPLIT('Dakota Lennon Sanchez', ' ')).to.eql([['Dakota', 'Lennon', 'Sanchez']])
+    expect(text.TEXTSPLIT('To be or not to be', ' ')).to.eql([['To', 'be', 'or', 'not', 'to', 'be']])
+    expect(text.TEXTSPLIT('zab.xac.yad.ae', [['.', 'a']])).to.eql([['z', 'b', 'x', 'c', 'y', 'd', '', 'e']])
+    expect(text.TEXTSPLIT('zab.xac.yad.ae', [['.'], ['a']])).to.eql([['z', 'b', 'x', 'c', 'y', 'd', '', 'e']])
+    expect(text.TEXTSPLIT('zab.xac.yad.ae', undefined, [['.', 'a']])).to.eql([
+      ['z'],
+      ['b'],
+      ['x'],
+      ['c'],
+      ['y'],
+      ['d'],
+      [''],
+      ['e']
+    ])
+    expect(text.TEXTSPLIT('zab.xac.yad.ae', undefined, [['.'], ['a']])).to.eql([
+      ['z'],
+      ['b'],
+      ['x'],
+      ['c'],
+      ['y'],
+      ['d'],
+      [''],
+      ['e']
+    ])
+    expect(text.TEXTSPLIT('zab.xAc.yad.Ae', undefined, [['.'], ['a']], true, true)).to.eql([
+      ['z'],
+      ['b'],
+      ['x'],
+      ['c'],
+      ['y'],
+      ['d'],
+      ['e']
+    ])
+    expect(text.TEXTSPLIT('za?b.xa?c.ya?d.A?e', undefined, [['.'], ['A?']], true, true)).to.eql([
+      ['z'],
+      ['b'],
+      ['x'],
+      ['c'],
+      ['y'],
+      ['d'],
+      ['e']
+    ])
+    expect(text.TEXTSPLIT('1,2,3;4,5,6', ',', ';')).to.eql([
+      ['1', '2', '3'],
+      ['4', '5', '6']
+    ])
+    expect(text.TEXTSPLIT('abcabc;abcabcabc', 'a', ';', true)).to.eql([
+      ['bc', 'bc', error.na],
+      ['bc', 'bc', 'bc']
+    ])
+    expect(text.TEXTSPLIT('abcabc', 'a')).to.eql([['', 'bc', 'bc']])
+    expect(text.TEXTSPLIT('abcabc', 'A', undefined, true, true)).to.eql([['bc', 'bc']])
+    expect(text.TEXTSPLIT('Do. Or do not. There is no try. -Anonymous', '.')).to.eql([
+      ['Do', ' Or do not', ' There is no try', ' -Anonymous']
+    ])
+    expect(text.TEXTSPLIT('Do. Or do not. There is no try. -Anonymous', undefined, '. ')).to.eql([
+      ['Do'],
+      ['Or do not'],
+      ['There is no try'],
+      ['-Anonymous']
+    ])
+    expect(text.TEXTSPLIT('Do. Or do not. There is no try. -Anonymous', ' ', '. ', true)).to.eql([
+      ['Do', error.na, error.na, error.na],
+      ['Or', 'do', 'not', error.na],
+      ['There', 'is', 'no', 'try'],
+      ['-Anonymous', error.na, error.na, error.na]
+    ])
+    expect(text.TEXTSPLIT('Do. Or do not. There is no try. -Anonymous', ' ', '. ', true, false, error.error)).to.eql([
+      ['Do', error.error, error.error, error.error],
+      ['Or', 'do', 'not', error.error],
+      ['There', 'is', 'no', 'try'],
+      ['-Anonymous', error.error, error.error, error.error]
+    ])
+    expect(text.TEXTSPLIT('Do. Or do not. There is no try. -Anonymous', ' ', '. ', true, false, '')).to.eql([
+      ['Do', '', '', ''],
+      ['Or', 'do', 'not', ''],
+      ['There', 'is', 'no', 'try'],
+      ['-Anonymous', '', '', '']
+    ])
+    expect(text.TEXTSPLIT(true, 'a')).to.eql('true')
+    expect(text.TEXTSPLIT(false, 'a')).to.eql([['f', 'lse']])
+    expect(text.TEXTSPLIT(undefined, 'a')).to.eql(error.na)
+    expect(text.TEXTSPLIT(null, 'a')).to.eql(error.value)
+    expect(text.TEXTSPLIT([[1], [2]], 'a')).to.eql(error.value)
+    expect(text.TEXTSPLIT(123, 2)).to.eql([['1', '3']])
+    expect(text.TEXTSPLIT(123, 2)).to.eql([['1', '3']])
+    expect(text.TEXTSPLIT(123, true)).to.eql('123')
+    expect(text.TEXTSPLIT(123, false)).to.eql('123')
+    expect(text.TEXTSPLIT(123, undefined)).to.eql(error.value)
+    expect(text.TEXTSPLIT(123, null)).to.eql(error.value)
+    expect(text.TEXTSPLIT(123, undefined, 2)).to.eql([['1'], ['3']])
+    expect(text.TEXTSPLIT(123, undefined, 2)).to.eql([['1'], ['3']])
+    expect(text.TEXTSPLIT(123, undefined, true)).to.eql('123')
+    expect(text.TEXTSPLIT(123, undefined, false)).to.eql('123')
+    expect(text.TEXTSPLIT(123, undefined, undefined)).to.eql(error.value)
+    expect(text.TEXTSPLIT(123, undefined, null)).to.eql(error.value)
+    expect(text.TEXTSPLIT(123, undefined, '2', 2)).to.eql([['1'], ['3']])
+    expect(text.TEXTSPLIT(123, undefined, '2', undefined, 2, 1, 1)).to.equal(error.na)
+    expect(text.TEXTSPLIT(123)).to.equal(error.na)
+    expect(text.TEXTSPLIT()).to.equal(error.na)
+    expect(text.TEXTSPLIT(123, undefined, '2', undefined)).to.eql([['1'], ['3']])
+    expect(text.TEXTSPLIT(123, undefined, '2', null)).to.eql([['1'], ['3']])
+    expect(text.TEXTSPLIT(123, undefined, '2', [[1, 3]])).to.eql(error.value)
+    expect(text.TEXTSPLIT(123, undefined, '2', undefined, 2)).to.eql([['1'], ['3']])
+    expect(text.TEXTSPLIT(123, undefined, '2', undefined, 2)).to.eql([['1'], ['3']])
+    expect(text.TEXTSPLIT('12?3', undefined, '2?', undefined, 2)).to.eql([['1'], ['3']])
+    expect(text.TEXTSPLIT(123, undefined, '2', undefined, undefined)).to.eql([['1'], ['3']])
+    expect(text.TEXTSPLIT(123, undefined, '2', undefined, null)).to.eql([['1'], ['3']])
+    expect(text.TEXTSPLIT(123, undefined, '2', undefined, 2)).to.eql([['1'], ['3']])
+    expect(text.TEXTSPLIT(123, undefined, '2', undefined, [[1, 3]])).to.eql(error.value)
+
+    Object.values(error).forEach((err) => {
+      expect(text.TEXTSPLIT(err, 'A', undefined, true, true)).to.equal(err)
+      expect(text.TEXTSPLIT('abcabc', err, undefined, true, true)).to.equal(err)
+      expect(text.TEXTSPLIT('abcabc', 'A', err, true, true)).to.equal(err)
+      expect(text.TEXTSPLIT('abcabc', 'A', undefined, err, true)).to.equal(err)
+      expect(text.TEXTSPLIT('abcabc', 'A', undefined, true, err)).to.equal(err)
+    })
+  })
+
+  it('VALUETOTEXT', () => {
+    expect(text.VALUETOTEXT(true, 0)).to.equal('true')
+    expect(text.VALUETOTEXT(false, 0)).to.equal('false')
+    expect(text.VALUETOTEXT(1234.01234, 0)).to.equal('1234.01234')
+    expect(text.VALUETOTEXT('Hello', 0)).to.equal('Hello')
+    expect(text.VALUETOTEXT(error.value, 0)).to.equal(error.value.message)
+    expect(text.VALUETOTEXT('Seattle', 0)).to.equal('Seattle')
+    expect(text.VALUETOTEXT(1234, 0)).to.equal('1234')
+    expect(text.VALUETOTEXT(true, 1)).to.equal('true')
+    expect(text.VALUETOTEXT(1234.01234, 1)).to.equal('1234.01234')
+    expect(text.VALUETOTEXT('Hello', 1)).to.equal(`"Hello"`)
+    expect(text.VALUETOTEXT(error.value, 1)).to.equal(error.value.message)
+    expect(text.VALUETOTEXT('Seattle', 1)).to.equal(`"Seattle"`)
+    expect(text.VALUETOTEXT(1234, 1)).to.equal('1234')
+    expect(text.VALUETOTEXT(undefined, 0)).to.equal('')
+    expect(text.VALUETOTEXT(null, 0)).to.equal('')
+    expect(text.VALUETOTEXT(undefined, 1)).to.equal('')
+    expect(text.VALUETOTEXT(null, 1)).to.equal('')
+    expect(text.VALUETOTEXT('Hello', true)).to.equal(`"Hello"`)
+    expect(text.VALUETOTEXT('Hello', false)).to.equal('Hello')
+    expect(text.VALUETOTEXT()).to.equal(error.na)
+    expect(text.VALUETOTEXT('Hello', false, 1)).to.equal(error.na)
+    expect(text.VALUETOTEXT([['Hello', 'Seattle', 123]], false)).to.eql([['Hello', 'Seattle', '123']])
+    expect(
+      text.VALUETOTEXT(
+        [
+          ['Hello', 'Seattle'],
+          [123, 456],
+          [null, undefined]
+        ],
+        false
+      )
+    ).to.eql([
+      ['Hello', 'Seattle'],
+      ['123', '456'],
+      ['', '']
+    ])
+    expect(
+      text.VALUETOTEXT(
+        [
+          ['Hello', 'Seattle'],
+          [123, 456],
+          [null, undefined]
+        ],
+        true
+      )
+    ).to.eql([
+      [`"Hello"`, `"Seattle"`],
+      ['123', '456'],
+      ['', '']
+    ])
+
+    Object.values(error).forEach((err) => {
+      expect(text.VALUETOTEXT(err, 0)).to.equal(err.message)
+      expect(text.VALUETOTEXT(err, 1)).to.equal(err.message)
+      expect(text.VALUETOTEXT('Hello', err)).to.equal(err)
+    })
+  })
 })

@@ -1005,3 +1005,382 @@ export function VALUE(text) {
 
   return output
 }
+
+/**
+ * Returns text that occurs after given character or string.
+ *
+ * Category: Text
+ *
+ * @param {*} text The text you are searching within. Wildcard characters not allowed.
+ * @param {*} delimiter The text that marks the point after which you want to extract.
+ * @param {*} instanceNum The instance of the delimiter after which you want to extract the text. A negative number starts searching text from the end.
+ * @param {*} matchMode  Determines whether the text search is case-sensitive. The default is case-sensitive.
+ * @param {*} matchEnd  Treats the end of text as a delimiter. By default, the text is an exact match.
+ * @param {*} ifNotFound  Value returned if no match is found. By default, #N/A is returned.
+ * @returns
+ */
+export function TEXTAFTER(text, delimiter, instanceNum = 1, matchMode = 0, matchEnd = 0, ifNotFound = error.na) {
+  if (arguments.length < 2 || arguments.length > 6 || utils.anyIsUndefined(text, delimiter)) {
+    return error.na
+  }
+
+  const anyError = utils.anyError(...arguments)
+
+  if (anyError) {
+    return anyError
+  }
+
+  if (utils.getVariableType(text) !== 'single') {
+    return error.value
+  }
+
+  text = utils.parseString(text)
+  delimiter = utils.parseString(delimiter)
+  instanceNum = utils.parseNumber(instanceNum)
+  matchMode = utils.parseNumber(matchMode)
+  matchEnd = utils.parseNumber(matchEnd)
+
+  if (utils.anyIsError(text, delimiter, instanceNum, matchMode, matchEnd)) {
+    return error.value
+  }
+
+  const token = '|'
+  let tokenizedText = token + text.split('').join(token) + token
+  let tokenizedDelimiter = token + delimiter.split('').join(token)
+
+  if (text.length < instanceNum || instanceNum === 0) {
+    return error.value
+  }
+
+  if (matchMode) {
+    tokenizedText = tokenizedText.toLowerCase()
+    tokenizedDelimiter = tokenizedDelimiter.toLowerCase()
+  }
+
+  let lastInstancePos = 0
+  let instanceLoops = 0
+
+  if (instanceNum < 0) {
+    instanceLoops = -instanceNum
+
+    for (let i = 0; i < instanceLoops; i++) {
+      if (tokenizedText.includes(tokenizedDelimiter)) {
+        lastInstancePos = tokenizedText.lastIndexOf(tokenizedDelimiter)
+        tokenizedText = tokenizedText.substring(0, tokenizedText.lastIndexOf(tokenizedDelimiter))
+      } else {
+        if (matchEnd) {
+          return text
+        }
+        return ifNotFound
+      }
+    }
+  } else {
+    instanceLoops = instanceNum
+
+    for (let i = 0; i < instanceLoops; i++) {
+      if (tokenizedText.includes(tokenizedDelimiter)) {
+        lastInstancePos = tokenizedText.indexOf(tokenizedDelimiter)
+        tokenizedText = tokenizedText.replace(tokenizedDelimiter, new Array(tokenizedDelimiter.length + 1).join(token))
+      } else {
+        if (matchEnd) {
+          return ''
+        }
+        return ifNotFound
+      }
+    }
+  }
+
+  return (token + text.split('').join(token) + token)
+    .slice(lastInstancePos + tokenizedDelimiter.length)
+    .replaceAll(token, '')
+}
+
+/**
+ * Returns text that occurs before given character or string.
+ *
+ * Category: Text
+ *
+ * @param {*} text The text you are searching within. Wildcard characters not allowed.
+ * @param {*} delimiter The text that marks the point after which you want to extract.
+ * @param {*} instanceNum The instance of the delimiter after which you want to extract the text. A negative number starts searching text from the end.
+ * @param {*} matchMode  Determines whether the text search is case-sensitive. The default is case-sensitive.
+ * @param {*} matchEnd  Treats the end of text as a delimiter. By default, the text is an exact match.
+ * @param {*} ifNotFound  Value returned if no match is found. By default, #N/A is returned.
+ * @returns
+ */
+export function TEXTBEFORE(text, delimiter, instanceNum = 1, matchMode = 0, matchEnd = 0, ifNotFound = error.na) {
+  if (arguments.length < 2 || arguments.length > 6 || utils.anyIsUndefined(text, delimiter)) {
+    return error.na
+  }
+
+  const anyError = utils.anyError(...arguments)
+
+  if (anyError) {
+    return anyError
+  }
+
+  if (utils.getVariableType(text) !== 'single') {
+    return error.value
+  }
+
+  text = utils.parseString(text)
+  delimiter = utils.parseString(delimiter)
+  instanceNum = utils.parseNumber(instanceNum)
+  matchMode = utils.parseNumber(matchMode)
+  matchEnd = utils.parseNumber(matchEnd)
+
+  if (utils.anyIsError(text, delimiter, instanceNum, matchMode, matchEnd)) {
+    return error.value
+  }
+
+  const token = '|'
+  let tokenizedText = token + text.split('').join(token) + token
+  let tokenizedDelimiter = token + delimiter.split('').join(token)
+
+  if (text.length < instanceNum || instanceNum === 0) {
+    return error.value
+  }
+
+  if (matchMode) {
+    tokenizedText = tokenizedText.toLowerCase()
+    tokenizedDelimiter = tokenizedDelimiter.toLowerCase()
+  }
+
+  let lastInstancePos = 0
+  let instanceLoops = 0
+
+  if (instanceNum < 0) {
+    instanceLoops = -instanceNum
+
+    for (let i = 0; i < instanceLoops; i++) {
+      if (tokenizedText.includes(tokenizedDelimiter)) {
+        lastInstancePos = tokenizedText.lastIndexOf(tokenizedDelimiter)
+        tokenizedText = tokenizedText.substring(0, tokenizedText.lastIndexOf(tokenizedDelimiter))
+      } else {
+        if (matchEnd) {
+          return ''
+        }
+        return ifNotFound
+      }
+    }
+  } else {
+    instanceLoops = instanceNum
+
+    for (let i = 0; i < instanceLoops; i++) {
+      if (tokenizedText.includes(tokenizedDelimiter)) {
+        lastInstancePos = tokenizedText.indexOf(tokenizedDelimiter)
+        tokenizedText = tokenizedText.replace(tokenizedDelimiter, new Array(tokenizedDelimiter.length + 1).join(token))
+      } else {
+        if (matchEnd) {
+          return text
+        }
+        return ifNotFound
+      }
+    }
+  }
+
+  return (token + text.split('').join(token) + token).slice(0, lastInstancePos).replaceAll(token, '')
+}
+
+function applyInsensitiveCaseRegex(array) {
+  const size = array.length
+  let result = [],
+    arrayValue
+  const regEscape = (v) => v.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
+
+  for (let i = 0; i < size; i++) {
+    arrayValue = array[i]
+    result[i] = arrayValue ? new RegExp(regEscape(arrayValue), 'ig') : arrayValue
+  }
+
+  return result
+}
+
+/**
+ * Splits text strings by using column and row delimiters.
+ *
+ * Category: Text
+ *
+ * @param {*} text The text you are searching within. Wildcard characters not allowed.
+ * @param {*} col_delimiter   The text that marks the point where to spill the text across columns.
+ * @param {*} row_delimiter The text that marks the point where to spill the text down rows. Optional.
+ * @param {*} ignoreEmpty  Specify TRUE to ignore consecutive delimiters. Defaults to FALSE, which creates an empty cell. Optional.
+ * @param {*} matchMode  Specify 1 to perform a case-insensitive match. Defaults to 0, which does a case-sensitive match. Optional.
+ * @param {*} padWidth  The value with which to pad the result. The default is #N/A.
+ * @returns
+ */
+export function TEXTSPLIT(text, colDelimiter, rowDelimiter, ignoreEmpty = false, matchMode = 0, padWidth = error.na) {
+  if (arguments.length < 2 || arguments.length > 6 || utils.anyIsUndefined(text)) {
+    return error.na
+  }
+
+  if (
+    utils.anyIsNull(text, colDelimiter) ||
+    utils.getVariableType(text) !== 'single' ||
+    (!utils.isDefined(colDelimiter) && !utils.isDefined(rowDelimiter))
+  ) {
+    return error.value
+  }
+
+  const anyError = utils.anyError(text, colDelimiter, rowDelimiter, ignoreEmpty, matchMode)
+
+  if (anyError) {
+    return anyError
+  }
+
+  text = utils.parseString(text)
+  ignoreEmpty = utils.parseBool(ignoreEmpty)
+  matchMode = utils.parseBool(matchMode)
+  colDelimiter = utils.flatten(colDelimiter)
+  rowDelimiter = utils.flatten(rowDelimiter)
+
+  if (utils.anyIsError(text, ignoreEmpty, matchMode)) {
+    return error.value
+  }
+
+  if (matchMode) {
+    colDelimiter = applyInsensitiveCaseRegex(colDelimiter)
+    rowDelimiter = applyInsensitiveCaseRegex(rowDelimiter)
+  }
+
+  let rows = text.split(rowDelimiter[0])
+  let rowDelimiterLength = utils.isArrayLike(rowDelimiter) ? rowDelimiter.length : 0
+
+  for (let i = 1; i < rowDelimiterLength; i++) {
+    let rowsLength = rows.length
+    for (let j = 0; j < rowsLength; j++) {
+      rows[j] = rows[j].split(rowDelimiter[i])
+    }
+    rows = utils.flatten(rows)
+  }
+
+  let maxSize = 1
+
+  let rowsLength = rows.length
+
+  for (let i = 0; i < rowsLength; i++) {
+    let colDelimiterLength = colDelimiter.length
+    rows[i] = rows[i].split(colDelimiter[0])
+    let thisRowLength = rows[i].length
+
+    for (let d = 1; d < colDelimiterLength; d++) {
+      for (let j = 0; j < thisRowLength; j++) {
+        rows[i][j] = rows[i][j].split(colDelimiter[d])
+      }
+      rows[i] = utils.flatten(rows[i])
+    }
+    thisRowLength = rows[i].length
+    if (thisRowLength > maxSize) {
+      maxSize = thisRowLength
+    }
+  }
+
+  if (ignoreEmpty) {
+    let filteredResult = []
+    let newSize = 0
+    let rowLength = undefined
+
+    for (let i = 0; i < rowsLength; i++) {
+      filteredResult[i] = []
+      for (let j = 0; j < maxSize; j++) {
+        if (rows[i][j] !== '') {
+          filteredResult[i].push(rows[i][j])
+        }
+      }
+      rowLength = filteredResult[i].length
+      if (rowLength > newSize) {
+        newSize = rowLength
+      }
+    }
+
+    maxSize = newSize
+    rows = filteredResult
+  }
+
+  let result = []
+
+  const isPaddable = rowsLength > 1 && maxSize > 1 ? true : false
+
+  for (let i = 0; i < rowsLength; i++) {
+    if (rows[i].length > 0) {
+      result[i] = []
+    }
+
+    for (let j = 0; j < maxSize; j++) {
+      let value = rows[i][j]
+      const isDefined = utils.isDefined(value)
+
+      if (isDefined) {
+        result[i][j] = value
+      } else if (isPaddable) {
+        result[i][j] = padWidth
+      }
+    }
+  }
+
+  const compactedArr = []
+
+  for (let i = 0; i < result.length; i++) {
+    if (result[i] !== undefined) {
+      compactedArr.push(result[i])
+    }
+  }
+
+  result = compactedArr
+
+  if (result.length === 1 && result[0].length === 1) return result[0][0]
+
+  return result
+}
+
+function valueToText(value, format) {
+  if (format && typeof value === 'string') {
+    return `"${value}"`
+  }
+
+  value = utils.parseString(value)
+
+  if (value && value.formulaError) {
+    return value.message
+  }
+
+  return `${value}`
+}
+
+/**
+ * Returns text from any specified value. It passes text values unchanged, and converts non-text values to text.
+ *
+ * Category: Text
+ *
+ * @param {*} value The value to return as text. Required.
+ * @param {*} format The format of the returned data. Optional. It can be one of two values: 0 or 1.
+ * @returns
+ */
+export function VALUETOTEXT(value, format = 0) {
+  if (arguments.length < 1 || arguments.length > 2) {
+    return error.na
+  }
+
+  if (format && format.formulaError) {
+    return format
+  }
+
+  format = utils.parseBool(format)
+
+  if (utils.getVariableType(value) !== 'single') {
+    let result = []
+    const rows = value.length
+    const columns = value[0].length
+
+    for (let i = 0; i < rows; i++) {
+      result[i] = []
+      for (let j = 0; j < columns; j++) {
+        result[i][j] = valueToText(value[i][j], format)
+      }
+    }
+
+    return result
+  }
+
+  return valueToText(...arguments)
+}

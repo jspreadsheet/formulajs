@@ -2433,7 +2433,41 @@ export function PHI(x) {
   return Math.exp(-0.5 * x * x) / SQRT2PI
 }
 
-export const POISSON = {}
+/**
+ * Returns the Poisson distribution. A common application of the Poisson distribution is predicting the number of events over a specific time, such as the number of cars arriving at a toll plaza in 1 minute.
+ *
+ * Category: Statistical
+ *
+ * @param {*} x The number of events.
+ * @param {*} mean The expected numeric value.
+ * @param {*} cumulative A logical value that determines the form of the probability distribution returned.
+ * @returns
+ */
+export function POISSON(x, mean, cumulative) {
+  if (arguments.length !== 3) {
+    return error.na
+  }
+
+  const anyError = utils.anyError(x, mean, cumulative)
+
+  if (anyError) {
+    return anyError
+  }
+
+  if (!utils.isDefined(cumulative)) {
+    cumulative = false
+  }
+
+  x = utils.parseNumber(x)
+  mean = utils.parseNumber(mean)
+  cumulative = utils.parseBool(cumulative)
+
+  if (utils.anyIsError(x, mean, cumulative)) {
+    return error.value
+  }
+
+  return cumulative ? jStat.poisson.cdf(x, mean) : jStat.poisson.pdf(x, mean)
+}
 
 /**
  * Returns the Poisson distribution.

@@ -855,3 +855,218 @@ export function GETPIVOTDATA() {
 export function RTD() {
   throw new Error('RTD is not implemented')
 }
+
+/**
+ * Excludes a specified number of rows or columns from the start or end of an array.
+ *
+ * Category: Lookup and reference
+ *
+ * @param {*} array The array from which to drop rows or columns.
+ * @param {*} rows The number of rows to drop. A negative value drops from the end of the array.
+ * @param {*} columns The number of columns to exclude. A negative value drops from the end of the array.
+ * @returns
+ */
+export function DROP(array, rows = 0, columns = 0) {
+  if (arguments.length < 2 || arguments.length > 3) {
+    return error.na
+  }
+
+  if (array === undefined) {
+    return error.value
+  }
+
+  const anyError = utils.anyError(rows, columns)
+
+  if (anyError) {
+    return anyError
+  }
+
+  rows = utils.parseNumber(rows)
+  columns = utils.parseNumber(columns)
+
+  if (utils.anyIsError(rows, columns)) {
+    return error.value
+  }
+
+  const arrayVarType = utils.getVariableType(array)
+
+  if (arrayVarType === 'single' && rows === 0 && columns === 0) {
+    return utils.isDefined(array) ? array : 0
+  } else if (arrayVarType === 'single') {
+    return error.calc
+  }
+
+  let arrayRows = array.length
+  let arrayColumns = array[0].length
+
+  if (arrayRows > 64 || arrayColumns > 64) {
+    return error.num
+  }
+
+  if (rows < 0) {
+    arrayRows = arrayRows + rows
+    rows = 0
+  }
+
+  if (columns < 0) {
+    arrayColumns = arrayColumns + columns
+    columns = 0
+  }
+
+  if (arrayRows <= rows || arrayColumns <= columns) {
+    return error.calc
+  }
+
+  let result = []
+  for (let i = rows; i < arrayRows; i++) {
+    result.push(array[i].slice(columns))
+  }
+
+  if (result.length === 1 && result[0].length === 1) {
+    return result[0][0]
+  }
+
+  return result
+}
+
+/**
+ * Expands or pads an array to specified row and column dimensions.
+ *
+ * Category: Lookup and reference
+ *
+ * @param {*} array The array to expand.
+ * @param {*} rows The number of rows in the expanded array. If missing, rows will not be expanded.
+ * @param {*} columns The number of columns in the expanded array. If missing, columns will not be expanded.
+ * @param {*} padWith The value with which to pad. The default is #N/A.
+ * @returns
+ */
+export function EXPAND(array, rows, columns, padWith = error.na) {
+  if (arguments.length < 2 || arguments.length > 4) {
+    return error.na
+  }
+
+  if (
+    !utils.isDefined(array) ||
+    utils.anyIsNull(rows, columns) ||
+    utils.isArrayLike(rows) ||
+    utils.isArrayLike(columns) ||
+    utils.isArrayLike(padWith)
+  ) {
+    return error.value
+  }
+
+  const anyError = utils.anyError(rows, columns)
+
+  if (anyError) {
+    return anyError
+  }
+
+  const arrayVarType = utils.getVariableType(array)
+
+  let arrayRows = utils.isArrayLike(array) ? array.length : 1
+  let arrayColumns = array[0] ? array[0].length || 1 : 1
+  rows = utils.isDefined(rows) ? rows : arrayRows
+  columns = utils.isDefined(columns) ? columns : arrayColumns
+
+  if (arrayRows > rows || arrayColumns > columns) {
+    return error.value
+  }
+
+  if (arrayRows > 64 || arrayColumns > 64) {
+    return error.num
+  }
+
+  let result = []
+
+  if (arrayVarType === 'single') {
+    for (let i = 0; i < rows; i++) {
+      result[i] = Array(columns).fill(padWith)
+      if (i === 0) {
+        result[i][0] = array
+      }
+    }
+  } else {
+    for (let i = 0; i < rows; i++) {
+      result[i] = []
+      for (let j = 0; j < columns; j++) {
+        result[i][j] = array[i] ? array[i][j] || padWith : padWith
+      }
+    }
+  }
+
+  if (result.length === 1 && result[0].length === 1) {
+    return result[0][0]
+  }
+
+  return result
+}
+
+/**
+ * Appends arrays horizontally and in sequence to return a larger array.
+ *
+ * Category: Lookup and reference
+ *
+ * @param {*} arrays The arrays to append.
+ * @returns
+ */
+export function HSTACK(...arrays) {
+  if (!arrays.length) {
+    return error.na
+  }
+
+  if (utils.anyIsUndefined(...arrays)) {
+    return error.value
+  }
+
+  let result = [],
+    maxRows = 0,
+    arraysLength = arrays.length
+
+  for (let a = 0; a < arraysLength; a++) {
+    let current = arrays[a]
+
+    if (!utils.isArrayLike(current)) {
+      current = [[current]]
+    }
+
+    if (maxRows < current.length) {
+      maxRows = current.length
+    }
+  }
+
+  for (let a = 0; a < arraysLength; a++) {
+    let current = arrays[a]
+
+    if (!utils.isArrayLike(current)) {
+      current = [[current]]
+    }
+
+    let currentRows = current.length
+
+    for (let i = 0; i < maxRows; i++) {
+      if (!result[i]) {
+        result[i] = []
+      }
+      if (i >= currentRows) {
+        result[i] = result[i].concat(new Array(current[0].length).fill(error.na))
+      } else {
+        result[i] = result[i].concat(current[i])
+      }
+    }
+  }
+
+  if (~utils.flatten(result).indexOf(null)) {
+    let rows = result.length
+    let columns = result[0].length
+
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < columns; j++) {
+        if (result[i][j] === null) {
+          result[i][j] = 0
+        }
+      }
+    }
+  }
+
+  return result.length === 1 && result[0].length === 1 ? result[0][0] : result
+}

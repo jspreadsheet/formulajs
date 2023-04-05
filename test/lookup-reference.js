@@ -2598,4 +2598,387 @@ describe('Lookup Reference', () => {
   xit('RTD', () => {
     expect(lookup.RTD).to.throw('RTD is not implemented')
   })
+
+  it('DROP', () => {
+    expect(
+      lookup.DROP(
+        [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9]
+        ],
+        2
+      )
+    ).to.eql([[7, 8, 9]])
+    expect(
+      lookup.DROP(
+        [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9]
+        ],
+        undefined,
+        2
+      )
+    ).to.eql([[3], [6], [9]])
+    expect(
+      lookup.DROP(
+        [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9]
+        ],
+        -2
+      )
+    ).to.eql([[1, 2, 3]])
+    expect(
+      lookup.DROP(
+        [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9]
+        ],
+        2,
+        2
+      )
+    ).to.eql(9)
+    expect(
+      lookup.DROP(
+        [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9]
+        ],
+        3,
+        0
+      )
+    ).to.eql(error.calc)
+    expect(
+      lookup.DROP(
+        [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9]
+        ],
+        -3,
+        0
+      )
+    ).to.eql(error.calc)
+    expect(
+      lookup.DROP(
+        [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9]
+        ],
+        -2,
+        0
+      )
+    ).not.to.eql(error.calc)
+    expect(
+      lookup.DROP(
+        [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9]
+        ],
+        4,
+        0
+      )
+    ).to.eql(error.calc)
+    expect(
+      lookup.DROP(
+        [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9]
+        ],
+        0,
+        3
+      )
+    ).to.eql(error.calc)
+    expect(
+      lookup.DROP(
+        [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9]
+        ],
+        0,
+        -2
+      )
+    ).not.to.eql(error.calc)
+    expect(
+      lookup.DROP(
+        [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9]
+        ],
+        0,
+        -3
+      )
+    ).to.eql(error.calc)
+    expect(
+      lookup.DROP(
+        [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9]
+        ],
+        0,
+        4
+      )
+    ).to.eql(error.calc)
+    expect(lookup.DROP('a', 0)).to.eql('a')
+    expect(lookup.DROP(555, 0)).to.eql(555)
+    expect(lookup.DROP('true', 0)).to.eql('true')
+    expect(lookup.DROP(true, 0)).to.eql(true)
+    expect(lookup.DROP(false, 0)).to.eql(false)
+    expect(lookup.DROP('a', 1)).to.eql(error.calc)
+    expect(lookup.DROP(555, 1)).to.eql(error.calc)
+    expect(lookup.DROP('true', 1)).to.eql(error.calc)
+    expect(lookup.DROP(true, 1)).to.eql(error.calc)
+    expect(lookup.DROP(false, 1)).to.eql(error.calc)
+    expect(lookup.DROP('a', -1)).to.eql(error.calc)
+    expect(lookup.DROP(555, -1)).to.eql(error.calc)
+    expect(lookup.DROP('true', -1)).to.eql(error.calc)
+    expect(lookup.DROP(true, -1)).to.eql(error.calc)
+    expect(lookup.DROP(false, -1)).to.eql(error.calc)
+    expect(lookup.DROP(undefined, -1)).to.equal(error.value)
+    expect(lookup.DROP(undefined, 0)).to.equal(error.value)
+    expect(lookup.DROP(undefined, 1)).to.equal(error.value)
+    expect(lookup.DROP(null, -1)).to.equal(error.calc)
+    expect(lookup.DROP(null, 0)).to.equal(0)
+    expect(lookup.DROP(null, 1)).to.equal(error.calc)
+    expect(lookup.DROP([[5], [5]], true)).to.eql(5)
+    expect(lookup.DROP([[5], [5]], false)).to.eql([[5], [5]])
+    expect(lookup.DROP([[5, 5]], undefined, 0)).to.eql([[5, 5]])
+    expect(lookup.DROP([[5, 5]], null, 0)).to.eql([[5, 5]])
+    expect(lookup.DROP([[5, 5]], 0, true)).to.eql(5)
+    expect(lookup.DROP([[5, 5]], 0, false)).to.eql([[5, 5]])
+    expect(lookup.DROP([[5, 5]], 0, undefined)).to.eql([[5, 5]])
+    expect(lookup.DROP([[5, 5]], 0, null)).to.eql([[5, 5]])
+    expect(lookup.DROP([[5, 5]], undefined, 0)).to.eql([[5, 5]])
+    expect(lookup.DROP([[5, 5]], null, 0)).to.eql([[5, 5]])
+    expect(lookup.DROP([[5, 5]], 'hello', 0)).to.eql(error.value)
+    expect(
+      lookup.DROP(
+        [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9]
+        ],
+        2,
+        2,
+        1
+      )
+    ).to.eql(error.na)
+    expect(
+      lookup.DROP([
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9]
+      ])
+    ).to.eql(error.na)
+    expect(lookup.DROP()).to.eql(error.na)
+
+    Object.values(error).forEach((err) => {
+      expect(lookup.DROP(err, 2, 2)).to.eql(error.calc)
+      expect(lookup.DROP([[5, 5]], err, 0)).to.equal(err)
+      expect(lookup.DROP([[5, 5]], 0, err)).to.equal(err)
+    })
+  })
+
+  it('EXPAND', () => {
+    expect(
+      lookup.EXPAND(
+        [
+          [1, 2],
+          [3, 4]
+        ],
+        3,
+        3
+      )
+    ).to.eql([
+      [1, 2, error.na],
+      [3, 4, error.na],
+      [error.na, error.na, error.na]
+    ])
+    expect(
+      lookup.EXPAND(
+        [
+          [1, 2],
+          [3, 4]
+        ],
+        3,
+        3,
+        ''
+      )
+    ).to.eql([
+      [1, 2, ''],
+      [3, 4, ''],
+      ['', '', '']
+    ])
+    expect(lookup.EXPAND(1, 3, 3, '-')).to.eql([
+      [1, '-', '-'],
+      ['-', '-', '-'],
+      ['-', '-', '-']
+    ])
+    expect(lookup.EXPAND(1, 3, 3, '-')).to.eql([
+      [1, '-', '-'],
+      ['-', '-', '-'],
+      ['-', '-', '-']
+    ])
+    expect(lookup.EXPAND('hello', 2)).to.eql([['hello'], [error.na]])
+    expect(lookup.EXPAND('hello', 2, 2)).to.eql([
+      ['hello', error.na],
+      [error.na, error.na]
+    ])
+    expect(lookup.EXPAND(true, 2, 2)).to.eql([
+      [true, error.na],
+      [error.na, error.na]
+    ])
+    expect(lookup.EXPAND(false, 2, 2)).to.eql([
+      [false, error.na],
+      [error.na, error.na]
+    ])
+    expect(
+      lookup.EXPAND(
+        [
+          [1, 2],
+          [3, 4]
+        ],
+        1,
+        1
+      )
+    ).to.eql(error.value)
+    expect(lookup.EXPAND('hello', true, 2)).to.eql([['hello', error.na]])
+    expect(lookup.EXPAND('hello', false, 2)).to.eql(error.value)
+    expect(lookup.EXPAND('hello', [[1, 2]], 2)).to.eql(error.value)
+    expect(lookup.EXPAND('hello', 1, [[1, 2]])).to.eql(error.value)
+    expect(lookup.EXPAND('hello', 1, 1, [[1, 2]])).to.eql(error.value)
+    expect(lookup.EXPAND('hello', 2, true)).to.eql([['hello'], [error.na]])
+    expect(lookup.EXPAND('hello', 2, false)).to.eql(error.value)
+    expect(lookup.EXPAND(-1, 2, 2)).to.eql([
+      [-1, error.na],
+      [error.na, error.na]
+    ])
+    expect(lookup.EXPAND(undefined, 2)).to.equal(error.value)
+    expect(lookup.EXPAND(1, undefined)).to.equal(1)
+    expect(lookup.EXPAND(1, undefined, undefined)).to.equal(1)
+    expect(lookup.EXPAND(1, 2, 2, undefined)[1][1]).to.equal(error.na)
+    expect(lookup.EXPAND(null, 2)).to.equal(error.value)
+    expect(lookup.EXPAND(1, null)).to.equal(error.value)
+    expect(lookup.EXPAND(1, 1, null)).to.equal(error.value)
+    expect(lookup.EXPAND(1, 2, 2, null)[1][1]).to.equal(null)
+    expect(lookup.EXPAND()).to.eql(error.na)
+    expect(
+      lookup.EXPAND([
+        [1, 2],
+        [3, 4]
+      ])
+    ).to.eql(error.na)
+    expect(
+      lookup.EXPAND(
+        [
+          [1, 2],
+          [3, 4]
+        ],
+        3,
+        3,
+        'pad',
+        1
+      )
+    ).to.eql(error.na)
+
+    Object.values(error).forEach((err) => {
+      expect(lookup.EXPAND(err, 2, 2)).to.eql([
+        [err, error.na],
+        [error.na, error.na]
+      ])
+      expect(lookup.EXPAND(1, err)).to.equal(err)
+      expect(lookup.EXPAND(1, 1, err)).to.equal(err)
+      expect(lookup.EXPAND(1, 2, 2, err)).to.eql([
+        [1, err],
+        [err, err]
+      ])
+    })
+  })
+
+  it('HSTACK', () => {
+    expect(
+      lookup.HSTACK(
+        [
+          ['A', 'B', 'C'],
+          ['D', 'E', 'F']
+        ],
+        [
+          ['AA', 'BB', 'CC'],
+          ['DD', 'EE', 'FF']
+        ]
+      )
+    ).to.eql([
+      ['A', 'B', 'C', 'AA', 'BB', 'CC'],
+      ['D', 'E', 'F', 'DD', 'EE', 'FF']
+    ])
+    expect(
+      lookup.HSTACK(
+        [
+          [1, 2],
+          [3, 4],
+          [5, 6]
+        ],
+        [
+          ['A', 'B'],
+          ['C', 'D']
+        ],
+        [['X', 'Y']]
+      )
+    ).to.eql([
+      [1, 2, 'A', 'B', 'X', 'Y'],
+      [3, 4, 'C', 'D', error.na, error.na],
+      [5, 6, error.na, error.na, error.na, error.na]
+    ])
+    expect(
+      lookup.HSTACK(
+        [
+          [1, 2],
+          [3, 4],
+          [5, 6]
+        ],
+        [
+          ['A', 'B'],
+          ['D', 'E']
+        ],
+        [
+          ['C', error.value],
+          ['F', null]
+        ]
+      )
+    ).to.eql([
+      [1, 2, 'A', 'B', 'C', error.value],
+      [3, 4, 'D', 'E', 'F', 0],
+      [5, 6, error.na, error.na, error.na, error.na]
+    ])
+    expect(lookup.HSTACK('Hello')).to.eql('Hello')
+    expect(lookup.HSTACK('Hello', 'World')).to.eql([['Hello', 'World']])
+    expect(lookup.HSTACK(true)).to.eql(true)
+    expect(lookup.HSTACK(true, false)).to.eql([[true, false]])
+    expect(lookup.HSTACK(null)).to.eql(0)
+    expect(lookup.HSTACK(null, null)).to.eql([[0, 0]])
+    expect(lookup.HSTACK(undefined, undefined)).to.eql(error.value)
+    expect(lookup.HSTACK(1)).to.eql(1)
+    expect(lookup.HSTACK(1, 2)).to.eql([[1, 2]])
+    expect(lookup.HSTACK(1, 2, 3)).to.eql([[1, 2, 3]])
+    expect(lookup.HSTACK(1, [['A'], ['A']], 2)).to.eql([
+      [1, 'A', 2],
+      [error.na, 'A', error.na]
+    ])
+
+    Object.values(error).forEach((err) => {
+      expect(lookup.HSTACK(err)).to.eql(err)
+      expect(lookup.HSTACK(err, err)).to.eql([[err, err]])
+    })
+  })
 })
