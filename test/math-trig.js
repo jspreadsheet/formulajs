@@ -1155,6 +1155,10 @@ describe('Math & Trig', () => {
     expect(mathTrig.ROUND(-1.475, 2)).to.equal(-1.48)
     expect(mathTrig.ROUND(5.785, 3)).to.equal(5.785)
     expect(mathTrig.ROUND(23542.5, 0)).to.equal(23543)
+    expect(mathTrig.ROUND([[23542.5]], 0)).to.equal(23543)
+    expect(mathTrig.ROUND([[23542.543]], 1)).to.equal(23542.5)
+    expect(mathTrig.ROUND([[null]], 0)).to.equal(0)
+    expect(mathTrig.ROUND([['a']], 0)).to.equal(error.value)
   })
 
   it('ROUNDDOWN', () => {
@@ -1418,6 +1422,7 @@ describe('Math & Trig', () => {
     expect(mathTrig.SUM(error.na)).to.equal(error.na)
     expect(mathTrig.SUM(null, error.na)).to.equal(error.na)
     expect(mathTrig.SUM(error.na, 1)).to.equal(error.na)
+    expect(mathTrig.SUM([[1]])).to.equal(0)
 
     expect(mathTrig.SUM(null, error.div0)).to.equal(error.div0)
 

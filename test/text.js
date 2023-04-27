@@ -162,6 +162,11 @@ describe('Text', () => {
     expect(text.CONCATENATE('hello', ' ', 'world')).to.equal('hello world')
     expect(text.CONCATENATE('text', 'text', 2, 4)).to.equal('texttext24')
 
+    expect(text.CONCATENATE([[1]])).to.equal('1')
+    expect(text.CONCATENATE([[5]])).to.equal('5')
+    expect(text.CONCATENATE([['a']])).to.equal('a')
+    expect(text.CONCATENATE([[null]])).to.equal('')
+
     // expect(text.CONCATENATE(['hello', ' my ', 'world'])).to.eql(['hello', ' my ', 'world'])
     // expect(text.CONCATENATE(['A', ', ', ' B', ', ', 'C'])).to.eql(['A', ', ', ' B', ', ', 'C'])
     // expect(text.CONCATENATE([415, ' text', ' 49'])).to.eql(['415', ' text', ' 49'])
@@ -388,6 +393,9 @@ describe('Text', () => {
     expect(text.LEN()).to.equal(error.na)
     expect(text.LEN(error.na)).to.equal(error.na)
 
+    expect(text.LEN([['text']])).to.eql([[4]])
+    expect(text.LEN([[null]])).to.eql([[0]])
+    expect(text.LEN([[1]])).to.eql([[1]])
     expect(text.LEN([1, 2, 3, 4, 5])).to.eql([1, 1, 1, 1, 1])
 
     expect(
@@ -950,6 +958,9 @@ describe('Text', () => {
     expect(text.TRIM(3.4)).to.equal('3.4')
     expect(text.TRIM(-93.4)).to.equal('-93.4')
 
+    expect(text.TRIM([['hello world']])).to.eql([['hello world']])
+    expect(text.TRIM([[1]])).to.eql([['1']])
+    expect(text.TRIM([[null]])).to.eql([['']])
     expect(text.TRIM(['   f', '   ', ' c'])).to.eql(['f', '', 'c'])
     expect(text.TRIM([[10], [5], [2]])).to.eql([['10'], ['5'], ['2']])
     expect(

@@ -41,6 +41,8 @@ describe('Statistical', () => {
     expect(statistical.AVERAGE(2, 4, 8, 16, true, error.na)).to.equal(error.na)
     expect(statistical.AVERAGE(2, 4, 8, 16, '', '')).to.approximately(7.5, 1e-9)
 
+    expect(statistical.AVERAGE([[5]])).to.equal(5)
+    expect(statistical.AVERAGE([[1]])).to.equal(1)
     expect(statistical.AVERAGE([2, 4, 8, 16])).to.approximately(7.5, 1e-9)
     expect(statistical.AVERAGE([[2, 4]], [[8, 16]])).to.approximately(7.5, 1e-9)
 
@@ -371,6 +373,9 @@ describe('Statistical', () => {
     expect(statistical.COUNT(1, 2, '8:30 AM')).to.equal(2)
     expect(statistical.COUNT(1, 2, error.div0, 4)).to.equal(3)
 
+    expect(statistical.COUNT([[100]])).to.equal(1)
+    expect(statistical.COUNT([['text']])).to.equal(0)
+    expect(statistical.COUNT([[null]])).to.equal(0)
     expect(statistical.COUNT([[1, 2, 3, 4]])).to.equal(4)
     expect(statistical.COUNT([[1, 2, 3, 4]], 1)).to.equal(5)
     expect(statistical.COUNT([[1, 2]], [[3, 4]])).to.equal(4)
@@ -1078,6 +1083,9 @@ describe('Statistical', () => {
     expect(statistical.MAX(3, 6)).to.equal(6)
     expect(statistical.MAX(3, 6, 'text')).to.equal(6)
 
+    expect(statistical.MAX([[4]])).to.equal(4)
+    expect(statistical.MAX([[null]])).to.equal(0)
+    expect(statistical.MAX([['a']])).to.equal(0)
     expect(statistical.MAX([['a', 1, 2, 3, 'v', 4, 'c', 'g']])).to.equal(4)
     expect(statistical.MAX([['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']])).to.equal(0)
     expect(statistical.MAX([[0.1, 0.2]], [[0.4, 0.8]], [[true, false]])).to.approximately(0.8, 1e-9)
@@ -1293,6 +1301,9 @@ describe('Statistical', () => {
 
     expect(statistical.MIN('a', 1, 2, 3, 'v', 4, 'c', 'g')).to.equal(1)
     expect(statistical.MIN('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h')).to.equal(0)
+    expect(statistical.MIN([[4]])).to.equal(4)
+    expect(statistical.MIN([[null]])).to.equal(0)
+    expect(statistical.MIN([['a']])).to.equal(0)
     expect(statistical.MIN([0.1, 0.2], [0.4, 0.8], [true, false])).to.approximately(0.1, 1e-9)
     expect(statistical.MIN([0, 0.1, 0.2], [0.4, 0.8, 1], [true, false])).to.equal(0)
 
