@@ -982,6 +982,92 @@ EXPON.DIST = (x, lambda, cumulative) => {
   return cumulative ? jStat.exponential.cdf(x, lambda) : jStat.exponential.pdf(x, lambda)
 }
 
+export const FDIST = function (x, deg_freedom1, deg_freedom2) {
+  if (arguments.length !== 3) {
+    return error.na
+  }
+
+  x = utils.getNumber(x)
+  if (x instanceof Error) {
+    return x
+  }
+  if (typeof x !== 'number') {
+    return error.value
+  }
+
+  deg_freedom1 = utils.getNumber(deg_freedom1)
+  if (deg_freedom1 instanceof Error) {
+    return deg_freedom1
+  }
+  if (typeof deg_freedom1 !== 'number') {
+    return error.value
+  }
+
+  deg_freedom2 = utils.getNumber(deg_freedom2)
+  if (deg_freedom2 instanceof Error) {
+    return deg_freedom2
+  }
+  if (typeof deg_freedom2 !== 'number') {
+    return error.value
+  }
+
+  if (x < 0) {
+    return error.num
+  }
+
+  deg_freedom1 = Math.trunc(deg_freedom1)
+  deg_freedom2 = Math.trunc(deg_freedom2)
+
+  if (deg_freedom1 < 1 || deg_freedom1 > 10000000000 || deg_freedom2 < 1 || deg_freedom2 > 10000000000) {
+    return error.num
+  }
+
+  return 1 - jStat.centralF.cdf(x, deg_freedom1, deg_freedom2)
+}
+
+export const FINV = function (probability, deg_freedom1, deg_freedom2) {
+  if (arguments.length !== 3) {
+    return error.na
+  }
+
+  probability = utils.getNumber(probability)
+  if (probability instanceof Error) {
+    return probability
+  }
+  if (typeof probability !== 'number') {
+    return error.value
+  }
+
+  deg_freedom1 = utils.getNumber(deg_freedom1)
+  if (deg_freedom1 instanceof Error) {
+    return deg_freedom1
+  }
+  if (typeof deg_freedom1 !== 'number') {
+    return error.value
+  }
+
+  deg_freedom2 = utils.getNumber(deg_freedom2)
+  if (deg_freedom2 instanceof Error) {
+    return deg_freedom2
+  }
+  if (typeof deg_freedom2 !== 'number') {
+    return error.value
+  }
+
+  if (probability <= 0 || probability > 1.0) {
+    return error.num
+  }
+
+  if (deg_freedom1 < 1 || deg_freedom1 > 10000000000 || deg_freedom2 < 1 || deg_freedom2 > 10000000000) {
+    return error.num
+  }
+
+  deg_freedom1 = Math.trunc(deg_freedom1)
+  deg_freedom2 = Math.trunc(deg_freedom2)
+
+  return jStat.centralF.inv(1 - probability, deg_freedom1, deg_freedom2)
+}
+
 export const F = {}
 
 /**

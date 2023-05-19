@@ -798,6 +798,59 @@ describe('Statistical', () => {
     expect(statistical.EXPON.DIST(0.2, 'invalid', false)).to.equal(error.value)
   })
 
+  it('FINV', () => {
+    expect(statistical.FINV(0.01, 6, 4)).to.approximately(15.2068648611575, 1e-9)
+    expect(statistical.FINV(0.975, 2, 2)).to.approximately(0.025641026, 1e-8)
+    expect(statistical.FINV(0.01, 6, 4)).to.approximately(15.20686486, 1e-8)
+
+    expect(statistical.FINV(0.01, 6, 4)).to.equal(statistical.FINV(0.01, 6.9, 4))
+    expect(statistical.FINV(0.01, 6, 4)).to.equal(statistical.FINV(0.01, 6, 4.7))
+
+    expect(statistical.FINV(0, 6, 4)).to.equal(error.num)
+    expect(statistical.FINV(-1, 6, 4)).to.equal(error.num)
+    expect(statistical.FINV(1.1, 6, 4)).to.equal(error.num)
+
+    expect(statistical.FINV(0.01, 0.99, 4)).to.equal(error.num)
+    expect(statistical.FINV(0.01, 6, 0.99)).to.equal(error.num)
+    expect(statistical.FINV(0.01, 10000000001, 4)).to.equal(error.num)
+    expect(statistical.FINV(0.01, 6, 10000000001)).to.equal(error.num)
+
+    expect(statistical.FINV(error.div0, 'test', 4)).to.equal(error.div0)
+    expect(statistical.FINV(0.01, 'test', 4)).to.equal(error.value)
+    expect(statistical.FINV(0.01, 'test', error.div0)).to.equal(error.value)
+    expect(statistical.FINV(0.01, 6, error.div0)).to.equal(error.div0)
+    expect(statistical.FINV(0.01, error.div0, 4)).to.equal(error.div0)
+
+    expect(statistical.FINV(0.01, 6)).to.equal(error.na)
+    expect(statistical.FINV(0.01)).to.equal(error.na)
+    expect(statistical.FINV()).to.equal(error.na)
+    expect(statistical.FINV(0.01, 6, 4, 1)).to.equal(error.na)
+  })
+
+  it('FDIST', () => {
+    expect(statistical.FDIST(0.025641026, 2, 2)).to.approximately(0.975, 1e-9)
+    expect(statistical.FDIST(15.20686486, 6, 4)).to.approximately(0.01, 1e-9)
+
+    expect(statistical.FDIST(15.20686486, 6, 4)).to.equal(statistical.FDIST(15.20686486, 6.9, 4))
+    expect(statistical.FDIST(15.20686486, 6, 4)).to.equal(statistical.FDIST(15.20686486, 6.9, 4.3))
+
+    expect(statistical.FDIST(15.20686486, 0.99, 4)).to.equal(error.num)
+    expect(statistical.FDIST(15.20686486, 6, 0.99)).to.equal(error.num)
+    expect(statistical.FDIST(15.20686486, 10000000001, 4)).to.equal(error.num)
+    expect(statistical.FDIST(15.20686486, 6, 10000000001)).to.equal(error.num)
+
+    expect(statistical.FDIST(-0.1, 6, 4)).to.equal(error.num)
+
+    expect(statistical.FDIST(error.div0, 'test', 4)).to.equal(error.div0)
+    expect(statistical.FDIST('test', error.div0, 4)).to.equal(error.value)
+    expect(statistical.FDIST(15.20686486, 6, error.div0)).to.equal(error.div0)
+
+    expect(statistical.FDIST(15.20686486, 6)).to.equal(error.na)
+    expect(statistical.FDIST(15.20686486)).to.equal(error.na)
+    expect(statistical.FDIST()).to.equal(error.na)
+    expect(statistical.FDIST(15.20686486, 6, 4, true)).to.equal(error.na)
+  })
+
   it('F.DIST', () => {
     expect(statistical.F.DIST(15.20686486, 6, 4, false)).to.approximately(0.0012237995987608916, 1e-9)
     expect(statistical.F.DIST(15.20686486, 6, 4, true)).to.approximately(0.9899999999985833, 1e-9)
