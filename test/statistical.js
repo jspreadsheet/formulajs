@@ -1337,6 +1337,31 @@ describe('Statistical', () => {
     ).to.equal(0)
   })
 
+  it('MODE', () => {
+    expect(statistical.MODE(5.6 , 4, 4, 3, 2, 4)).to.equal(4)
+    expect(statistical.MODE(1, 2, 3, 3, 4, 4, 5)).to.equal(3)
+    expect(statistical.MODE(1.1, 2.1, 3.3, 3.3, 4.4, 4.4, 5.1)).to.equal(3.3)
+    expect(statistical.MODE(1)).to.equal(error.na)
+    expect(statistical.MODE(1, 'daniel', 'daniel')).to.equal(error.na)
+    expect(statistical.MODE(1, 1, 'daniel')).to.equal(1)
+    expect(statistical.MODE('daniel')).to.equal(error.na)
+    expect(statistical.MODE([[1, 1, 1, 1]])).to.equal(1)
+    expect(statistical.MODE([[1], [1], [1], [1]])).to.equal(1)
+
+    expect(statistical.MODE(1, null)).to.equal(error.na)
+    expect(statistical.MODE(1, [[null, null]])).to.equal(error.na)
+    expect(statistical.MODE(1, [null], [null])).to.equal(error.na)
+    expect(statistical.MODE(null, null)).to.equal(error.na)
+    expect(statistical.MODE(1, 1, null)).to.equal(1)
+    expect(statistical.MODE(1, [[null], [null]])).to.equal(error.na)
+
+    expect(statistical.MODE(1, undefined)).to.equal(error.na)
+    expect(statistical.MODE(1, undefined, undefined)).to.equal(error.na)
+    expect(statistical.MODE(1, 1, undefined)).to.equal(1)
+
+    
+  })
+
   it('MODE.MULT', () => {
     const data = [1, 2, 3, 4, 3, 2, 1, 2, 3, 5, 6, 1]
     const modes = statistical.MODE.MULT(data)
