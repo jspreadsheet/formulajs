@@ -1277,6 +1277,10 @@ export function FORECAST(x, known_ys, known_xs) {
     return error.value
   }
 
+  if (known_xs.length !== known_ys.length) {
+    return error.value;
+  }
+
   const xmean = jStat.mean(known_xs)
   const ymean = jStat.mean(known_ys)
   const n = known_xs.length
@@ -1292,6 +1296,47 @@ export function FORECAST(x, known_ys, known_xs) {
   const a = ymean - b * xmean
 
   return a + b * x
+}
+
+/**
+ * Returns a value along a linear trend.
+ *
+ * Category: Statistical
+ *
+ * @param {*} x The data point for which you want to predict a value.
+ * @param {*} known_ys The dependent array or range of data.
+ * @param {*} known_xs The independent array or range of data.
+ * @returns
+ */
+FORECAST.LINEAR = function(x, known_ys, known_xs) {
+  if (known_ys.length !== known_xs.length) {
+    return error.value;
+  }
+
+  x = utils.parseNumber(x)
+  known_ys = utils.parseNumberArray(utils.flatten(known_ys))
+  known_xs = utils.parseNumberArray(utils.flatten(known_xs))
+
+  if (utils.anyIsError(x, known_ys, known_xs)) {
+    return error.value;
+  }
+
+  const n = known_ys.length;
+
+  const sumX = known_xs.reduce((total, val) => total + val, 0);
+  const sumY = known_ys.reduce((total, val) => total + val, 0);
+  const sumXY = known_xs.reduce((total, val, index) => total + val * known_ys[index], 0);
+  const sumXSquare = known_xs.reduce((total, val) => total + val * val, 0);
+
+  const meanX = jStat.mean(known_xs);
+  const meanY = jStat.mean(known_ys);
+
+  const b = (n * sumXY - sumX * sumY) / (n * sumXSquare - sumX * sumX);
+  const a = meanY - b * meanX;
+
+  const forecast = a + b * x;
+
+  return forecast;
 }
 
 /**
