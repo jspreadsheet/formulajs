@@ -330,7 +330,7 @@ export function parseNumber(string) {
     string = +string
   }
 
-  if (!isNaN(string) && string !== '') {
+  if (!isNaN(string) && string !== '' && !Array.isArray(string)) {
     return parseFloat(string)
   }
 
