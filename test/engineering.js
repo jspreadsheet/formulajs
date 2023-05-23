@@ -238,18 +238,18 @@ describe('Engineering', () => {
   });
 
   it('ERFC', () => {
-    expect(engineering.ERFC(0)).to.equal(1);
+    expect(engineering.ERFC(0)).to.be.approximately(1, 1e-9);
     expect(engineering.ERFC(1)).to.approximately(0.1572992070502851, 1e-9)
     expect(engineering.ERFC('a')).to.equal(error.value)
   })
 
   it('ERFC.PRECISE', () => {
     expect(engineering.ERFC.PRECISE(0.745)).to.approximately(0.2920710799, 1e-9);
-    expect(engineering.ERFC.PRECISE(0)).to.equal(1);
+    expect(engineering.ERFC.PRECISE(0)).to.be.approximately(1, 1e-9);
     expect(engineering.ERFC.PRECISE(0.475)).to.be.approximately(0.5017419463, 1e-9);
     expect(engineering.ERFC.PRECISE(0.2)).to.be.approximately(0.7772974108, 1e-9);
     expect(engineering.ERFC.PRECISE(1)).to.approximately(0.1572992070502851, 1e-9)
-    expect(engineering.ERFC.PRECISE(null)).to.equal(1);
+    expect(engineering.ERFC.PRECISE(null)).to.be.approximately(1, 1e-9);
   });
 
   it('GESTEP', () => {

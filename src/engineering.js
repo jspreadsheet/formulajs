@@ -990,13 +990,7 @@ export function ERFC(x) {
   }
 
   // Cálculo do ERFC.PRECISE utilizando a função erfc
-  const erfcValue = jStat.erfc(x);
-
-  // Verifica se o valor é próximo de 1 e ajusta se necessário
-  const epsilon = 1e-15; // Valor de tolerância para ajuste
-  const adjustedValue = Math.abs(1 - erfcValue) < epsilon ? 1 : erfcValue;
-
-  return adjustedValue;
+  return jStat.erfc(x);
 }
 
 /**
