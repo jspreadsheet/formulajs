@@ -950,24 +950,31 @@ export function ERF(lower_limit, upper_limit) {
   return jStat.erf(lower_limit)
 }
 
-// TODO
-
 /**
- * -- Not implemented --
  *
- * Returns the error function.
+ * Returns the error function..
+ * The current return of ERF.PRECISE(x) has the same precision as the return of ERF(x)
+ * due to accuracy issues
  *
  * Category: Engineering
- *
  * @param {*} x The lower bound for integrating ERF.PRECISE.
  * @returns
  */
-ERF.PRECISE = () => {
-  throw new Error('ERF.PRECISE is not implemented')
+ERF.PRECISE = (x) => {
+  x = utils.parseNumber(x)
+
+  if (utils.anyIsError(x)) {
+    return error.value;
+  }
+
+  const erf = jStat.erf(x);
+  const result = Math.abs(erf) < 1e-15 ? 0 : erf;
+
+  return result;
 }
 
 /**
- * Returns the complementary error function.
+ * Returns the complementary ERF function integrated between x and infinity.
  *
  * Category: Engineering
  *
@@ -976,28 +983,33 @@ ERF.PRECISE = () => {
  */
 export function ERFC(x) {
   // Return error if x is not a number
-  if (isNaN(x)) {
-    return error.value
+  x = utils.parseNumber(x);
+
+  if (utils.anyIsError(x)) {
+    return error.value;
   }
 
-  return jStat.erfc(x)
+  // Cálculo do ERFC.PRECISE utilizando a função erfc
+  const erfcValue = jStat.erfc(x);
+
+  // Verifica se o valor é próximo de 1 e ajusta se necessário
+  const epsilon = 1e-15; // Valor de tolerância para ajuste
+  const adjustedValue = Math.abs(1 - erfcValue) < epsilon ? 1 : erfcValue;
+
+  return adjustedValue;
 }
 
-// TODO
-
 /**
- * -- Not implemented --
  *
  * Returns the complementary ERF function integrated between x and infinity.
- *
+ * The current return of ERFC.PRECISE(x) has the same precision as the return of ERFC(x)
+ * due to accuracy issues.
  * Category: Engineering
  *
  * @param {*} x The lower bound for integrating ERFC.PRECISE.
  * @returns
  */
-ERFC.PRECISE = () => {
-  throw new Error('ERFC.PRECISE is not implemented')
-}
+ERFC.PRECISE = (x) => ERFC(x);
 
 /**
  * Tests whether a number is greater than a threshold value.
