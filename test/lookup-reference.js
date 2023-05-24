@@ -2981,4 +2981,76 @@ describe('Lookup Reference', () => {
       expect(lookup.HSTACK(err, err)).to.eql([[err, err]])
     })
   })
+
+  it('CHOOSECOLS', () => {
+    expect(lookup.CHOOSECOLS(
+      [
+        [99, 3, 3, 4, 5], 
+        [3,7,8,9,10],
+        [11,12,13,14,15],
+        [16,17,18,19,20],
+        [21,22,23,24,25],
+        [26,27,28,29,30]
+      ],
+      1, 3, 5, 1
+    )).to.eql([
+      [99, 3, 5, 99],
+      [3, 8, 10, 3],
+      [11, 13, 15, 11],
+      [16, 18, 20, 16],
+      [21, 23, 25, 21],
+      [26, 28, 30, 26]
+    ])
+
+    expect(lookup.CHOOSECOLS(
+      [
+        ['A', 'B', 'C', 'D'], 
+        ['E', 'F', 'G'],
+        ['H', 'I', 'J', 'K'],
+      ], 1)).to.eql([
+        ['A'],
+        ['E'],
+        ['H']
+      ]);
+
+    expect(lookup.CHOOSECOLS(null, 1)).to.equal(error.value)
+    expect(lookup.CHOOSECOLS([], 1)).to.equal(error.value);
+    expect(lookup.CHOOSECOLS([[1,2,3,4], [5,6,7,8]], 1, 5)).to.equal(error.value);
+
+    expect(lookup.CHOOSECOLS(
+      [
+        [null, 'B', 'C', 'D'], 
+        [null, 'F', 'G'],
+        ['H', 'I', 'J', 'K'],
+      ], 1)).to.eql([
+        [0],
+        [0],
+        ['H']
+      ]);
+
+    expect(lookup.CHOOSECOLS(
+      [
+        [undefined, undefined, undefined, undefined], 
+        [undefined, undefined, undefined, undefined],
+        [undefined, undefined, undefined, undefined],
+        [undefined, undefined, undefined, undefined],
+        [undefined, undefined, undefined, undefined],
+      ], 1, 3, 4)).to.eql([
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0]
+    ]);
+  
+    expect(lookup.CHOOSECOLS(
+      [
+        [99, 3, 3, 4, 5], 
+        [3,7,8,9,10],
+        [11,12,13,14,15],
+        [16,17,18,19,20],
+        [21,22,23,24,25],
+        [26,27,28,29,30]
+      ])).to.equal(error.value)
+  })
 })

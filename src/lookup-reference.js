@@ -1070,3 +1070,51 @@ export function HSTACK(...arrays) {
 
   return result.length === 1 && result[0].length === 1 ? result[0][0] : result
 }
+
+/**
+ * Returns the specified columns from an array.  
+ * 
+ * Category: Lookup and reference
+ * 
+ * @param {*} array The array containing the columns to be returned in the new array. Required.
+ * @param  {*} col_num1 The first column to be returned. Required.
+ * @param {...any} col_numN Additional columns to be returned. Optional.
+ * @returns 
+ */
+export function CHOOSECOLS(array, col_num1, ...col_numN) {
+  if (!Array.isArray(array) || !array.length) {
+    return error.value;
+  }
+
+  if (array.some(item => !Array.isArray(item))) {
+    return error.value;
+  }
+
+  const result = [];
+  const indices = [col_num1, ...col_numN];
+
+  for (let i = 0; i < array.length; i++) {
+    const row = array[i];
+    const newRow = [];
+
+    for (let j = 0; j < indices.length; j++) {
+      const index = indices[j];
+
+      if (typeof index !== 'number' || index < 1 || index > row.length) {
+        return error.value;
+      }
+
+      let k = row[index - 1];
+
+      if ((typeof k !== 'number') && !k) {
+        k = 0;
+      }
+      
+      newRow.push(k);
+    }
+
+    result.push(newRow);
+  }
+
+  return result;
+}
