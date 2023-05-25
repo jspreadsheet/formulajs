@@ -2665,7 +2665,72 @@ export function PROB(x_range, prob_range, lower_limit, upper_limit) {
   return result
 }
 
-export const QUARTILE = {}
+/**
+ * Returns the quartile of a data set.
+ *
+ * Category: Statistical
+ *
+ * @param {*} array Required. The array or cell range of numeric values for which you want the quartile value.
+ * @param {*} quart Indicates which value to return.
+ * @returns
+ */
+export function QUARTILE(array, quart) {
+  if (quart === undefined) {
+    return error.value;
+  }
+
+  array = utils.parseNumberArray(utils.flatten(array))
+  quart = utils.parseNumber(quart)
+
+  if (utils.anyIsError(array, quart)) {
+    return error.value
+  }
+
+  const sortedArray = array.slice().sort((a, b) => a - b);
+  const n = sortedArray.length;
+  
+  if (n === 0) {
+    return error.num;
+  }
+  
+  if (quart === 0) {
+    return sortedArray[0];
+  } else if (quart === 1) {
+    const index = (n - 1) * 0.25;
+    const lower = Math.floor(index);
+    const upper = Math.ceil(index);
+    
+    if (lower === upper) {
+      return sortedArray[lower];
+    }
+    
+    return sortedArray[lower] + (sortedArray[upper] - sortedArray[lower]) * (index - lower);
+  } else if (quart === 2) {
+    const index = (n - 1) * 0.5;
+    const lower = Math.floor(index);
+    const upper = Math.ceil(index);
+    
+    if (lower === upper) {
+      return sortedArray[lower];
+    }
+    
+    return sortedArray[lower] + (sortedArray[upper] - sortedArray[lower]) * (index - lower);
+  } else if (quart === 3) {
+    const index = (n - 1) * 0.75;
+    const lower = Math.floor(index);
+    const upper = Math.ceil(index);
+    
+    if (lower === upper) {
+      return sortedArray[lower];
+    }
+    
+    return sortedArray[lower] + (sortedArray[upper] - sortedArray[lower]) * (index - lower);
+  } else if (quart === 4) {
+    return sortedArray[n - 1];
+  } else {
+    return error.num;
+  }
+}
 
 /**
  * Returns the quartile of the data set, based on percentile values from 0..1, exclusive.
