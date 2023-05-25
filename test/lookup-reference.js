@@ -3007,11 +3007,11 @@ describe('Lookup Reference', () => {
         ['A', 'B', 'C', 'D'], 
         ['E', 'F', 'G'],
         ['H', 'I', 'J', 'K'],
-      ], 1)).to.eql([
-        ['A'],
-        ['E'],
-        ['H']
-      ]);
+    ], 1)).to.eql([
+      ['A'],
+      ['E'],
+      ['H']
+    ]);
 
     expect(lookup.CHOOSECOLS(null, 1)).to.equal(error.value)
     expect(lookup.CHOOSECOLS([], 1)).to.equal(error.value);
@@ -3022,11 +3022,11 @@ describe('Lookup Reference', () => {
         [null, 'B', 'C', 'D'], 
         [null, 'F', 'G'],
         ['H', 'I', 'J', 'K'],
-      ], 1)).to.eql([
-        [0],
-        [0],
-        ['H']
-      ]);
+    ], 1)).to.eql([
+      [0],
+      [0],
+      ['H']
+    ]);
 
     expect(lookup.CHOOSECOLS(
       [
@@ -3042,6 +3042,15 @@ describe('Lookup Reference', () => {
         [0, 0, 0],
         [0, 0, 0]
     ]);
+
+    expect(lookup.CHOOSECOLS(
+      [
+        [null, true, false, 'A'],
+        [true, undefined, true, 'B'],
+      ], 1, 3, 4)).to.eql([
+        [0, 0, 'A'],
+        [1, 1, 'B'],
+    ]);
   
     expect(lookup.CHOOSECOLS(
       [
@@ -3051,6 +3060,81 @@ describe('Lookup Reference', () => {
         [16,17,18,19,20],
         [21,22,23,24,25],
         [26,27,28,29,30]
-      ])).to.equal(error.value)
+    ])).to.equal(error.value)
+
+  })
+
+  it('CHOOSEROWS', () => {
+    expect(lookup.CHOOSEROWS(
+      [
+        [99, 3, 3, 4, 5], 
+        [3,7,8,9,10],
+        [11,12,13,14,15],
+        [16,17,18,19,20],
+        [21,22,23,24,25],
+        [26,27,28,29,30]
+      ],
+      1, 3, 5, 1
+    )).to.eql([
+      [99, 3, 3, 4, 5],
+      [11,12,13,14,15],
+      [21,22,23,24,25],
+      [99, 3, 3, 4, 5]
+    ])
+
+    expect(lookup.CHOOSEROWS(
+      [
+        ['A', 'B', 'C', 'D'], 
+        ['E', 'F', 'G'],
+        ['H', 'I', 'J', 'K'],
+    ], 1)).to.eql([
+      ['A', 'B', 'C', 'D']
+    ]);
+
+    expect(lookup.CHOOSEROWS(null, 1)).to.equal(error.value)
+    expect(lookup.CHOOSEROWS([], 1)).to.equal(error.value);
+    expect(lookup.CHOOSEROWS([[1,2,3,4], [5,6,7,8]], 1, 5)).to.equal(error.value);
+
+    expect(lookup.CHOOSEROWS(
+      [
+        [null, 'B', 'C', 'D'], 
+        [null, 'F', 'G'],
+        ['H', 'I', 'J', 'K'],
+    ], 1, 2)).to.eql([
+      [0, 'B', 'C', 'D'],
+      [0, 'F', 'G']
+    ]);
+
+    expect(lookup.CHOOSEROWS(
+      [
+        [undefined, undefined, undefined, undefined], 
+        [undefined, undefined, undefined, undefined],
+        [undefined, undefined, undefined, undefined],
+        [undefined, undefined, undefined, undefined],
+        [undefined, undefined, undefined, undefined],
+      ], 1, 3, 4)).to.eql([
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0]
+    ]);
+
+    expect(lookup.CHOOSEROWS(
+      [
+        [null, true, false, 'A'],
+        [true, undefined, true, 'B'],
+      ], 1, 2)).to.eql([
+        [0, 1, 0, 'A'],
+        [1, 0, 1, 'B']
+    ]);
+  
+    expect(lookup.CHOOSEROWS(
+      [
+        [99, 3, 3, 4, 5], 
+        [3,7,8,9,10],
+        [11,12,13,14,15],
+        [16,17,18,19,20],
+        [21,22,23,24,25],
+        [26,27,28,29,30]
+    ])).to.equal(error.value)
   })
 })

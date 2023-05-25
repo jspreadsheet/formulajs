@@ -1104,16 +1104,57 @@ export function CHOOSECOLS(array, col_num1, ...col_numN) {
         return error.value;
       }
 
-      let k = row[index - 1];
+      let v = row[index - 1];
 
-      if ((typeof k !== 'number') && !k) {
-        k = 0;
+      if (((typeof v !== 'number' && !v) || typeof v === 'boolean')) {
+        v = utils.parseNumber(v);
       }
       
-      newRow.push(k);
+      newRow.push(v);
     }
 
     result.push(newRow);
+  }
+
+  return result;
+}
+
+
+/**
+ * Returns the specified columns from an array.  
+ * 
+ * Category: Lookup and reference
+ * 
+ * @param {*} array The array containing the columns to be returned in the new array. Required.
+ * @param  {*} row_num1 The first row to be returned. Required.
+ * @param {...any} row_numN Additional row numbers to be returned. Optional.
+ * @returns 
+ */
+export function CHOOSEROWS(array, row_num1, ...row_numN) {
+  if (!Array.isArray(array) || !array.length) {
+    return error.value;
+  }
+
+  if (array.some(item => !Array.isArray(item))) {
+    return error.value;
+  }
+
+  const result = [];
+  const indices = [row_num1, ...row_numN];
+
+  // processamento de erro anterior ao cálculo da matriz
+  if (indices.some(index => typeof index !== 'number' || index < 1 || !array[index - 1])) {
+    return error.value;
+  }
+
+  for (let i = 0; i < indices.length; i ++) {
+    const index = indices[i];
+
+    const row = [...array[index - 1]].map(v => {
+      return ((typeof v !== 'number' && !v) || typeof v === 'boolean') ? utils.parseNumber(v) : v 
+    });
+
+    result.push(row);
   }
 
   return result;
