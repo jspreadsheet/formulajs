@@ -183,8 +183,27 @@ export function COUPDAYS() {
  * @param {*} basis Optional. The type of day count basis to use.
  * @returns
  */
-export function COUPDAYSNC() {
-  throw new Error('COUPDAYSNC is not implemented')
+export function COUPDAYSNC(settlement, maturity, frequency, basis) {
+  const start = new Date(settlement)
+  const end = new Date(maturity)
+
+  if (isNaN(start) || isNaN(end)) {
+    return error.value
+  }
+
+  if (basis >= 0 && basis <= 4 && [1, 2, 4].includes(frequency) && settlement >= maturity) {
+    const actualDays = (end - start) / (1000 * 60 * 60 * 24)
+    const numberPeriods = Math.ceil(actualDays / basis)
+
+    const remainingDays = actualDays % basis
+    let daysNc = 0
+    if (remainingDays > 0 && end.getDate() >= start.getDate()) {
+      daysNc = basis - remainingDays + 1
+    }
+
+    return daysNc
+  }
+  return error.num
 }
 
 // TODO
@@ -219,8 +238,50 @@ export function COUPNCD() {
  * @param {*} basis Optional. The type of day count basis to use.
  * @returns
  */
-export function COUPNUM() {
-  throw new Error('COUPNUM is not implemented')
+export function COUPNUM(settlement, maturity, frequency, basis) {
+  if (arguments.length > 4 || arguments.length < 3 || utils.anyIsUndefined(settlement, maturity, frequency)) {
+    return error.na
+  }
+
+  if (utils.anyIsNull(settlement, maturity, frequency)) {
+    return error.num
+  }
+
+  if (utils.anyIsBoolean(settlement, maturity, frequency, basis)) {
+    return error.value
+  }
+
+  const anyError = utils.anyError(settlement, maturity, frequency, basis)
+  if (anyError) {
+    return anyError
+  }
+
+  settlement = utils.parseDate(settlement)
+  maturity = utils.parseDate(maturity)
+  frequency = utils.parseNumber(frequency)
+  basis = utils.parseNumber(basis)
+
+  if (utils.anyIsError(settlement, maturity, frequency, basis)) {
+    return error.value
+  }
+
+  if (basis < 0 || basis > 4 || ![1, 2, 4].includes(frequency) || settlement >= maturity) {
+    return error.num
+  }
+
+  const numberMonths =
+    (maturity.getFullYear() - settlement.getFullYear()) * 12 + (maturity.getMonth() - settlement.getMonth())
+
+  const numberPeriods = Math.ceil(numberMonths / (12 / frequency))
+
+  let coupNumber = numberPeriods
+
+  const remainingMonths = numberMonths % (12 / frequency)
+
+  if (remainingMonths > 0 && maturity.getDate() >= settlement.getDate()) {
+    coupNumber++
+  }
+  return coupNumber
 }
 
 // TODO

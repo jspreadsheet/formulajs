@@ -798,6 +798,59 @@ describe('Statistical', () => {
     expect(statistical.EXPON.DIST(0.2, 'invalid', false)).to.equal(error.value)
   })
 
+  it('FINV', () => {
+    expect(statistical.FINV(0.01, 6, 4)).to.approximately(15.2068648611575, 1e-9)
+    expect(statistical.FINV(0.975, 2, 2)).to.approximately(0.025641026, 1e-8)
+    expect(statistical.FINV(0.01, 6, 4)).to.approximately(15.20686486, 1e-8)
+
+    expect(statistical.FINV(0.01, 6, 4)).to.equal(statistical.FINV(0.01, 6.9, 4))
+    expect(statistical.FINV(0.01, 6, 4)).to.equal(statistical.FINV(0.01, 6, 4.7))
+
+    expect(statistical.FINV(0, 6, 4)).to.equal(error.num)
+    expect(statistical.FINV(-1, 6, 4)).to.equal(error.num)
+    expect(statistical.FINV(1.1, 6, 4)).to.equal(error.num)
+
+    expect(statistical.FINV(0.01, 0.99, 4)).to.equal(error.num)
+    expect(statistical.FINV(0.01, 6, 0.99)).to.equal(error.num)
+    expect(statistical.FINV(0.01, 10000000001, 4)).to.equal(error.num)
+    expect(statistical.FINV(0.01, 6, 10000000001)).to.equal(error.num)
+
+    expect(statistical.FINV(error.div0, 'test', 4)).to.equal(error.div0)
+    expect(statistical.FINV(0.01, 'test', 4)).to.equal(error.value)
+    expect(statistical.FINV(0.01, 'test', error.div0)).to.equal(error.value)
+    expect(statistical.FINV(0.01, 6, error.div0)).to.equal(error.div0)
+    expect(statistical.FINV(0.01, error.div0, 4)).to.equal(error.div0)
+
+    expect(statistical.FINV(0.01, 6)).to.equal(error.na)
+    expect(statistical.FINV(0.01)).to.equal(error.na)
+    expect(statistical.FINV()).to.equal(error.na)
+    expect(statistical.FINV(0.01, 6, 4, 1)).to.equal(error.na)
+  })
+
+  it('FDIST', () => {
+    expect(statistical.FDIST(0.025641026, 2, 2)).to.approximately(0.975, 1e-9)
+    expect(statistical.FDIST(15.20686486, 6, 4)).to.approximately(0.01, 1e-9)
+
+    expect(statistical.FDIST(15.20686486, 6, 4)).to.equal(statistical.FDIST(15.20686486, 6.9, 4))
+    expect(statistical.FDIST(15.20686486, 6, 4)).to.equal(statistical.FDIST(15.20686486, 6.9, 4.3))
+
+    expect(statistical.FDIST(15.20686486, 0.99, 4)).to.equal(error.num)
+    expect(statistical.FDIST(15.20686486, 6, 0.99)).to.equal(error.num)
+    expect(statistical.FDIST(15.20686486, 10000000001, 4)).to.equal(error.num)
+    expect(statistical.FDIST(15.20686486, 6, 10000000001)).to.equal(error.num)
+
+    expect(statistical.FDIST(-0.1, 6, 4)).to.equal(error.num)
+
+    expect(statistical.FDIST(error.div0, 'test', 4)).to.equal(error.div0)
+    expect(statistical.FDIST('test', error.div0, 4)).to.equal(error.value)
+    expect(statistical.FDIST(15.20686486, 6, error.div0)).to.equal(error.div0)
+
+    expect(statistical.FDIST(15.20686486, 6)).to.equal(error.na)
+    expect(statistical.FDIST(15.20686486)).to.equal(error.na)
+    expect(statistical.FDIST()).to.equal(error.na)
+    expect(statistical.FDIST(15.20686486, 6, 4, true)).to.equal(error.na)
+  })
+
   it('F.DIST', () => {
     expect(statistical.F.DIST(15.20686486, 6, 4, false)).to.approximately(0.0012237995987608916, 1e-9)
     expect(statistical.F.DIST(15.20686486, 6, 4, true)).to.approximately(0.9899999999985833, 1e-9)
@@ -852,7 +905,20 @@ describe('Statistical', () => {
 
   it('FORECAST', () => {
     expect(statistical.FORECAST(30, [6, 7, 9, 15, 21], [20, 28, 31, 38, 40])).to.approximately(10.607253086419755, 1e-9)
+    expect(statistical.FORECAST(30, [9, 15, 21], [20, 28, 31, 38, 40])).to.equal(error.value)
     expect(statistical.FORECAST(30, [6, 7, 'invalid', 15, 21], [20, 28, 31, 38, 40])).to.equal(error.value)
+  })
+
+  it('FORECAST.LINEAR', () => {
+    expect(statistical.FORECAST.LINEAR(6, [1, 4, 9, 16, 25], [1, 2, 3, 4, 5])).to.equal(29)
+    expect(statistical.FORECAST.LINEAR(8.5, [1, 4, 9, 16, 25], [6, 3, 8, 10, 24])).to.approximately(9.144637462, 1e-9)
+    expect(statistical.FORECAST.LINEAR(44, [0, 4, 9.3, -6.3, 0], [0.1235, 3, 88, 10, 543])).to.approximately(
+      1.451875047,
+      1e-9
+    )
+    expect(statistical.FORECAST.LINEAR(30, [6, 7, 'invalid', 15, 21], [20, 28, 31, 38, 40])).to.equal(error.value)
+    expect(statistical.FORECAST.LINEAR('invalid', [6, 7, 15, 21], [20, 28, 31, 38, 40])).to.equal(error.value)
+    expect(statistical.FORECAST.LINEAR(30, [6, 15, 21], [20, 28, 31, 38, 40])).to.equal(error.value)
   })
 
   it('FREQUENCY', () => {
@@ -1552,6 +1618,21 @@ describe('Statistical', () => {
     expect(statistical.PROB(x, prob)).to.equal(0)
     x.push('invalid')
     expect(statistical.PROB(x, prob, 1, 3)).to.equal(error.value)
+  })
+
+  it('QUARTILE', () => {
+    const data = [1, 2, 4, 7, 8, 9, 10, 12]
+    const data2 = [1, 2, 3, 7.9827856, 8, 9, 10, 12]
+
+    expect(statistical.QUARTILE(data, 1)).to.equal(3.5)
+    expect(statistical.QUARTILE(data, 2)).to.equal(7.5)
+    expect(statistical.QUARTILE(data, 3)).to.equal(9.25)
+    expect(statistical.QUARTILE(data, 4)).to.equal(12)
+    expect(statistical.QUARTILE(data, 0)).to.equal(1)
+    expect(statistical.QUARTILE(data, 0)).to.equal(1)
+    expect(statistical.QUARTILE(data)).to.equal(error.value)
+    expect(statistical.QUARTILE(data2, 2)).to.approximately(7.9913928, 1e-9)
+    expect(statistical.QUARTILE(data, 'invalid')).to.equal(error.value)
   })
 
   it('QUARTILE.EXC', () => {

@@ -982,6 +982,92 @@ EXPON.DIST = (x, lambda, cumulative) => {
   return cumulative ? jStat.exponential.cdf(x, lambda) : jStat.exponential.pdf(x, lambda)
 }
 
+export const FDIST = function (x, deg_freedom1, deg_freedom2) {
+  if (arguments.length !== 3) {
+    return error.na
+  }
+
+  x = utils.getNumber(x)
+  if (x instanceof Error) {
+    return x
+  }
+  if (typeof x !== 'number') {
+    return error.value
+  }
+
+  deg_freedom1 = utils.getNumber(deg_freedom1)
+  if (deg_freedom1 instanceof Error) {
+    return deg_freedom1
+  }
+  if (typeof deg_freedom1 !== 'number') {
+    return error.value
+  }
+
+  deg_freedom2 = utils.getNumber(deg_freedom2)
+  if (deg_freedom2 instanceof Error) {
+    return deg_freedom2
+  }
+  if (typeof deg_freedom2 !== 'number') {
+    return error.value
+  }
+
+  if (x < 0) {
+    return error.num
+  }
+
+  deg_freedom1 = Math.trunc(deg_freedom1)
+  deg_freedom2 = Math.trunc(deg_freedom2)
+
+  if (deg_freedom1 < 1 || deg_freedom1 > 10000000000 || deg_freedom2 < 1 || deg_freedom2 > 10000000000) {
+    return error.num
+  }
+
+  return 1 - jStat.centralF.cdf(x, deg_freedom1, deg_freedom2)
+}
+
+export const FINV = function (probability, deg_freedom1, deg_freedom2) {
+  if (arguments.length !== 3) {
+    return error.na
+  }
+
+  probability = utils.getNumber(probability)
+  if (probability instanceof Error) {
+    return probability
+  }
+  if (typeof probability !== 'number') {
+    return error.value
+  }
+
+  deg_freedom1 = utils.getNumber(deg_freedom1)
+  if (deg_freedom1 instanceof Error) {
+    return deg_freedom1
+  }
+  if (typeof deg_freedom1 !== 'number') {
+    return error.value
+  }
+
+  deg_freedom2 = utils.getNumber(deg_freedom2)
+  if (deg_freedom2 instanceof Error) {
+    return deg_freedom2
+  }
+  if (typeof deg_freedom2 !== 'number') {
+    return error.value
+  }
+
+  if (probability <= 0 || probability > 1.0) {
+    return error.num
+  }
+
+  if (deg_freedom1 < 1 || deg_freedom1 > 10000000000 || deg_freedom2 < 1 || deg_freedom2 > 10000000000) {
+    return error.num
+  }
+
+  deg_freedom1 = Math.trunc(deg_freedom1)
+  deg_freedom2 = Math.trunc(deg_freedom2)
+
+  return jStat.centralF.inv(1 - probability, deg_freedom1, deg_freedom2)
+}
+
 export const F = {}
 
 /**
@@ -1191,6 +1277,10 @@ export function FORECAST(x, known_ys, known_xs) {
     return error.value
   }
 
+  if (known_xs.length !== known_ys.length) {
+    return error.value
+  }
+
   const xmean = jStat.mean(known_xs)
   const ymean = jStat.mean(known_ys)
   const n = known_xs.length
@@ -1206,6 +1296,47 @@ export function FORECAST(x, known_ys, known_xs) {
   const a = ymean - b * xmean
 
   return a + b * x
+}
+
+/**
+ * Returns a value along a linear trend.
+ *
+ * Category: Statistical
+ *
+ * @param {*} x The data point for which you want to predict a value.
+ * @param {*} known_ys The dependent array or range of data.
+ * @param {*} known_xs The independent array or range of data.
+ * @returns
+ */
+FORECAST.LINEAR = function (x, known_ys, known_xs) {
+  if (known_ys.length !== known_xs.length) {
+    return error.value
+  }
+
+  x = utils.parseNumber(x)
+  known_ys = utils.parseNumberArray(utils.flatten(known_ys))
+  known_xs = utils.parseNumberArray(utils.flatten(known_xs))
+
+  if (utils.anyIsError(x, known_ys, known_xs)) {
+    return error.value
+  }
+
+  const n = known_ys.length
+
+  const sumX = known_xs.reduce((total, val) => total + val, 0)
+  const sumY = known_ys.reduce((total, val) => total + val, 0)
+  const sumXY = known_xs.reduce((total, val, index) => total + val * known_ys[index], 0)
+  const sumXSquare = known_xs.reduce((total, val) => total + val * val, 0)
+
+  const meanX = jStat.mean(known_xs)
+  const meanY = jStat.mean(known_ys)
+
+  const b = (n * sumXY - sumX * sumY) / (n * sumXSquare - sumX * sumX)
+  const a = meanY - b * meanX
+
+  const forecast = a + b * x
+
+  return forecast
 }
 
 /**
@@ -2564,7 +2695,72 @@ export function PROB(x_range, prob_range, lower_limit, upper_limit) {
   return result
 }
 
-export const QUARTILE = {}
+/**
+ * Returns the quartile of a data set.
+ *
+ * Category: Statistical
+ *
+ * @param {*} array Required. The array or cell range of numeric values for which you want the quartile value.
+ * @param {*} quart Indicates which value to return.
+ * @returns
+ */
+export function QUARTILE(array, quart) {
+  if (quart === undefined) {
+    return error.value
+  }
+
+  array = utils.parseNumberArray(utils.flatten(array))
+  quart = utils.parseNumber(quart)
+
+  if (utils.anyIsError(array, quart)) {
+    return error.value
+  }
+
+  const sortedArray = array.slice().sort((a, b) => a - b)
+  const n = sortedArray.length
+
+  if (n === 0) {
+    return error.num
+  }
+
+  if (quart === 0) {
+    return sortedArray[0]
+  } else if (quart === 1) {
+    const index = (n - 1) * 0.25
+    const lower = Math.floor(index)
+    const upper = Math.ceil(index)
+
+    if (lower === upper) {
+      return sortedArray[lower]
+    }
+
+    return sortedArray[lower] + (sortedArray[upper] - sortedArray[lower]) * (index - lower)
+  } else if (quart === 2) {
+    const index = (n - 1) * 0.5
+    const lower = Math.floor(index)
+    const upper = Math.ceil(index)
+
+    if (lower === upper) {
+      return sortedArray[lower]
+    }
+
+    return sortedArray[lower] + (sortedArray[upper] - sortedArray[lower]) * (index - lower)
+  } else if (quart === 3) {
+    const index = (n - 1) * 0.75
+    const lower = Math.floor(index)
+    const upper = Math.ceil(index)
+
+    if (lower === upper) {
+      return sortedArray[lower]
+    }
+
+    return sortedArray[lower] + (sortedArray[upper] - sortedArray[lower]) * (index - lower)
+  } else if (quart === 4) {
+    return sortedArray[n - 1]
+  } else {
+    return error.num
+  }
+}
 
 /**
  * Returns the quartile of the data set, based on percentile values from 0..1, exclusive.

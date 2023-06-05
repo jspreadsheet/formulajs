@@ -2,6 +2,7 @@ import { expect } from 'chai'
 
 import * as error from '../src/utils/error.js'
 import * as financial from '../src/financial.js'
+import { DATEVALUE } from '../src/date-time.js'
 
 describe('Financial', () => {
   it('ACCRINT', () => {
@@ -344,7 +345,7 @@ describe('Financial', () => {
 
   // TODO: implement
   it('COUPDAYSNC', () => {
-    expect(financial.COUPDAYSNC).to.throw('COUPDAYSNC is not implemented')
+    expect(financial.COUPDAYSNC('25-jan-11', '15-NOV-11', 2, 1)).to.equals(110)
   })
 
   // TODO: implement
@@ -354,7 +355,56 @@ describe('Financial', () => {
 
   // TODO: implement
   it('COUPNUM', () => {
-    expect(financial.COUPNUM).to.throw('COUPNUM is not implemented')
+    expect(financial.COUPNUM('25-jan-07', '15-NOV-08', 1, 1)).to.equals(2)
+    expect(financial.COUPNUM('25-jan-7', '15-NOV-8', 2, 1)).to.equals(4)
+    expect(financial.COUPNUM('25-jan-7', '15-NOV-8', 4, 1)).to.equals(8)
+
+    expect(financial.COUPNUM('string', '15-NOV-8', 2, 1)).to.equals(error.value)
+    expect(financial.COUPNUM('25-jan-7', 'string', 2, 1)).to.equals(error.value)
+    expect(financial.COUPNUM('string', 'string', 2, 1)).to.equals(error.value)
+
+    expect(financial.COUPNUM('string', '15-NOV-8', 3, 1)).to.equals(error.value)
+    expect(financial.COUPNUM('string', 'string', 2, 1)).to.equals(error.value)
+    expect(financial.COUPNUM('string', '15-NOV-8', 3, 5)).to.equals(error.value)
+
+    expect(financial.COUPNUM('25-jan-7', '15-NOV-8', 2, 5)).to.equals(error.num)
+    expect(financial.COUPNUM('25-jan-7', '15-NOV-8', 3, 1)).to.equals(error.num)
+    expect(financial.COUPNUM('15-NOV-8', '25-jan-7', 2, 5)).to.equals(error.num)
+
+    expect(financial.COUPNUM(undefined, '15-NOV-8', 2, 1)).to.equals(error.na)
+    expect(financial.COUPNUM(null, '15-NOV-8', 2, 1)).to.equals(error.num)
+    expect(financial.COUPNUM('25-jan-7', undefined, 2, 1)).to.equals(error.na)
+    expect(financial.COUPNUM('25-jan-7', null, 2, 1)).to.equals(error.num)
+    expect(financial.COUPNUM('25-jan-7', '15-NOV-8', undefined, 1)).to.equals(error.na)
+    expect(financial.COUPNUM('25-jan-7', '15-NOV-8', null, 1)).to.equals(error.num)
+    expect(financial.COUPNUM('25-jan-7', '15-NOV-8', 2, undefined)).to.equals(4)
+    expect(financial.COUPNUM('25-jan-7', '15-NOV-8', 2, null)).to.equals(4)
+    expect(financial.COUPNUM([['25-jan-07']], '15-NOV-08', 1, 1)).to.equals(error.value)
+    expect(financial.COUPNUM('25-jan-07', [['15-NOV-08']], 1, 1)).to.equals(error.value)
+    expect(financial.COUPNUM('25-jan-07', '15-NOV-08', [[1]], 1)).to.equals(error.value)
+    expect(financial.COUPNUM('25-jan-07', '15-NOV-08', 1, [[1]])).to.equals(error.value)
+    expect(financial.COUPNUM(true, '15-NOV-08', 1, 1)).to.equals(error.value)
+    expect(financial.COUPNUM('25-jan-07', true, 1, 1)).to.equals(error.value)
+    expect(financial.COUPNUM('25-jan-07', '15-NOV-08', true, 1)).to.equals(error.value)
+    expect(financial.COUPNUM('25-jan-07', '15-NOV-08', 1, true)).to.equals(error.value)
+    expect(financial.COUPNUM(false, '15-NOV-08', 1, 1)).to.equals(error.value)
+    expect(financial.COUPNUM('25-jan-07', false, 1, 1)).to.equals(error.value)
+    expect(financial.COUPNUM('25-jan-07', '15-NOV-08', false, 1)).to.equals(error.value)
+    expect(financial.COUPNUM('25-jan-07', '15-NOV-08', 1, false)).to.equals(error.value)
+    expect(financial.COUPNUM()).to.equals(error.na)
+    expect(financial.COUPNUM('25-jan-07')).to.equals(error.na)
+    expect(financial.COUPNUM('25-jan-07', '15-NOV-08')).to.equals(error.na)
+    expect(financial.COUPNUM('25-jan-07', '15-NOV-08', 1)).to.equals(2)
+    expect(financial.COUPNUM('25-jan-07', '15-NOV-08', 1, 1, 1)).to.equals(error.na)
+    expect(financial.COUPNUM('true', '15-NOV-08', 1, 1)).to.equals(error.value)
+    expect(financial.COUPNUM('25-jan-07', 'false', 1, 1)).to.equals(error.value)
+
+    Object.values(error).forEach((err) => {
+      expect(financial.COUPNUM(err, '15-NOV-8', 1, 1)).to.equals(err)
+      expect(financial.COUPNUM('25-jan-7', err, 1, 1)).to.equals(err)
+      expect(financial.COUPNUM('25-jan-7', '15-NOV-8', err, 1)).to.equals(err)
+      expect(financial.COUPNUM('25-jan-7', '15-NOV-8', 1, err)).to.equals(err)
+    })
   })
 
   // TODO: implement
