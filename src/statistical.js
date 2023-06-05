@@ -2151,7 +2151,37 @@ export function MINA() {
   return range.length === 0 ? 0 : Math.min.apply(Math, range)
 }
 
-export const MODE = {}
+export const MODE = function(){
+  
+  const frequency = {};
+  let maxFrequency = 0;
+  const filteredArray = [];
+
+  const flatArguments = utils.flatten(arguments);
+  
+  for(let i = 0; i < flatArguments.length; i++){
+    if(!isNaN(flatArguments[i] || typeof(flatArguments[i]!=null))){
+      filteredArray.push(flatArguments[i]);
+    }
+  }
+  
+  if(filteredArray.length<=1){
+    return error.na;
+  }
+
+  for(let i = 0; i < filteredArray.length; i++){
+    const currentNumber = filteredArray[i];
+    frequency[currentNumber] = (frequency[currentNumber] || 0) + 1;
+    maxFrequency = Math.max(maxFrequency, frequency[currentNumber]);
+  };
+
+  for( const number in frequency){
+    if(frequency[number] === maxFrequency){
+      return Number(number);
+    }
+  }
+
+}
 
 /**
  * Returns a vertical array of the most frequently occurring, or repetitive values in an array or range of data.
