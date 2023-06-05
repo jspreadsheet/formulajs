@@ -1278,7 +1278,7 @@ export function FORECAST(x, known_ys, known_xs) {
   }
 
   if (known_xs.length !== known_ys.length) {
-    return error.value;
+    return error.value
   }
 
   const xmean = jStat.mean(known_xs)
@@ -1308,9 +1308,9 @@ export function FORECAST(x, known_ys, known_xs) {
  * @param {*} known_xs The independent array or range of data.
  * @returns
  */
-FORECAST.LINEAR = function(x, known_ys, known_xs) {
+FORECAST.LINEAR = function (x, known_ys, known_xs) {
   if (known_ys.length !== known_xs.length) {
-    return error.value;
+    return error.value
   }
 
   x = utils.parseNumber(x)
@@ -1318,25 +1318,25 @@ FORECAST.LINEAR = function(x, known_ys, known_xs) {
   known_xs = utils.parseNumberArray(utils.flatten(known_xs))
 
   if (utils.anyIsError(x, known_ys, known_xs)) {
-    return error.value;
+    return error.value
   }
 
-  const n = known_ys.length;
+  const n = known_ys.length
 
-  const sumX = known_xs.reduce((total, val) => total + val, 0);
-  const sumY = known_ys.reduce((total, val) => total + val, 0);
-  const sumXY = known_xs.reduce((total, val, index) => total + val * known_ys[index], 0);
-  const sumXSquare = known_xs.reduce((total, val) => total + val * val, 0);
+  const sumX = known_xs.reduce((total, val) => total + val, 0)
+  const sumY = known_ys.reduce((total, val) => total + val, 0)
+  const sumXY = known_xs.reduce((total, val, index) => total + val * known_ys[index], 0)
+  const sumXSquare = known_xs.reduce((total, val) => total + val * val, 0)
 
-  const meanX = jStat.mean(known_xs);
-  const meanY = jStat.mean(known_ys);
+  const meanX = jStat.mean(known_xs)
+  const meanY = jStat.mean(known_ys)
 
-  const b = (n * sumXY - sumX * sumY) / (n * sumXSquare - sumX * sumX);
-  const a = meanY - b * meanX;
+  const b = (n * sumXY - sumX * sumY) / (n * sumXSquare - sumX * sumX)
+  const a = meanY - b * meanX
 
-  const forecast = a + b * x;
+  const forecast = a + b * x
 
-  return forecast;
+  return forecast
 }
 
 /**
@@ -2676,7 +2676,7 @@ export function PROB(x_range, prob_range, lower_limit, upper_limit) {
  */
 export function QUARTILE(array, quart) {
   if (quart === undefined) {
-    return error.value;
+    return error.value
   }
 
   array = utils.parseNumberArray(utils.flatten(array))
@@ -2686,49 +2686,49 @@ export function QUARTILE(array, quart) {
     return error.value
   }
 
-  const sortedArray = array.slice().sort((a, b) => a - b);
-  const n = sortedArray.length;
-  
+  const sortedArray = array.slice().sort((a, b) => a - b)
+  const n = sortedArray.length
+
   if (n === 0) {
-    return error.num;
+    return error.num
   }
-  
+
   if (quart === 0) {
-    return sortedArray[0];
+    return sortedArray[0]
   } else if (quart === 1) {
-    const index = (n - 1) * 0.25;
-    const lower = Math.floor(index);
-    const upper = Math.ceil(index);
-    
+    const index = (n - 1) * 0.25
+    const lower = Math.floor(index)
+    const upper = Math.ceil(index)
+
     if (lower === upper) {
-      return sortedArray[lower];
+      return sortedArray[lower]
     }
-    
-    return sortedArray[lower] + (sortedArray[upper] - sortedArray[lower]) * (index - lower);
+
+    return sortedArray[lower] + (sortedArray[upper] - sortedArray[lower]) * (index - lower)
   } else if (quart === 2) {
-    const index = (n - 1) * 0.5;
-    const lower = Math.floor(index);
-    const upper = Math.ceil(index);
-    
+    const index = (n - 1) * 0.5
+    const lower = Math.floor(index)
+    const upper = Math.ceil(index)
+
     if (lower === upper) {
-      return sortedArray[lower];
+      return sortedArray[lower]
     }
-    
-    return sortedArray[lower] + (sortedArray[upper] - sortedArray[lower]) * (index - lower);
+
+    return sortedArray[lower] + (sortedArray[upper] - sortedArray[lower]) * (index - lower)
   } else if (quart === 3) {
-    const index = (n - 1) * 0.75;
-    const lower = Math.floor(index);
-    const upper = Math.ceil(index);
-    
+    const index = (n - 1) * 0.75
+    const lower = Math.floor(index)
+    const upper = Math.ceil(index)
+
     if (lower === upper) {
-      return sortedArray[lower];
+      return sortedArray[lower]
     }
-    
-    return sortedArray[lower] + (sortedArray[upper] - sortedArray[lower]) * (index - lower);
+
+    return sortedArray[lower] + (sortedArray[upper] - sortedArray[lower]) * (index - lower)
   } else if (quart === 4) {
-    return sortedArray[n - 1];
+    return sortedArray[n - 1]
   } else {
-    return error.num;
+    return error.num
   }
 }
 

@@ -226,31 +226,31 @@ describe('Engineering', () => {
   })
 
   it('ERF.PRECISE', () => {
-    expect(engineering.ERF.PRECISE(0.745)).to.be.closeTo(0.7079289201, 1e-8);
-    expect(engineering.ERF.PRECISE(0)).to.equal(0);
-    expect(engineering.ERF.PRECISE(-1.5)).to.be.closeTo(-0.9661051465, 1e-8);
-    expect(engineering.ERF.PRECISE(0.05)).to.be.closeTo(0.0563719778, 1e-8);
-    expect(engineering.ERF.PRECISE(1)).to.be.closeTo(0.8427007929, 1e-8);
-    expect(engineering.ERF.PRECISE('a')).to.equal(error.value);
-    expect(engineering.ERF.PRECISE([])).to.equal(error.value);
-    expect(engineering.ERF.PRECISE(null)).to.equal(0);
-    expect(engineering.ERF.PRECISE()).to.equal(0);
-  });
+    expect(engineering.ERF.PRECISE(0.745)).to.be.closeTo(0.7079289201, 1e-8)
+    expect(engineering.ERF.PRECISE(0)).to.equal(0)
+    expect(engineering.ERF.PRECISE(-1.5)).to.be.closeTo(-0.9661051465, 1e-8)
+    expect(engineering.ERF.PRECISE(0.05)).to.be.closeTo(0.0563719778, 1e-8)
+    expect(engineering.ERF.PRECISE(1)).to.be.closeTo(0.8427007929, 1e-8)
+    expect(engineering.ERF.PRECISE('a')).to.equal(error.value)
+    expect(engineering.ERF.PRECISE([])).to.equal(error.value)
+    expect(engineering.ERF.PRECISE(null)).to.equal(0)
+    expect(engineering.ERF.PRECISE()).to.equal(0)
+  })
 
   it('ERFC', () => {
-    expect(engineering.ERFC(0)).to.be.approximately(1, 1e-9);
+    expect(engineering.ERFC(0)).to.be.approximately(1, 1e-9)
     expect(engineering.ERFC(1)).to.approximately(0.1572992070502851, 1e-9)
     expect(engineering.ERFC('a')).to.equal(error.value)
   })
 
   it('ERFC.PRECISE', () => {
-    expect(engineering.ERFC.PRECISE(0.745)).to.approximately(0.2920710799, 1e-9);
-    expect(engineering.ERFC.PRECISE(0)).to.be.approximately(1, 1e-9);
-    expect(engineering.ERFC.PRECISE(0.475)).to.be.approximately(0.5017419463, 1e-9);
-    expect(engineering.ERFC.PRECISE(0.2)).to.be.approximately(0.7772974108, 1e-9);
+    expect(engineering.ERFC.PRECISE(0.745)).to.approximately(0.2920710799, 1e-9)
+    expect(engineering.ERFC.PRECISE(0)).to.be.approximately(1, 1e-9)
+    expect(engineering.ERFC.PRECISE(0.475)).to.be.approximately(0.5017419463, 1e-9)
+    expect(engineering.ERFC.PRECISE(0.2)).to.be.approximately(0.7772974108, 1e-9)
     expect(engineering.ERFC.PRECISE(1)).to.approximately(0.1572992070502851, 1e-9)
-    expect(engineering.ERFC.PRECISE(null)).to.be.approximately(1, 1e-9);
-  });
+    expect(engineering.ERFC.PRECISE(null)).to.be.approximately(1, 1e-9)
+  })
 
   it('GESTEP', () => {
     expect(engineering.GESTEP(5, 4)).to.equal(1)
