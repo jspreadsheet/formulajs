@@ -3137,4 +3137,119 @@ describe('Lookup Reference', () => {
         [26,27,28,29,30]
     ])).to.equal(error.value)
   })
+
+  it('XMATCH', () => {
+    // numbers with linear search_mode
+    expect(lookup.XMATCH(12, [25, 98, 34, 66, 346, 88], 1, 1)).to.equal(1);
+    expect(lookup.XMATCH(12, [25, 98, 34, 66, 346, 88], 0, 1)).to.equal(error.na);
+    expect(lookup.XMATCH(66, [25, 98, 34, 66, 346, 88], 1, 1)).to.equal(4);
+    expect(lookup.XMATCH(33, [25, 98, 34, 66, 346, 88], -1, 1)).to.equal(1);
+    expect(lookup.XMATCH(33, [25, 98, 34, 66, 346, 88], -1, -1)).to.equal(1);
+    expect(lookup.XMATCH(1, [0, 2, 2, 0], -1, 1)).to.equal(1);
+    expect(lookup.XMATCH(0, [1, 2, 2, 2], -1, 1)).to.equal(error.na);
+    expect(lookup.XMATCH(15000, [42000, 35000, 25000, 15901, 13801, 12181, 9201], 1)).to.equal(4);
+    // strings with linear search_mode
+    expect(lookup.XMATCH('apple', ['Grape', 'Pera', 'Apple', 'Light', 'Dark'], 1, 1)).to.equal(3);
+    expect(lookup.XMATCH('apple', ['Grape', 'Pera', 'Apple', 'Light', 'Dark'], -1, 1)).to.equal(3);
+    expect(lookup.XMATCH('apple', ['Grape', 'Apple', 'Light', 'Dark'], -1, -1)).to.equal(2);
+    expect(lookup.XMATCH('apple', ['Grape', 'Light', 'Dark','Apple'], -1, -1)).to.equal(4);
+    expect(lookup.XMATCH('gra', ['Grape', 'Light', 'Dark','Apple'], -1, -1)).to.equal(3);
+    expect(lookup.XMATCH('gra', ['Grape', 'Light', 'Dark','Apple'], 1, -1)).to.equal(1);
+    expect(lookup.XMATCH('grapee', ['Grape', 'Dark'], 1, 1)).to.equal(error.na);
+    expect(lookup.XMATCH('grapee', ['Grape', 'Dark', 'Carlos', 'Let'], 1, 1)).to.equal(4);
+    expect(lookup.XMATCH('grapee', ['Grape', 'Dark', 'Carlos', 'Let'], -1, 1)).to.equal(1);
+    expect(lookup.XMATCH('grapee', ['Grape', 'Dark', 'Carlos', 'Let'], 1, -1)).to.equal(4);
+    expect(lookup.XMATCH('grapee', ['Grape', 'Dark', 'Carlos', 'Let'], -1, -1)).to.equal(1);
+    expect(lookup.XMATCH('grapee', ['Grape', 'Dark', 'Carlos', 'Let'], 0, 1)).to.equal(error.na);
+
+    // booleans with linear search_mode
+    expect(lookup.XMATCH(true, [true, false], 0, 1)).to.equal(1);
+    expect(lookup.XMATCH(true, [false, false, false], 0, 1)).to.equal(error.na);
+    expect(lookup.XMATCH(true, [false, false, true, false], 0, 1)).to.equal(3);
+    expect(lookup.XMATCH(true, [false, true, true, false], 1, 1)).to.equal(2);
+    expect(lookup.XMATCH(true, [false, true, true, false], 1, 1)).to.equal(2);
+    expect(lookup.XMATCH(true, [false, true, true, false], -1, 1)).to.equal(2);
+
+    // numbers with binary search, when search_mode in [2, -2]
+    expect(lookup.XMATCH(7,[1, 3, 5, 7, 9, 11, 13, 15, 17], 1, 2)).to.equal(4);
+    expect(lookup.XMATCH(6,[1, 3, 5, 7, 9, 11, 13, 15, 17], -1, 2)).to.equal(3);
+    expect(lookup.XMATCH(15.99,[-9, 4.5, 7, 9, 11, 13, 15, 17, 888], -1, 2)).to.equal(7);
+    expect(lookup.XMATCH(15.99,[-9, 4.5, 7, 9, 11, 13, 15, 17, 888], -1, 2)).to.equal(7);
+    expect(lookup.XMATCH(15.99,[0, 22], -1, 2)).to.equal(1);
+    expect(lookup.XMATCH(15.99,[0], -1, 2)).to.equal(1);
+    expect(lookup.XMATCH(15.99,[0, 22], 1, 2)).to.equal(2);
+    expect(lookup.XMATCH(1, [0, 1, 1, 0], 1, 2)).to.equal(2);
+    expect(lookup.XMATCH(1, [9, 9, 8, 7], 1, 2)).to.equal(1);
+    expect(lookup.XMATCH(1, [9, 9, 8, 7, 9, 9, 8, 7], 1, 2)).to.equal(1);
+    expect(lookup.XMATCH(1, [1, 1, 0, 0, 1, 1, 1, 1], 1, 2)).to.equal(5);
+    expect(lookup.XMATCH(1, [1, 1, 0, 0, 1, 1, 1, 0], 1, 2)).to.equal(5);
+
+    // numbers with binary search, when search_mode = -2
+    expect(lookup.XMATCH(1, [1, 1, 0, 1, 1, 1, 1, 1], 1, -2)).to.equal(8);
+    expect(lookup.XMATCH(22, [34, 98, 12, 0, -99, 3], 1, -2)).to.equal(2);
+    expect(lookup.XMATCH(22, [21.9, -1, 12, 0, -99, 3], 1, -2)).to.equal(error.na);
+    expect(lookup.XMATCH(-100, [21.9, -1, 12, 0, -99, 3], 1, -2)).to.equal(6);
+    expect(lookup.XMATCH(0, [21.9, -1, 12, 0, -99, 3], 1, -2)).to.equal(4);
+    expect(lookup.XMATCH(3, [21.9, -1, 12, 0, -99, 3], 1, -2)).to.equal(3);
+    expect(lookup.XMATCH(3, [false, -1, true, true, false, 3], 1, -2)).to.equal(6);
+    expect(lookup.XMATCH(3, [false, -1, true, true, false, -3], 1, -2)).to.equal(5);
+
+    // numbers with binary search, when match_mode = -1 and search_mode = -2
+    expect(lookup.XMATCH(3, [21.9, -1, 12, 0, -99, 3], -1, -2)).to.equal(4);
+    expect(lookup.XMATCH(3, [false, -1, true, true, false, -3], -1, -2)).to.equal(6);
+    expect(lookup.XMATCH(3, [false, -1, true, true, false, 6], -1, -2)).to.equal(error.na);
+    expect(lookup.XMATCH(3, [false, 1, 2, true, false, 6], -1, -2)).to.equal(2);
+    expect(lookup.XMATCH(true, [false, 1, 2, true, false, 6], -1, -2)).to.equal(1);
+
+    // numbers with binary search with exact match (match_mode = 0)
+    expect(lookup.XMATCH(3, [21.9, -1, 12, 0, -99, 3], 0, 2)).to.equal(error.na);
+    expect(lookup.XMATCH(-99, [21.9, -1, 12, 0, -99, 3], 0, 2)).to.equal(error.na);
+    expect(lookup.XMATCH(12, [21.9, -1, 12, 0, -99, 3], 0, 2)).to.equal(3);
+    expect(lookup.XMATCH(0, [21.9, -1, -6, 0, 4, 3], 0, 2)).to.equal(4);
+    expect(lookup.XMATCH(0, [21.9, -1, -6], 0, 2)).to.equal(error.na);
+    expect(lookup.XMATCH(21.9, [21.9, -1, -6], 0, 2)).to.equal(error.na);
+    expect(lookup.XMATCH(-1, [21.9, -1, -6], 0, 2)).to.equal(2);
+    expect(lookup.XMATCH(3, [21.9, -1, 3], 0, 2)).to.equal(3);
+    expect(lookup.XMATCH(0, [0, 1], 0, 2)).to.equal(1);
+    expect(lookup.XMATCH(1, [0, 1], 0, 2)).to.equal(2);
+    expect(lookup.XMATCH(1, [0, 1, 0, 0, 1], 0, 2)).to.equal(5);
+
+    expect(lookup.XMATCH(1, [0, 1, 0, 0, 1], 0, -2)).to.equal(error.na);
+    expect(lookup.XMATCH(1, [1, 1, 0, 0, 1], 0, -2)).to.equal(2);
+    expect(lookup.XMATCH(1, [true, false, 1], 0, -2)).to.equal(3);
+
+    // data merge search tests
+    expect(lookup.XMATCH('zipzap', [false, 0, 1, true, true], 1, 1)).to.equal(1);
+    expect(lookup.XMATCH('grape', [false, 0, 1, true, true, 'zebra'], 1, 1)).to.equal(6);
+    expect(lookup.XMATCH('grape', [false, 0, 1, true, true, 'zebra'], 1, -1)).to.equal(6);
+    expect(lookup.XMATCH('grape', [false, 0, 1, true, true, 'zebra'], -1, -1)).to.equal(3);
+    expect(lookup.XMATCH('grape', [false, 'kvc', true], -1, -1)).to.equal(error.na);
+    expect(lookup.XMATCH('grape', [false, 'kvc', true], 1, -1)).to.equal(2);
+
+    // binary search with strings
+    expect(lookup.XMATCH('apple', ['Grape', 'Pera', 'Apple', 'Light', 'Dark'], 1, 2)).to.equal(3);
+    expect(lookup.XMATCH('apple', ['Grape', 'Pera', 'Apple', 'Light', 'Dark'], 1, -2)).to.equal(3);
+    expect(lookup.XMATCH('apple', ['Grape', 'Pera', 'Apple', 'Light', 'Dark'], 0, 2)).to.equal(3);
+    expect(lookup.XMATCH('apple', ['Grape', 'Apple', 'Pera', 'Light', 'Dark'], -1, 2)).to.equal(error.na);
+    expect(lookup.XMATCH('apple', ['Grape', 'Apple', 'Pera', 'Light', 'Dark'], 0, 2)).to.equal(error.na);
+    expect(lookup.XMATCH('grapee', ['Grape', 'Dark', 'Carlos', 'Let'], -1, 2)).to.equal(3);
+
+    // empty lookup_range tests
+    expect(lookup.XMATCH('a', [], 0, 1)).to.equal(error.na);
+    expect(lookup.XMATCH(undefined, [], 2, 0)).to.equal(error.na);
+    expect(lookup.XMATCH(123, [], 1, 1)).to.equal(error.na);
+    expect(lookup.XMATCH(123, [], -1, 1)).to.equal(error.na);
+    expect(lookup.XMATCH(123, [], 1, -1)).to.equal(error.na);
+    expect(lookup.XMATCH(123, [], -1, -1)).to.equal(error.na);
+    expect(lookup.XMATCH(15.99,[], -1, 2)).to.equal(error.na);
+    expect(lookup.XMATCH(15.99,[], 1, 2)).to.equal(error.na);
+    expect(lookup.XMATCH(15.99,[], 1, -2)).to.equal(error.na);
+    expect(lookup.XMATCH(15.99,[], -1, -2)).to.equal(error.na);
+
+    // omitted arguments
+    expect(lookup.XMATCH(undefined, [false, 'kvc', null, true, true, 'zebra'], 1, 1)).to.equal(3);
+    expect(lookup.XMATCH(undefined, [false, null, null, true, true, 'zebra'], 1, 1)).to.equal(2);
+    expect(lookup.XMATCH(7, undefined, 1, 1)).to.equal(error.value);
+    expect(lookup.XMATCH(undefined, undefined, 1, 1)).to.equal(error.value);
+  })
 })
