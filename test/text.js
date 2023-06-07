@@ -225,17 +225,17 @@ describe('Text', () => {
   })
 
   it('DBCS', () => {
-    expect(text.DBCS('ｈｅｌｌｏ')).to.equal('hello')
+    expect(text.DBCS('hello')).to.equal('ｈｅｌｌｏ')
     expect(text.DBCS()).to.equal(error.na)
     expect(text.DBCS('abc', 'def')).to.equal(error.na)
-    expect(text.DBCS(1)).to.equal('1')
-    expect(text.DBCS(false)).to.equal('false')
+    expect(text.DBCS(1)).to.equal('１')
+    expect(text.DBCS(false)).to.equal('ｆａｌｓｅ')
     expect(text.DBCS(null)).to.equal('')
-    expect(text.DBCS([['ｈｅｌｌｏ'], ['ｉｕｔｃｈｕｂ']])).to.eql([['hello'], ['iutchub']])
+    expect(text.DBCS([['hello'], ['iutchub']])).to.eql([['ｈｅｌｌｏ'], ['ｉｕｔｃｈｕｂ']])
     expect(text.DBCS('在梁思成先生作品提到的古建筑的「角叶」的含义及其图片')).to.equal(
       '在梁思成先生作品提到的古建筑的「角叶」的含义及其图片'
     )
-    expect(text.DBCS('ａｂｃ')).to.equal('abc')
+    expect(text.DBCS('abc')).to.equal('ａｂｃ')
   })
 
   it('DOLLAR', () => {
