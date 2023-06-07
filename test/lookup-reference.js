@@ -1262,6 +1262,280 @@ describe('Lookup Reference', () => {
     })
   })
 
+  it('SORTBY', () => {
+    expect(
+      lookup.SORTBY(
+        [
+          ['tom', 52],
+          ['fred', 65],
+          ['amy', 22],
+          ['sal', 73],
+          ['fritz', 19]
+        ],
+        [[52], [65], [22], [73], [19]]
+      )
+    ).to.eql([
+      ['fritz', 19],
+      ['amy', 22],
+      ['tom', 52],
+      ['fred', 65],
+      ['sal', 73]
+    ])
+    expect(
+      lookup.SORTBY(
+        [
+          ['tom', 52],
+          ['fred', 65],
+          ['amy', 22],
+          ['sal', 73],
+          ['fritz', 19]
+        ],
+        2
+      )
+    ).to.eql(error.value)
+    expect(
+      lookup.SORTBY(
+        [
+          ['tom', 52],
+          ['fred', 65],
+          ['amy', 22],
+          ['sal', 73],
+          ['fritz', 19]
+        ],
+        'hello'
+      )
+    ).to.eql(error.value)
+    expect(
+      lookup.SORTBY(
+        [
+          ['tom', 52],
+          ['fred', 65],
+          ['amy', 22],
+          ['sal', 73],
+          ['fritz', 19]
+        ],
+        [[1], [1]]
+      )
+    ).to.eql(error.value)
+    expect(lookup.SORTBY([['tom', 'fred', 'amy', 'sal', 'fritz']], [[1, 1]])).to.eql(error.value)
+    expect(
+      lookup.SORTBY(
+        [
+          ['kelvin', 82],
+          ['celson', 32]
+        ],
+        [[2, 1]]
+      )
+    ).to.eql([
+      [82, 'kelvin'],
+      [32, 'celson']
+    ])
+    expect(
+      lookup.SORTBY(
+        [
+          ['kelvin', 82],
+          ['celson', 32]
+        ],
+        [[1, 1]]
+      )
+    ).to.eql([
+      ['kelvin', 82],
+      ['celson', 32]
+    ])
+    expect(
+      lookup.SORTBY(
+        [
+          ['kelvin', 82],
+          ['celson', 32]
+        ],
+        [['bernard', 'ana']]
+      )
+    ).to.eql([
+      [82, 'kelvin'],
+      [32, 'celson']
+    ])
+    expect(
+      lookup.SORTBY(
+        [
+          ['kelvin', 82],
+          ['celson', 32]
+        ],
+        [['ana', 'bernard']]
+      )
+    ).to.eql([
+      ['kelvin', 82],
+      ['celson', 32]
+    ])
+    expect(
+      lookup.SORTBY(
+        [
+          ['kelvin', 82],
+          ['celson', 32]
+        ],
+        [[true, false]]
+      )
+    ).to.eql([
+      [82, 'kelvin'],
+      [32, 'celson']
+    ])
+    expect(
+      lookup.SORTBY(
+        [
+          ['kelvin', 82],
+          ['celson', 32]
+        ],
+        [[false, true]]
+      )
+    ).to.eql([
+      ['kelvin', 82],
+      ['celson', 32]
+    ])
+    expect(
+      lookup.SORTBY(
+        [
+          ['kelvin', 82],
+          ['celson', 32]
+        ],
+        [[1, null]]
+      )
+    ).to.eql([
+      [82, 'kelvin'],
+      [32, 'celson']
+    ])
+    expect(
+      lookup.SORTBY(
+        [
+          ['kelvin', 82],
+          ['celson', 32]
+        ],
+        [[null, 1]]
+      )
+    ).to.eql([
+      ['kelvin', 82],
+      ['celson', 32]
+    ])
+    expect(
+      lookup.SORTBY(
+        [
+          ['tom', 52],
+          ['fred', 65],
+          ['amy', 22],
+          ['sal', 73],
+          ['fritz', 19]
+        ],
+        [[52], [65], [22], [73], [19]],
+        -1
+      )
+    ).to.eql([
+      ['sal', 73],
+      ['fred', 65],
+      ['tom', 52],
+      ['amy', 22],
+      ['fritz', 19]
+    ])
+    expect(
+      lookup.SORTBY(
+        [
+          ['tom', 52],
+          ['fred', 65],
+          ['amy', 19],
+          ['sal', 73],
+          ['fritz', 19]
+        ],
+        [[52], [65], [19], [73], [19]],
+        -1,
+        [[2550], [2300], [6400], [2400], [6600]],
+        1
+      )
+    ).to.eql([
+      ['sal', 73],
+      ['fred', 65],
+      ['tom', 52],
+      ['amy', 19],
+      ['fritz', 19]
+    ])
+    expect(
+      lookup.SORTBY(
+        [
+          ['tom', 52],
+          ['fred', 65],
+          ['amy', 19],
+          ['sal', 73],
+          ['fritz', 19]
+        ],
+        [[52], [65], [19], [73], [19]],
+        -1,
+        [[2550], [2300], [6400], [2400], [6600]],
+        -1
+      )
+    ).to.eql([
+      ['sal', 73],
+      ['fred', 65],
+      ['tom', 52],
+      ['fritz', 19],
+      ['amy', 19]
+    ])
+    expect(
+      lookup.SORTBY(
+        [
+          ['tom', 52],
+          ['fred', 65],
+          ['amy', 19],
+          ['sal', 73],
+          ['fritz', 19]
+        ],
+        [[52], [65], [19], [73], [19]],
+        1,
+        [[2550], [2300], [6400], [2400], [6600]],
+        -1
+      )
+    ).to.eql([
+      ['fritz', 19],
+      ['amy', 19],
+      ['tom', 52],
+      ['fred', 65],
+      ['sal', 73]
+    ])
+    expect(lookup.SORTBY([['tom', 'fred', 'amy', 'sal', 'fritz']], [[52, 65, 19, 73, 19]], 1)).to.eql([
+      ['amy', 'fritz', 'tom', 'fred', 'sal']
+    ])
+    expect(
+      lookup.SORTBY(
+        [['tom', 'fred', 'amy', 'sal', 'fritz']],
+        [[52, 65, 19, 73, 19]],
+        1,
+        [[2550, 2300, 6400, 2400, 6600]],
+        -1
+      )
+    ).to.eql([['fritz', 'amy', 'tom', 'fred', 'sal']])
+    expect(lookup.SORTBY([['hello', 'world']], [[1, 2]], -1)).to.eql([['world', 'hello']])
+    expect(lookup.SORTBY([['hello', 'world']], [[1, 2]], 1)).to.eql([['hello', 'world']])
+    expect(lookup.SORTBY([['hello', 'world']], [[1, 'string']], 1)).to.eql([['hello', 'world']])
+    expect(lookup.SORTBY([['hello', 'world']], [[1, 2]], 0)).to.equal(error.value)
+    expect(lookup.SORTBY([['hello', 'world']], [[1, 2]], 10)).to.equal(error.value)
+    expect(lookup.SORTBY([['hello', 'world']], [[1, 2]], -10)).to.equal(error.value)
+    expect(lookup.SORTBY([['hello', 'world']], [[1, 2]], false)).to.equal(error.value)
+    expect(lookup.SORTBY([['hello', 'world']], [[1, 2]], [[1, 2]])).to.equal(error.value)
+    expect(lookup.SORTBY([['hello', 'world']], 1, 1)).to.eql(error.value)
+    expect(lookup.SORTBY([['hello', 'world']], 'hello', 1)).to.eql(error.value)
+    expect(lookup.SORTBY([['hello', 'world']], true, 1)).to.eql(error.value)
+    expect(lookup.SORTBY([['hello', 'world']], false, 1)).to.eql(error.value)
+    expect(lookup.SORTBY([['hello', 'world']], null, 1)).to.eql(error.value)
+    expect(lookup.SORTBY([['hello', 'world']], undefined, 1)).to.eql(error.value)
+    expect(lookup.SORTBY(1, [[1, 2]], -1)).to.eql(error.value)
+    expect(lookup.SORTBY('hello', [[1, 2]], -1)).to.eql(error.value)
+    expect(lookup.SORTBY(true, [[1, 2]], -1)).to.eql(error.value)
+    expect(lookup.SORTBY(false, [[1, 2]], -1)).to.eql(error.value)
+    expect(lookup.SORTBY(null, [[1, 2]], -1)).to.eql(error.value)
+    expect(lookup.SORTBY(undefined, [[1, 2]], -1)).to.eql(error.value)
+
+    Object.values(error).forEach((err) => {
+      expect(lookup.SORTBY(err, [[1, 2]], 1)).to.eql(err)
+      expect(lookup.SORTBY([['hello', 'world']], err, 1)).to.eql(err)
+      expect(lookup.SORTBY([['hello', 'world']], [[1, 2]], err)).to.eql(err)
+    })
+  })
+
   it('TRANSPOSE', () => {
     expect(lookup.TRANSPOSE(1)).to.equal(1)
     expect(lookup.TRANSPOSE(0)).to.equal(0)
@@ -2983,17 +3257,22 @@ describe('Lookup Reference', () => {
   })
 
   it('CHOOSECOLS', () => {
-    expect(lookup.CHOOSECOLS(
-      [
-        [99, 3, 3, 4, 5], 
-        [3,7,8,9,10],
-        [11,12,13,14,15],
-        [16,17,18,19,20],
-        [21,22,23,24,25],
-        [26,27,28,29,30]
-      ],
-      1, 3, 5, 1
-    )).to.eql([
+    expect(
+      lookup.CHOOSECOLS(
+        [
+          [99, 3, 3, 4, 5],
+          [3, 7, 8, 9, 10],
+          [11, 12, 13, 14, 15],
+          [16, 17, 18, 19, 20],
+          [21, 22, 23, 24, 25],
+          [26, 27, 28, 29, 30]
+        ],
+        1,
+        3,
+        5,
+        1
+      )
+    ).to.eql([
       [99, 3, 5, 99],
       [3, 8, 10, 3],
       [11, 13, 15, 11],
@@ -3002,55 +3281,71 @@ describe('Lookup Reference', () => {
       [26, 28, 30, 26]
     ])
 
-    expect(lookup.CHOOSECOLS(
-      [
-        ['A', 'B', 'C', 'D'], 
-        ['E', 'F', 'G'],
-        ['H', 'I', 'J', 'K'],
-      ], 1)).to.eql([
-        ['A'],
-        ['E'],
-        ['H']
-      ]);
+    expect(
+      lookup.CHOOSECOLS(
+        [
+          ['A', 'B', 'C', 'D'],
+          ['E', 'F', 'G'],
+          ['H', 'I', 'J', 'K']
+        ],
+        1
+      )
+    ).to.eql([['A'], ['E'], ['H']])
 
     expect(lookup.CHOOSECOLS(null, 1)).to.equal(error.value)
-    expect(lookup.CHOOSECOLS([], 1)).to.equal(error.value);
-    expect(lookup.CHOOSECOLS([[1,2,3,4], [5,6,7,8]], 1, 5)).to.equal(error.value);
+    expect(lookup.CHOOSECOLS([], 1)).to.equal(error.value)
+    expect(
+      lookup.CHOOSECOLS(
+        [
+          [1, 2, 3, 4],
+          [5, 6, 7, 8]
+        ],
+        1,
+        5
+      )
+    ).to.equal(error.value)
 
-    expect(lookup.CHOOSECOLS(
-      [
-        [null, 'B', 'C', 'D'], 
-        [null, 'F', 'G'],
-        ['H', 'I', 'J', 'K'],
-      ], 1)).to.eql([
-        [0],
-        [0],
-        ['H']
-      ]);
+    expect(
+      lookup.CHOOSECOLS(
+        [
+          [null, 'B', 'C', 'D'],
+          [null, 'F', 'G'],
+          ['H', 'I', 'J', 'K']
+        ],
+        1
+      )
+    ).to.eql([[0], [0], ['H']])
 
-    expect(lookup.CHOOSECOLS(
-      [
-        [undefined, undefined, undefined, undefined], 
-        [undefined, undefined, undefined, undefined],
-        [undefined, undefined, undefined, undefined],
-        [undefined, undefined, undefined, undefined],
-        [undefined, undefined, undefined, undefined],
-      ], 1, 3, 4)).to.eql([
-        [0, 0, 0],
-        [0, 0, 0],
-        [0, 0, 0],
-        [0, 0, 0],
-        [0, 0, 0]
-    ]);
-  
-    expect(lookup.CHOOSECOLS(
-      [
-        [99, 3, 3, 4, 5], 
-        [3,7,8,9,10],
-        [11,12,13,14,15],
-        [16,17,18,19,20],
-        [21,22,23,24,25],
-        [26,27,28,29,30]
-      ])).to.equal(error.value)
+    expect(
+      lookup.CHOOSECOLS(
+        [
+          [undefined, undefined, undefined, undefined],
+          [undefined, undefined, undefined, undefined],
+          [undefined, undefined, undefined, undefined],
+          [undefined, undefined, undefined, undefined],
+          [undefined, undefined, undefined, undefined]
+        ],
+        1,
+        3,
+        4
+      )
+    ).to.eql([
+      [0, 0, 0],
+      [0, 0, 0],
+      [0, 0, 0],
+      [0, 0, 0],
+      [0, 0, 0]
+    ])
+
+    expect(
+      lookup.CHOOSECOLS([
+        [99, 3, 3, 4, 5],
+        [3, 7, 8, 9, 10],
+        [11, 12, 13, 14, 15],
+        [16, 17, 18, 19, 20],
+        [21, 22, 23, 24, 25],
+        [26, 27, 28, 29, 30]
+      ])
+    ).to.equal(error.value)
   })
 })

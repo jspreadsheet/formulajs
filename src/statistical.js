@@ -1278,7 +1278,7 @@ export function FORECAST(x, known_ys, known_xs) {
   }
 
   if (known_xs.length !== known_ys.length) {
-    return error.value;
+    return error.value
   }
 
   const xmean = jStat.mean(known_xs)
@@ -1308,9 +1308,9 @@ export function FORECAST(x, known_ys, known_xs) {
  * @param {*} known_xs The independent array or range of data.
  * @returns
  */
-FORECAST.LINEAR = function(x, known_ys, known_xs) {
+FORECAST.LINEAR = function (x, known_ys, known_xs) {
   if (known_ys.length !== known_xs.length) {
-    return error.value;
+    return error.value
   }
 
   x = utils.parseNumber(x)
@@ -1318,25 +1318,25 @@ FORECAST.LINEAR = function(x, known_ys, known_xs) {
   known_xs = utils.parseNumberArray(utils.flatten(known_xs))
 
   if (utils.anyIsError(x, known_ys, known_xs)) {
-    return error.value;
+    return error.value
   }
 
-  const n = known_ys.length;
+  const n = known_ys.length
 
-  const sumX = known_xs.reduce((total, val) => total + val, 0);
-  const sumY = known_ys.reduce((total, val) => total + val, 0);
-  const sumXY = known_xs.reduce((total, val, index) => total + val * known_ys[index], 0);
-  const sumXSquare = known_xs.reduce((total, val) => total + val * val, 0);
+  const sumX = known_xs.reduce((total, val) => total + val, 0)
+  const sumY = known_ys.reduce((total, val) => total + val, 0)
+  const sumXY = known_xs.reduce((total, val, index) => total + val * known_ys[index], 0)
+  const sumXSquare = known_xs.reduce((total, val) => total + val * val, 0)
 
-  const meanX = jStat.mean(known_xs);
-  const meanY = jStat.mean(known_ys);
+  const meanX = jStat.mean(known_xs)
+  const meanY = jStat.mean(known_ys)
 
-  const b = (n * sumXY - sumX * sumY) / (n * sumXSquare - sumX * sumX);
-  const a = meanY - b * meanX;
+  const b = (n * sumXY - sumX * sumY) / (n * sumXSquare - sumX * sumX)
+  const a = meanY - b * meanX
 
-  const forecast = a + b * x;
+  const forecast = a + b * x
 
-  return forecast;
+  return forecast
 }
 
 /**

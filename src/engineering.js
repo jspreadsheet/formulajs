@@ -964,13 +964,13 @@ ERF.PRECISE = (x) => {
   x = utils.parseNumber(x)
 
   if (utils.anyIsError(x)) {
-    return error.value;
+    return error.value
   }
 
-  const erf = jStat.erf(x);
-  const result = Math.abs(erf) < 1e-15 ? 0 : erf;
+  const erf = jStat.erf(x)
+  const result = Math.abs(erf) < 1e-15 ? 0 : erf
 
-  return result;
+  return result
 }
 
 /**
@@ -983,14 +983,14 @@ ERF.PRECISE = (x) => {
  */
 export function ERFC(x) {
   // Return error if x is not a number
-  x = utils.parseNumber(x);
+  x = utils.parseNumber(x)
 
   if (utils.anyIsError(x)) {
-    return error.value;
+    return error.value
   }
 
   // Cálculo do ERFC.PRECISE utilizando a função erfc
-  return jStat.erfc(x);
+  return jStat.erfc(x)
 }
 
 /**
@@ -1003,7 +1003,7 @@ export function ERFC(x) {
  * @param {*} x The lower bound for integrating ERFC.PRECISE.
  * @returns
  */
-ERFC.PRECISE = (x) => ERFC(x);
+ERFC.PRECISE = (x) => ERFC(x)
 
 /**
  * Tests whether a number is greater than a threshold value.

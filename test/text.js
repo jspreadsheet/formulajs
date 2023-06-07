@@ -5,7 +5,17 @@ import * as text from '../src/text.js'
 
 describe('Text', () => {
   it('ASC', () => {
-    expect(text.ASC).to.throw('ASC is not implemented')
+    expect(text.ASC('ｈｅｌｌｏ')).to.equal('hello')
+    expect(text.ASC()).to.equal(error.na)
+    expect(text.ASC('abc', 'def')).to.equal(error.na)
+    expect(text.ASC(1)).to.equal('1')
+    expect(text.ASC(false)).to.equal('false')
+    expect(text.ASC(null)).to.equal('')
+    expect(text.ASC([['ｈｅｌｌｏ'], ['ｉｕｔｃｈｕｂ']])).to.eql([['hello'], ['iutchub']])
+    expect(text.ASC('在梁思成先生作品提到的古建筑的「角叶」的含义及其图片')).to.equal(
+      '在梁思成先生作品提到的古建筑的「角叶」的含义及其图片'
+    )
+    expect(text.ASC('ａｂｃ')).to.equal('abc')
   })
 
   it('BAHTTEXT', () => {
@@ -215,7 +225,17 @@ describe('Text', () => {
   })
 
   it('DBCS', () => {
-    expect(text.DBCS).to.throw('DBCS is not implemented')
+    expect(text.DBCS('ｈｅｌｌｏ')).to.equal('hello')
+    expect(text.DBCS()).to.equal(error.na)
+    expect(text.DBCS('abc', 'def')).to.equal(error.na)
+    expect(text.DBCS(1)).to.equal('1')
+    expect(text.DBCS(false)).to.equal('false')
+    expect(text.DBCS(null)).to.equal('')
+    expect(text.DBCS([['ｈｅｌｌｏ'], ['ｉｕｔｃｈｕｂ']])).to.eql([['hello'], ['iutchub']])
+    expect(text.DBCS('在梁思成先生作品提到的古建筑的「角叶」的含义及其图片')).to.equal(
+      '在梁思成先生作品提到的古建筑的「角叶」的含义及其图片'
+    )
+    expect(text.DBCS('ａｂｃ')).to.equal('abc')
   })
 
   it('DOLLAR', () => {

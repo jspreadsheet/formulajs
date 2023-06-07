@@ -905,14 +905,17 @@ describe('Statistical', () => {
 
   it('FORECAST', () => {
     expect(statistical.FORECAST(30, [6, 7, 9, 15, 21], [20, 28, 31, 38, 40])).to.approximately(10.607253086419755, 1e-9)
-    expect(statistical.FORECAST(30, [9, 15, 21], [20, 28, 31, 38, 40])).to.equal(error.value);
+    expect(statistical.FORECAST(30, [9, 15, 21], [20, 28, 31, 38, 40])).to.equal(error.value)
     expect(statistical.FORECAST(30, [6, 7, 'invalid', 15, 21], [20, 28, 31, 38, 40])).to.equal(error.value)
   })
 
   it('FORECAST.LINEAR', () => {
-    expect(statistical.FORECAST.LINEAR(6, [1, 4, 9, 16, 25], [1, 2, 3, 4, 5])).to.equal(29);
-    expect(statistical.FORECAST.LINEAR(8.5, [1, 4, 9, 16, 25], [6,3,8,10,24])).to.approximately(9.144637462, 1e-9);
-    expect(statistical.FORECAST.LINEAR(44, [0,4,9.3,-6.3,0], [0.1235,3,88,10,543])).to.approximately(1.451875047, 1e-9);
+    expect(statistical.FORECAST.LINEAR(6, [1, 4, 9, 16, 25], [1, 2, 3, 4, 5])).to.equal(29)
+    expect(statistical.FORECAST.LINEAR(8.5, [1, 4, 9, 16, 25], [6, 3, 8, 10, 24])).to.approximately(9.144637462, 1e-9)
+    expect(statistical.FORECAST.LINEAR(44, [0, 4, 9.3, -6.3, 0], [0.1235, 3, 88, 10, 543])).to.approximately(
+      1.451875047,
+      1e-9
+    )
     expect(statistical.FORECAST.LINEAR(30, [6, 7, 'invalid', 15, 21], [20, 28, 31, 38, 40])).to.equal(error.value)
     expect(statistical.FORECAST.LINEAR('invalid', [6, 7, 15, 21], [20, 28, 31, 38, 40])).to.equal(error.value)
     expect(statistical.FORECAST.LINEAR(30, [6, 15, 21], [20, 28, 31, 38, 40])).to.equal(error.value)

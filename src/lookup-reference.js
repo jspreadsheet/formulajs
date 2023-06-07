@@ -452,6 +452,90 @@ export function SORT(array, sort_index = 1, sort_order = 1, by_col = false) {
 }
 
 /**
+ * Returns a sorted array of the elements in an array. The returned array is the same shape as the provided array argument.
+ *
+ * Category: Lookup and reference
+ *
+ * @param {*} array Array to sort
+ * @param {*} sort_index Optional. A number indicating the row or column to sort by
+ * @param {*} sort_order Optional. A number indicating the desired sort order; 1 for ascending order (default), -1 for descending order
+ * @param {*} by_col Optional. A logical value indicating the desired sort direction; FALSE to sort by row (default), TRUE to sort by column
+ * @returns
+ */
+export function SORTBY(array, ...sort) {
+  if (arguments.length < 2) {
+    return error.na
+  }
+
+  const anyError = utils.anyError(array, ...sort)
+
+  if (anyError) {
+    return anyError
+  }
+
+  if (
+    !array ||
+    !Array.isArray(array) ||
+    sort.filter((_, i) => i % 2 == 1).some((e) => e !== 1 && e !== -1 && typeof e !== 'undefined')
+  ) {
+    return error.value
+  }
+
+  const sortLength = sort.length
+
+  if (utils.getVariableType(arguments[1]) === 'column') {
+    if (arguments[1].length !== array.length) {
+      return error.value
+    }
+
+    array = array.sort((a, b) => {
+      for (let i = 0; i < sortLength; i += 2) {
+        let indexA = array.indexOf(a)
+        let indexB = array.indexOf(b)
+        let criteria = sort[i]
+        let criteriaOrder = sort[i + 1] | 1
+
+        if (criteria[indexA] > criteria[indexB]) {
+          return criteriaOrder
+        } else if (criteria[indexA] < criteria[indexB]) {
+          return -criteriaOrder
+        }
+      }
+      return 0
+    })
+  } else if (utils.getVariableType(arguments[1]) === 'line') {
+    if (arguments[1][0].length !== array[0].length) {
+      return error.value
+    }
+
+    const arrayLength = array.length
+
+    for (let c = 0; c < arrayLength; c++) {
+      let current = array[c]
+      current = current.sort((a, b) => {
+        for (let i = 0; i < sortLength; i += 2) {
+          let indexA = current.indexOf(a)
+          let indexB = current.indexOf(b)
+          let criteria = sort[i][0]
+          let criteriaOrder = sort[i + 1] | 1
+
+          if (criteria[indexA] > criteria[indexB]) {
+            return criteriaOrder
+          } else if (criteria[indexA] < criteria[indexB]) {
+            return -criteriaOrder
+          }
+        }
+        return 0
+      })
+    }
+  } else {
+    return error.value
+  }
+
+  return array
+}
+
+/**
  * Returns the transpose of an array.
  *
  * Category: Lookup and reference
@@ -1072,49 +1156,49 @@ export function HSTACK(...arrays) {
 }
 
 /**
- * Returns the specified columns from an array.  
- * 
+ * Returns the specified columns from an array.
+ *
  * Category: Lookup and reference
- * 
+ *
  * @param {*} array The array containing the columns to be returned in the new array. Required.
  * @param  {*} col_num1 The first column to be returned. Required.
  * @param {...any} col_numN Additional columns to be returned. Optional.
- * @returns 
+ * @returns
  */
 export function CHOOSECOLS(array, col_num1, ...col_numN) {
   if (!Array.isArray(array) || !array.length) {
-    return error.value;
+    return error.value
   }
 
-  if (array.some(item => !Array.isArray(item))) {
-    return error.value;
+  if (array.some((item) => !Array.isArray(item))) {
+    return error.value
   }
 
-  const result = [];
-  const indices = [col_num1, ...col_numN];
+  const result = []
+  const indices = [col_num1, ...col_numN]
 
   for (let i = 0; i < array.length; i++) {
-    const row = array[i];
-    const newRow = [];
+    const row = array[i]
+    const newRow = []
 
     for (let j = 0; j < indices.length; j++) {
-      const index = indices[j];
+      const index = indices[j]
 
       if (typeof index !== 'number' || index < 1 || index > row.length) {
-        return error.value;
+        return error.value
       }
 
-      let k = row[index - 1];
+      let k = row[index - 1]
 
-      if ((typeof k !== 'number') && !k) {
-        k = 0;
+      if (typeof k !== 'number' && !k) {
+        k = 0
       }
-      
-      newRow.push(k);
+
+      newRow.push(k)
     }
 
-    result.push(newRow);
+    result.push(newRow)
   }
 
-  return result;
+  return result
 }
