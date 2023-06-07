@@ -1595,6 +1595,21 @@ describe('Statistical', () => {
     expect(statistical.PROB(x, prob, 1, 3)).to.equal(error.value)
   })
 
+  it('QUARTILE', () => {
+    const data = [1, 2, 4, 7, 8, 9, 10, 12];
+    const data2 = [1, 2, 3, 7.9827856, 8, 9, 10, 12];
+
+    expect(statistical.QUARTILE(data, 1)).to.equal(3.5)
+    expect(statistical.QUARTILE(data, 2)).to.equal(7.5)
+    expect(statistical.QUARTILE(data, 3)).to.equal(9.25)
+    expect(statistical.QUARTILE(data, 4)).to.equal(12)
+    expect(statistical.QUARTILE(data, 0)).to.equal(1);
+    expect(statistical.QUARTILE(data, 0)).to.equal(1);
+    expect(statistical.QUARTILE(data)).to.equal(error.value);
+    expect(statistical.QUARTILE(data2, 2)).to.approximately(7.9913928, 1e-9);
+    expect(statistical.QUARTILE(data, 'invalid')).to.equal(error.value)
+  })
+
   it('QUARTILE.EXC', () => {
     const data = [6, 7, 15, 36, 39, 40, 41, 42, 43, 47, 49]
     expect(statistical.QUARTILE.EXC(data, 1)).to.equal(15)
