@@ -938,9 +938,7 @@ export function FVSCHEDULE(principal, schedule) {
   return future
 }
 
-// TODO
 /**
- * -- Not implemented --
  *
  * Returns the interest rate for a fully invested security.
  *
