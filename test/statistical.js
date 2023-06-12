@@ -3,6 +3,7 @@ import { expect } from 'chai'
 import * as error from '../src/utils/error.js'
 import * as mathTrig from '../src/math-trig.js'
 import * as statistical from '../src/statistical.js'
+import { ERROR } from '../src/information.js'
 
 describe('Statistical', () => {
   it('AVEDEV', () => {
@@ -1404,26 +1405,58 @@ describe('Statistical', () => {
   })
 
   it('MODE', () => {
+    
+    expect(statistical.MODE(5.6, 3 ,[[4]], [[4]], [[3]], [[2]], [[4]])).to.equal(4)
     expect(statistical.MODE(5.6 , 4, 4, 3, 2, 4)).to.equal(4)
     expect(statistical.MODE(1, 2, 3, 3, 4, 4, 5)).to.equal(3)
+    expect(statistical.MODE(1, 2, 3, 3, 4, 5)).to.equal(3)
+    expect(statistical.MODE(1, 2, 3, 4, 5)).to.equal(error.na)
     expect(statistical.MODE(1.1, 2.1, 3.3, 3.3, 4.4, 4.4, 5.1)).to.equal(3.3)
     expect(statistical.MODE(1)).to.equal(error.na)
-    expect(statistical.MODE(1, 'daniel', 'daniel')).to.equal(error.na)
-    expect(statistical.MODE(1, 1, 'daniel')).to.equal(1)
-    expect(statistical.MODE('daniel')).to.equal(error.na)
+    expect(statistical.MODE()).to.equal(error.na)
+    expect(statistical.MODE(1, 'string', 'string')).to.equal(error.na)
+    expect(statistical.MODE(1, 1, 'string')).to.equal(1)
+    expect(statistical.MODE('string')).to.equal(error.na)
     expect(statistical.MODE([[1, 1, 1, 1]])).to.equal(1)
     expect(statistical.MODE([[1], [1], [1], [1]])).to.equal(1)
+    expect(statistical.MODE([[1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 1, 1]])).to.equal(1)
+    expect(statistical.MODE([1], [1], [1], [1])).to.equal(1)
+    expect(statistical.MODE([1, 1, ['string'], ['string']])).to.equal(1)
+    expect(statistical.MODE([1, 1, [true], [true]])).to.equal(1)
+    expect(statistical.MODE([1, 1, [false], [false]])).to.equal(1)
+    expect(statistical.MODE([1, 1, [true], [false]])).to.equal(1)
+    expect(statistical.MODE([1, [[], [], []]])).to.equal(error.na)
+    expect(statistical.MODE([1, [[0], [0], [0]]])).to.equal(0)
+    expect(statistical.MODE(1, '1')).to.equal(error.na)
+    expect(statistical.MODE(1, 1, '1')).to.equal(1)
 
     expect(statistical.MODE(1, null)).to.equal(error.na)
-    expect(statistical.MODE(1, [[null, null]])).to.equal(error.na)
-    expect(statistical.MODE(1, [null], [null])).to.equal(error.na)
+    expect(statistical.MODE(1, 1, null)).to.equal(1)
+    expect(statistical.MODE(1, 1, [[null, null]])).to.equal(1)
+    expect(statistical.MODE(1, null, null)).to.equal(error.na)
     expect(statistical.MODE(null, null)).to.equal(error.na)
     expect(statistical.MODE(1, 1, null)).to.equal(1)
+    expect(statistical.MODE(1, [[null], [null]])).to.equal(error.na)
+
+    expect(statistical.MODE(1, false, true)).to.equal(error.na)
+    expect(statistical.MODE(1, false, false)).to.equal(error.na)
+    expect(statistical.MODE(1, false, true)).to.equal(error.na)
+    expect(statistical.MODE(1, true, false)).to.equal(error.na)
+
+    expect(statistical.MODE(1, 1, true, true)).to.equal(1)
+    expect(statistical.MODE(1, 1, false, false)).to.equal(1)
+    expect(statistical.MODE(1, 1, false, true)).to.equal(1)
+    expect(statistical.MODE(1, 1, true, false)).to.equal(1)
+    expect(statistical.MODE(1, 1, [[false], [true]])).to.equal(1)
     expect(statistical.MODE(1, [[null], [null]])).to.equal(error.na)
 
     expect(statistical.MODE(1, undefined)).to.equal(error.na)
     expect(statistical.MODE(1, undefined, undefined)).to.equal(error.na)
     expect(statistical.MODE(1, 1, undefined)).to.equal(1)
+
+    Object.values(error).forEach((err) => {
+      expect(statistical.MODE(1, 1, err)).to.equal(err)
+    })
 
     
   })

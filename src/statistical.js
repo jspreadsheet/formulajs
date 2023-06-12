@@ -2151,36 +2151,60 @@ export function MINA() {
   return range.length === 0 ? 0 : Math.min.apply(Math, range)
 }
 
-export const MODE = function(){
-  
+function hasDuplicates(array) {
+  return array.some((item, index) => array.includes(item, index + 1))
+}
+
+export function MODE() {
   const frequency = {};
   let maxFrequency = 0;
-  const filteredArray = [];
 
   const flatArguments = utils.flatten(arguments);
+  //console.log(flatArguments)
   
-  for(let i = 0; i < flatArguments.length; i++){
-    if(!isNaN(flatArguments[i] || typeof(flatArguments[i]!=null))){
+  /*for(let i = 0; i < flatArguments.length; i++){
+    if (!isNaN(flatArguments[i]) || flatArguments[i] !== null) {
       filteredArray.push(flatArguments[i]);
     }
+  }*/
+  const filteredArray = flatArguments.filter((element) => !isNaN(element) || element !== null);
+
+  const anyError = utils.anyError(...filteredArray);
+  if (anyError) {
+    return anyError;
+  }
+
+  if (utils.anyIsError(filteredArray)) {
+    return error.value
+  }
+
+  let numericElements = filteredArray.filter((element) => typeof element === 'number');
+  if(numericElements.length<2){
+    return error.na
   }
   
-  if(filteredArray.length<=1){
-    return error.na;
+  if(!(filteredArray.length>=1 && filteredArray.length<=255)){
+    return error.na
+  }
+
+  
+  if(!filteredArray.some((item, index) => filteredArray.includes(item, index + 1))){
+    return error.na
   }
 
   for(let i = 0; i < filteredArray.length; i++){
     const currentNumber = filteredArray[i];
     frequency[currentNumber] = (frequency[currentNumber] || 0) + 1;
     maxFrequency = Math.max(maxFrequency, frequency[currentNumber]);
-  };
-
-  for( const number in frequency){
-    if(frequency[number] === maxFrequency){
-      return Number(number);
-    }
   }
 
+  let mostFrequentNumbers = [];
+  for (const number in frequency) {
+    if (frequency[number] === maxFrequency) {
+      mostFrequentNumbers.push(Number(number));
+    }
+  }
+  return mostFrequentNumbers[0];
 }
 
 /**
