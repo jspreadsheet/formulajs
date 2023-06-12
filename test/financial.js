@@ -1439,9 +1439,65 @@ describe('Financial', () => {
     })
   })
 
-  // TODO: implement
   it('PRICEMAT', () => {
-    expect(financial.PRICEMAT).to.throw('PRICEMAT is not implemented')
+    expect(financial.PRICEMAT('02/15/2008', '04/13/2008', '11/11/2007', 6.1 / 100, 6.1 / 100, 0)).to.approximately(
+      99.98449888,
+      1e-8
+    )
+    expect(financial.PRICEMAT('07/01/2017', '01/01/2027', '01/01/2017', 7 / 100, 8 / 100, 0)).to.approximately(
+      93.09090909,
+      1e-8
+    )
+
+    expect(financial.PRICEMAT('string', '01/01/2027', '01/01/2017', 7 / 100, 8 / 100, 0)).to.equal(error.value)
+    expect(financial.PRICEMAT(false, '01/01/2027', '01/01/2017', 7 / 100, 8 / 100, 0)).to.equal(error.value)
+    expect(financial.PRICEMAT(true, '01/01/2027', '01/01/2017', 7 / 100, 8 / 100, 0)).to.equal(error.value)
+    expect(financial.PRICEMAT('07/01/2017', false, '01/01/2017', 7 / 100, 8 / 100, 0)).to.equal(error.value)
+    expect(financial.PRICEMAT('07/01/2017', true, '01/01/2017', 7 / 100, 8 / 100, 0)).to.equal(error.value)
+    expect(financial.PRICEMAT('07/01/2017', '01/01/2027', true, 8 / 100, 0)).to.equal(error.value)
+    expect(financial.PRICEMAT('07/01/2017', '01/01/2027', false, 8 / 100, 0)).to.equal(error.value)
+    expect(financial.PRICEMAT('07/01/2017', '01/01/2027', '01/01/2017', 7 / 100, true, 0)).to.equal(error.value)
+    expect(financial.PRICEMAT('07/01/2017', '01/01/2027', '01/01/2017', 7 / 100, false, 0)).to.equal(error.value)
+    expect(financial.PRICEMAT('false', '01/01/2027', '01/01/2017', 7 / 100, 8 / 100, 0)).to.equal(error.value)
+    expect(financial.PRICEMAT('true', '01/01/2027', '01/01/2017', 7 / 100, 8 / 100, 0)).to.equal(error.value)
+    expect(financial.PRICEMAT('07/01/2017', 'false', '01/01/2017', 7 / 100, 8 / 100, 0)).to.equal(error.value)
+    expect(financial.PRICEMAT('07/01/2017', 'true', '01/01/2017', 7 / 100, 8 / 100, 0)).to.equal(error.value)
+    expect(financial.PRICEMAT('07/01/2017', '01/01/2027', 'true', 8 / 100, 0)).to.equal(error.value)
+    expect(financial.PRICEMAT('07/01/2017', '01/01/2027', 'false', 8 / 100, 0)).to.equal(error.value)
+    expect(financial.PRICEMAT('07/01/2017', '01/01/2027', '01/01/2017', 7 / 100, 'true', 0)).to.equal(error.value)
+    expect(financial.PRICEMAT('07/01/2017', '01/01/2027', '01/01/2017', 7 / 100, 'false', 0)).to.equal(error.value)
+    expect(financial.PRICEMAT([['07/01/2017']], '01/01/2027', '01/01/2017', 7 / 100, 8 / 100, 0)).to.equal(error.value)
+    expect(financial.PRICEMAT('07/01/2017', [['01/01/2027']], '01/01/2017', 7 / 100, 8 / 100, 0)).to.equal(error.value)
+    expect(financial.PRICEMAT('07/01/2017', '01/01/2027', '01/01/2017', [[7 / 100]], 8 / 100, 0)).to.equal(error.value)
+    expect(financial.PRICEMAT('07/01/2017', '01/01/2027', '01/01/2017', [[7 / 100, 7 / 100]], 8 / 100, 0)).to.equal(
+      error.value
+    )
+    expect(financial.PRICEMAT('07/01/2017', '01/01/2027', 800, '01/01/2017', [[7 / 100]], 0)).to.equal(error.value)
+    expect(financial.PRICEMAT('07/01/2017', '01/01/2027', 800, '01/01/2017', [[7 / 100, 7 / 100]], 0)).to.equal(
+      error.value
+    )
+    expect(financial.PRICEMAT(null, '01/01/2027', '01/01/2017', 7 / 100, 8 / 100, 0)).to.equal(error.value)
+    expect(financial.PRICEMAT(undefined, '01/01/2027', '01/01/2017', 7 / 100, 8 / 100, 0)).to.equal(error.na)
+    expect(financial.PRICEMAT('07/01/2017', null, '01/01/2017', 7 / 100, 8 / 100, 0)).to.equal(error.value)
+    expect(financial.PRICEMAT('07/01/2017', undefined, '01/01/2017', 7 / 100, 8 / 100, 0)).to.equal(error.na)
+    expect(financial.PRICEMAT('07/01/2017', '01/01/2027', undefined, 8 / 100, 0)).to.equal(error.na)
+    expect(financial.PRICEMAT('07/01/2017', '01/01/2027', null, 8 / 100, 0)).to.equal(error.value)
+    expect(financial.PRICEMAT('07/01/2017', '01/01/2027', '01/01/2017', 7 / 100, undefined, 0)).to.equal(error.na)
+    expect(financial.PRICEMAT('07/01/2017', '01/01/2027', '01/01/2017', 7 / 100, null, 0)).to.equal(error.value)
+
+    expect(financial.PRICEMAT('07/01/2017', '01/01/2027', '01/01/2017', 7 / 100, 8 / 100, 0, 1)).to.equal(error.na)
+    expect(financial.PRICEMAT('07/01/2017', '01/01/2027', '01/01/2017', 7 / 100)).to.equal(error.na)
+    expect(financial.PRICEMAT('07/01/2017', '01/01/2027')).to.equal(error.na)
+    expect(financial.PRICEMAT('07/01/2017')).to.equal(error.na)
+    expect(financial.PRICEMAT()).to.equal(error.na)
+
+    Object.values(error).forEach((err) => {
+      expect(financial.PRICEMAT(err, '01/01/2027', '01/01/2017', 7 / 100, 8 / 100, 0)).to.equal(err)
+      expect(financial.PRICEMAT('07/01/2017', err, '01/01/2017', 7 / 100, 8 / 100, 0)).to.equal(err)
+      expect(financial.PRICEMAT('07/01/2017', '01/01/2027', err, 8 / 100, 0)).to.equal(err)
+      expect(financial.PRICEMAT('07/01/2017', '01/01/2027', '01/01/2017', 7 / 100, err, 0)).to.equal(err)
+      expect(financial.PRICEMAT('07/01/2017', '01/01/2027', '01/01/2017', 7 / 100, 8 / 100, err)).to.equal(err)
+    })
   })
 
   it('PV', () => {

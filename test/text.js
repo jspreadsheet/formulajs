@@ -256,7 +256,6 @@ describe('Text', () => {
     expect(text.DBCS('abc')).to.equal('ａｂｃ')
 
     expect(text.DBCS([['hello', 'hello']])).to.eql([['ｈｅｌｌｏ', 'ｈｅｌｌｏ']])
-
   })
 
   it('JIS', () => {

@@ -1789,8 +1789,73 @@ export function PRICEDISC(settlement, maturity, discount, redemption, basis = 0)
  * @param {*} basis Optional. The type of day count basis to use.
  * @returns
  */
-export function PRICEMAT() {
-  throw new Error('PRICEMAT is not implemented')
+export function PRICEMAT(settlement, maturity, issue, rate, yld, basis = 0) {
+  if (arguments.length < 5 || arguments.length > 6 || utils.anyIsUndefined(settlement, maturity, issue, rate, yld)) {
+    return error.na
+  }
+
+  const anyError = utils.anyError(...arguments)
+
+  if (anyError) {
+    return anyError
+  }
+
+  if (
+    utils.anyIsBoolean(settlement, maturity, issue, rate, yld) ||
+    utils.anyIsNot('single', ...arguments) ||
+    utils.anyIsNull(...arguments)
+  ) {
+    return error.value
+  }
+
+  settlement = utils.parseDate(settlement)
+  maturity = utils.parseDate(maturity)
+  issue = utils.parseDate(issue)
+  rate = utils.parseNumber(rate)
+  yld = utils.parseNumber(yld)
+
+  if (utils.anyIsError(settlement, maturity, issue, rate, yld, basis)) {
+    return error.value
+  }
+
+  settlement = utils.dateToSerialNumber(settlement)
+  maturity = utils.dateToSerialNumber(maturity)
+  issue = utils.dateToSerialNumber(issue)
+
+  let B, DSM, DIM, A
+  switch (basis) {
+    case 0:
+      B = 360
+      DSM = dateTime.DAYS360(settlement, maturity, false)
+      DIM = dateTime.DAYS360(issue, maturity, false)
+      A = dateTime.DAYS360(issue, settlement, false)
+      break
+    case 1:
+      B = 365
+      DSM = dateTime.DATEDIF(settlement, maturity, 'D')
+      DIM = dateTime.DATEDIF(issue, maturity, 'D')
+      A = dateTime.DATEDIF(issue, settlement, 'D')
+      break
+    case 2:
+      B = 360
+      DSM = dateTime.DATEDIF(settlement, maturity, 'D')
+      DIM = dateTime.DATEDIF(issue, maturity, 'D')
+      break
+    case 3:
+      B = 365
+      DSM = dateTime.DATEDIF(settlement, maturity, 'D')
+      DIM = dateTime.DATEDIF(issue, maturity, 'D')
+      break
+    case 4:
+      B = 360
+      DSM = dateTime.DAYS360(settlement, maturity, true)
+      DIM = dateTime.DAYS360(issue, maturity, true)
+      break
+    default:
+      return error.num
+  }
+
+  return (100 + (DIM / B) * rate * 100) / (1 + (DSM / B) * yld) - (A / B) * rate * 100
 }
 
 /**
