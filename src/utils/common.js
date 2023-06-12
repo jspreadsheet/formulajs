@@ -412,6 +412,18 @@ export function anyIsUndefined() {
   return false
 }
 
+export function anyIsNot(type, ...variables) {
+  let n = variables.length
+
+  while (n--) {
+    if (getVariableType(variables[n]) !== type) {
+      return true
+    }
+  }
+
+  return false
+}
+
 // Misc
 export function isDefined(arg) {
   return arg !== undefined && arg !== null

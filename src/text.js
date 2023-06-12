@@ -3,7 +3,6 @@ import * as utils from './utils/common.js'
 import { ROUND } from './math-trig.js'
 import THBText from 'thai-baht-text'
 
-
 function halfWidthStr(str) {
   let halfWidthStr = ''
   for (var i = 0; i < str.length; i++) {

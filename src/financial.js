@@ -953,8 +953,69 @@ export function FVSCHEDULE(principal, schedule) {
  * @param {*} basis Optional. The type of day count basis to use.
  * @returns
  */
-export function INTRATE() {
-  throw new Error('INTRATE is not implemented')
+export function INTRATE(settlement, maturity, investment, redemption, basis = 0) {
+  if (
+    arguments.length < 4 ||
+    arguments.length > 5 ||
+    utils.anyIsUndefined(settlement, maturity, investment, redemption)
+  ) {
+    return error.na
+  }
+
+  const anyError = utils.anyError(settlement, maturity, investment, redemption, basis)
+
+  if (anyError) {
+    return anyError
+  }
+
+  if (
+    utils.anyIsBoolean(settlement, maturity, investment, redemption) ||
+    utils.anyIsNot('single', ...arguments) ||
+    utils.anyIsNull(...arguments)
+  ) {
+    return error.value
+  }
+
+  settlement = utils.parseDate(settlement)
+  maturity = utils.parseDate(maturity)
+  investment = utils.parseNumber(investment)
+  redemption = utils.parseNumber(redemption)
+  basis = utils.parseNumber(basis)
+
+  if (utils.anyIsError(settlement, maturity, investment, redemption, basis)) {
+    return error.value
+  }
+
+  settlement = utils.dateToSerialNumber(settlement)
+  maturity = utils.dateToSerialNumber(maturity)
+
+  let basisVal, diff
+  switch (basis) {
+    case 0:
+      basisVal = 360
+      diff = dateTime.DAYS360(settlement, maturity, false)
+      break
+    case 1:
+      basisVal = 365
+      diff = dateTime.DATEDIF(settlement, maturity, 'D')
+      break
+    case 2:
+      basisVal = 360
+      diff = dateTime.DATEDIF(settlement, maturity, 'D')
+      break
+    case 3:
+      basisVal = 365
+      diff = dateTime.DATEDIF(settlement, maturity, 'D')
+      break
+    case 4:
+      basisVal = 360
+      diff = dateTime.DAYS360(settlement, maturity, true)
+      break
+    default:
+      return error.num
+  }
+
+  return ((redemption - investment) / investment) * (basisVal / diff)
 }
 
 /**

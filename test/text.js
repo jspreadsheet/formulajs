@@ -19,19 +19,19 @@ describe('Text', () => {
   })
 
   it('BAHTTEXT', () => {
-      expect(text.BAHTTEXT(1234)).to.equal('หนึ่งพันสองร้อยสามสิบสี่บาทถ้วน')
-      expect(text.BAHTTEXT(1)).to.equal('หนึ่งบาทถ้วน')
-      expect(text.BAHTTEXT(0)).to.equal('ศูนย์บาทถ้วน')
-      expect(text.BAHTTEXT('1234')).to.equal('หนึ่งพันสองร้อยสามสิบสี่บาทถ้วน')
-      expect(text.BAHTTEXT(null)).to.equal('ศูนย์บาทถ้วน')
-      
-      expect(text.BAHTTEXT('string')).to.equal(error.value)
-      expect(text.BAHTTEXT()).to.equal(error.na)
-      expect(text.BAHTTEXT(1234, 1234)).to.equal(error.na)
+    expect(text.BAHTTEXT(1234)).to.equal('หนึ่งพันสองร้อยสามสิบสี่บาทถ้วน')
+    expect(text.BAHTTEXT(1)).to.equal('หนึ่งบาทถ้วน')
+    expect(text.BAHTTEXT(0)).to.equal('ศูนย์บาทถ้วน')
+    expect(text.BAHTTEXT('1234')).to.equal('หนึ่งพันสองร้อยสามสิบสี่บาทถ้วน')
+    expect(text.BAHTTEXT(null)).to.equal('ศูนย์บาทถ้วน')
 
-      Object.values(error).forEach((err) => {
-        expect(text.BAHTTEXT(err)).to.equal(err)
-      })
+    expect(text.BAHTTEXT('string')).to.equal(error.value)
+    expect(text.BAHTTEXT()).to.equal(error.na)
+    expect(text.BAHTTEXT(1234, 1234)).to.equal(error.na)
+
+    Object.values(error).forEach((err) => {
+      expect(text.BAHTTEXT(err)).to.equal(err)
+    })
   })
 
   it('CHAR', () => {
