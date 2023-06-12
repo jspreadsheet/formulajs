@@ -250,9 +250,7 @@ export function CONCATENATE() {
 
 export const CONCAT = CONCATENATE
 
-// TODO
 /**
- * -- Not implemented --
  *
  * Changes half-width (single-byte) English letters or katakana within a character string to full-width (double-byte) characters.
  *
@@ -290,6 +288,19 @@ export function DBCS(text) {
   }
 
   return fullWidthStr(text)
+}
+
+/**
+ *
+ * Old name of DBCS. Changes half-width (single-byte) English letters or katakana within a character string to full-width (double-byte) characters.
+ *
+ * Category: Text
+ *
+ * @param {*} text The text or a reference to a value that contains the text you want to change. If text does not contain any half-width English letters or katakana, text is not changed.
+ * @returns
+ */
+export function JIS() {
+  return DBCS.apply(this, arguments)
 }
 
 /**

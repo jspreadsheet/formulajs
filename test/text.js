@@ -250,6 +250,20 @@ describe('Text', () => {
     expect(text.DBCS('abc')).to.equal('ａｂｃ')
   })
 
+  it('JIS', () => {
+    expect(text.JIS('hello')).to.equal('ｈｅｌｌｏ')
+    expect(text.JIS()).to.equal(error.na)
+    expect(text.JIS('abc', 'def')).to.equal(error.na)
+    expect(text.JIS(1)).to.equal('１')
+    expect(text.JIS(false)).to.equal('ｆａｌｓｅ')
+    expect(text.JIS(null)).to.equal('')
+    expect(text.JIS([['hello'], ['iutchub']])).to.eql([['ｈｅｌｌｏ'], ['ｉｕｔｃｈｕｂ']])
+    expect(text.JIS('在梁思成先生作品提到的古建筑的「角叶」的含义及其图片')).to.equal(
+      '在梁思成先生作品提到的古建筑的「角叶」的含义及其图片'
+    )
+    expect(text.JIS('abc')).to.equal('ａｂｃ')
+  })
+
   it('DOLLAR', () => {
     expect(text.DOLLAR(1234.567)).to.equal('$1,234.57')
     expect(text.DOLLAR(1234.567, -2)).to.equal('$1,200')
