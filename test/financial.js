@@ -332,9 +332,10 @@ describe('Financial', () => {
     expect(financial.AMORLINC).to.throw('AMORLINC is not implemented')
   })
 
-  // TODO: implement
   it('COUPDAYBS', () => {
-    expect(financial.COUPDAYBS).to.throw('COUPDAYBS is not implemented')
+    expect(financial.COUPDAYBS('01/25/2011', '11/15/2011', 2, 0)).to.equal(70)
+    expect(financial.COUPDAYBS('01/25/2011', '11/15/2011', 2, 1)).to.equal(71)
+    expect(financial.COUPDAYBS('02/15/2019', '01/01/2024', 2, 0)).to.equal(44)
   })
 
   // TODO: implement
@@ -357,9 +358,14 @@ describe('Financial', () => {
     expect(financial.COUPNUM).to.throw('COUPNUM is not implemented')
   })
 
-  // TODO: implement
+  // TODO: Solve Problem on the commented case
   it('COUPPCD', () => {
-    expect(financial.COUPPCD).to.throw('COUPPCD is not implemented')
+    expect(financial.COUPPCD('06/01/2012', '05/30/18', 2, 4)).to.equal(41059)
+    // expect(financial.COUPPCD('06/01/2012', '05/31/18', 2, 4)).to.equal(41060)
+    expect(financial.COUPPCD('06/01/2012', '06/01/18', 2, 4)).to.equal(41061)
+    expect(financial.COUPPCD('06/01/2012', '06/02/18', 2, 4)).to.equal(40879)
+    expect(financial.COUPPCD('01/25/2011', '11/15/11', 2, 1)).to.equal(40497)
+    expect(financial.COUPPCD('09/01/2019', '01/01/29', 2, 0)).to.equal(43647)
   })
 
   it('CUMIPMT', () => {
@@ -2211,9 +2217,8 @@ describe('Financial', () => {
     })
   })
 
-  // TODO: implement
   it('YIELD', () => {
-    expect(financial.YIELD).to.throw('YIELD is not implemented')
+    expect(financial.YIELD('02/15/2008', '11/15/2016', 5.75/100, 95.04287, 100, 2, 0)).to.approximately(6.5/100, 1e-9)
   })
 
   // TODO: implement

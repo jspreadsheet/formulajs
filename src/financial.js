@@ -147,8 +147,15 @@ export function AMORLINC() {
  * @param {*} basis Optional. The type of day count basis to use.
  * @returns
  */
-export function COUPDAYBS() {
-  throw new Error('COUPDAYBS is not implemented')
+export function COUPDAYBS(settlement, maturity, frequency, basis) {
+  const aSettle = settlement
+  const aDate = COUPPCD(aSettle, maturity, frequency)
+
+  if ([0, 4].includes(basis)) {
+    return dateTime.DAYS360(aDate, aSettle, false)
+  }
+
+  return Math.floor(dateTime.DATEDIF(aDate, aSettle, 'D'))
 }
 
 // TODO
@@ -238,8 +245,26 @@ export function COUPNUM() {
  * @param {*} basis Optional. The type of day count basis to use.
  * @returns
  */
-export function COUPPCD() {
-  throw new Error('COUPPCD is not implemented')
+export function COUPPCD(settlement, maturity, frequency) {
+  settlement = utils.parseDate(settlement)
+  maturity = utils.parseDate(maturity)
+
+  let result = maturity
+  result.setFullYear(settlement.getFullYear())
+
+  if ((result - settlement) < 0) {
+    result = new Date(result.getFullYear() + 1, result.getMonth(), result.getDate())
+  }
+
+  while ((result - settlement) > 0) {
+    result = new Date(result.getFullYear(), result.getMonth() + (-12 / frequency), result.getDate())
+  }
+
+
+  result.setHours(result.getHours() - 3)
+
+  // console.log(utils.dateToSerialNumber(result))
+  return Math.floor(utils.dateToSerialNumber(result))
 }
 
 /**
@@ -2495,8 +2520,40 @@ export function XNPV(rate, values, dates) {
  * @param {*} basis Optional. The type of day count basis to use.
  * @returns
  */
-export function YIELD() {
-  throw new Error('YIELD is not implemented')
+export function YIELD(settlement, maturity, rate, pr, redemption, frequency, basis) {
+  settlement = utils.parseDate(settlement)
+  maturity = utils.parseDate(maturity)
+
+  settlement = utils.dateToSerialNumber(settlement)
+  maturity = utils.dateToSerialNumber(maturity)
+
+  let B, DSM
+  switch (basis) {
+    case 0:
+      B = 360
+      DSM = dateTime.DAYS360(settlement, maturity, false)
+      break
+    case 1:
+      B = 365
+      DSM = dateTime.DATEDIF(settlement, maturity, 'D')
+      break
+    case 2:
+      B = 360
+      DSM = dateTime.DATEDIF(settlement, maturity, 'D')
+      break
+    case 3:
+      B = 365
+      DSM = dateTime.DATEDIF(settlement, maturity, 'D')
+      break
+    case 4:
+      B = 360
+      DSM = dateTime.DAYS360(settlement, maturity, true)
+      break
+    default:
+      return error.num
+  }
+
+  return (redemption/100 + rate/frequency) - (pr/100)
 }
 
 // TODO
