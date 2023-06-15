@@ -1618,6 +1618,22 @@ export function ROMAN(number) {
   return new Array(+digits.join('') + 1).join('M') + roman
 }
 
+function roundSingle(number, num_digits) {
+  num_digits = utils.parseNumber(num_digits)
+  number = utils.parseNumber(number)
+
+  if (utils.anyIsError(number, num_digits)) {
+    return error.value
+  }
+  
+  const signal = Math.sign(number)
+  number = Math.abs(number)
+
+  var result = Math.round(number * Math.pow(10, num_digits)) / Math.pow(10, num_digits)
+
+  return result * signal
+}
+
 /**
  * Rounds a number to a specified number of digits.
  *
@@ -1636,20 +1652,32 @@ export function ROUND(number, num_digits) {
     return error.value
   }
 
-  number = utils.parseNumber(number)
-  num_digits = utils.parseNumber(num_digits)
   const anyError = utils.anyError(number, num_digits)
-
   if (anyError) {
     return anyError
   }
 
-  const signal = Math.sign(number)
-  number = Math.abs(number)
+  if (utils.getVariableType(number) === 'single') {
+    return roundSingle(number, num_digits)
+  }
 
-  var result = Math.round(number * Math.pow(10, num_digits)) / Math.pow(10, num_digits)
+  const result = []
 
-  return result * signal
+  const rows = number.length
+  const columns = number[0].length
+
+  for (let i = 0; i < rows; i++) {
+    result[0] = []
+    for (let j = 0; j < columns; j++) {
+      result[i][j] = roundSingle(number[i][j], num_digits)
+    }
+  }
+
+  if (result.length === 1 && result[0].length === 1) {
+    return result[0][0]
+  }
+
+  return result
 }
 
 /**
