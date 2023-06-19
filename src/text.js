@@ -1,6 +1,7 @@
 import * as error from './utils/error.js'
 import * as utils from './utils/common.js'
 import { ROUND } from './math-trig.js'
+import THBText from 'thai-baht-text'
 
 function halfWidthStr(str) {
   let halfWidthStr = ''
@@ -70,9 +71,8 @@ export function ASC(text) {
   return halfWidthStr(text)
 }
 
-// TODO
+// TODO: Implement negative number support
 /**
- * -- Not implemented --
  *
  * Converts a number to text, using the ß (baht) currency format.
  *
@@ -81,8 +81,26 @@ export function ASC(text) {
  * @param {*} number A number you want to convert to text, or a reference to a value containing a number, or a formula that evaluates to a number.
  * @returns
  */
-export function BAHTTEXT() {
-  throw new Error('BAHTTEXT is not implemented')
+export function BAHTTEXT(num) {
+  if (arguments.length != 1) {
+    return error.na
+  }
+
+  if (num && num.formulaError) {
+    return num
+  }
+
+  num = utils.parseNumber(num)
+
+  if (utils.anyIsError(num) || num < 0) {
+    return error.value
+  }
+
+  if (num === 0) {
+    return 'ศูนย์บาทถ้วน'
+  }
+
+  return THBText(num)
 }
 
 /**
@@ -231,9 +249,7 @@ export function CONCATENATE() {
 
 export const CONCAT = CONCATENATE
 
-// TODO
 /**
- * -- Not implemented --
  *
  * Changes half-width (single-byte) English letters or katakana within a character string to full-width (double-byte) characters.
  *
@@ -271,6 +287,19 @@ export function DBCS(text) {
   }
 
   return fullWidthStr(text)
+}
+
+/**
+ *
+ * Old name of DBCS. Changes half-width (single-byte) English letters or katakana within a character string to full-width (double-byte) characters.
+ *
+ * Category: Text
+ *
+ * @param {*} text The text or a reference to a value that contains the text you want to change. If text does not contain any half-width English letters or katakana, text is not changed.
+ * @returns
+ */
+export function JIS() {
+  return DBCS.apply(this, arguments)
 }
 
 /**

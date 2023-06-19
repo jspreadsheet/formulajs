@@ -133,9 +133,7 @@ export function AMORLINC() {
   throw new Error('AMORLINC is not implemented')
 }
 
-// TODO
 /**
- * -- Not implemented --
  *
  * Returns the number of days from the beginning of the coupon period to the settlement date.
  *
@@ -147,13 +145,38 @@ export function AMORLINC() {
  * @param {*} basis Optional. The type of day count basis to use.
  * @returns
  */
-export function COUPDAYBS() {
-  throw new Error('COUPDAYBS is not implemented')
+export function COUPDAYBS(settlement, maturity, frequency, basis = 0) {
+  if (arguments.length < 3 || arguments.length > 4 || utils.anyIsUndefined(settlement, maturity, frequency)) {
+    return error.na
+  }
+  
+  if (utils.anyIsBoolean(settlement, maturity, frequency, basis) || utils.anyIsNull(settlement, maturity, frequency, basis)) {
+    return error.value
+  }
+
+  settlement = utils.parseDate(settlement)
+  maturity = utils.parseDate(maturity)
+  
+  frequency = utils.parseNumber(frequency)
+  basis = utils.parseNumber(basis)
+
+  if (utils.anyIsError(settlement, maturity, frequency, basis)) {
+    return error.value
+  }
+
+  maturity = utils.dateToSerialNumber(maturity)
+  settlement = utils.dateToSerialNumber(settlement)
+
+  const pcd = COUPPCD(settlement, maturity, frequency)
+
+  if ([0, 4].includes(basis)) {
+    return dateTime.DAYS360(pcd, settlement, false)
+  }
+
+  return Math.floor(dateTime.DATEDIF(pcd, settlement, 'D'))
 }
 
-// TODO
 /**
- * -- Not implemented --
  *
  * Returns the number of days in the coupon period that contains the settlement date.
  *
@@ -166,13 +189,61 @@ export function COUPDAYBS() {
  * @returns
   throw new Error('COUPDAYSNC is not implemented')
  */
-export function COUPDAYS() {
-  throw new Error('COUPDAYS is not implemented')
+export function COUPDAYS(settlement, maturity, frequency, basis = 0) {
+  if (arguments.length < 3 || arguments.length > 4 || utils.anyIsUndefined(settlement, maturity, frequency)) {
+    return error.na
+  }
+
+  if (utils.anyIsBoolean(...arguments) || utils.anyIsNull(...arguments)) {
+    return error.value
+  }
+
+  settlement = utils.parseDate(settlement)
+  maturity = utils.parseDate(maturity)
+  frequency = utils.parseNumber(frequency)
+  basis = utils.parseNumber(basis)
+
+  if (utils.anyIsError(settlement, maturity, frequency, basis)) {
+    return error.value
+  }
+
+  settlement = utils.dateToSerialNumber(settlement)
+  maturity = utils.dateToSerialNumber(maturity)
+
+  if (basis === 1) {
+    let pcd = utils.parseDate(COUPPCD(settlement, maturity, frequency))
+
+    let nextDate = new Date(pcd.getFullYear(), pcd.getMonth() + 12 / frequency, pcd.getDate())
+    nextDate.setHours(nextDate.getHours() - 3)
+
+    pcd = utils.dateToSerialNumber(pcd)
+    nextDate = utils.dateToSerialNumber(nextDate)
+
+    return dateTime.DATEDIF(pcd, nextDate, 'D') + 1
+  }
+
+  let B
+  switch (basis) {
+    case 0:
+      B = 360
+      break
+    case 2:
+      B = 360
+      break
+    case 3:
+      B = 365
+      break
+    case 4:
+      B = 360
+      break
+    default:
+      return error.num
+  }
+
+  return B / frequency
 }
 
-// TODO
 /**
- * -- Not implemented --
  *
  * Returns the number of days from the settlement date to the next coupon date.
  *
@@ -184,13 +255,38 @@ export function COUPDAYS() {
  * @param {*} basis Optional. The type of day count basis to use.
  * @returns
  */
-export function COUPDAYSNC() {
-  throw new Error('COUPDAYSNC is not implemented')
+export function COUPDAYSNC(settlement, maturity, frequency, basis = 0) {
+  if (arguments.length < 3 || arguments.length > 4 || utils.anyIsUndefined(settlement, maturity, frequency)) {
+    return error.na
+  }
+
+  if (utils.anyIsBoolean(...arguments) || utils.anyIsNull(...arguments)) {
+    return error.value
+  }
+
+  settlement = utils.parseDate(settlement)
+  maturity = utils.parseDate(maturity)
+  frequency = utils.parseNumber(frequency)
+  basis = utils.parseNumber(basis)
+
+  if (utils.anyIsError(settlement, maturity, frequency, basis)) {
+    return error.value
+  }
+
+  settlement = utils.dateToSerialNumber(settlement)
+  maturity = utils.dateToSerialNumber(maturity)
+
+  if (basis !== 0 && basis !== 4) {
+    let ncd = COUPNCD(settlement, maturity, frequency, basis)
+    return Math.floor(dateTime.DATEDIF(settlement, ncd, 'D') + 1)
+  }
+
+  return Math.floor(
+    COUPDAYS(settlement, maturity, frequency, basis) - COUPDAYBS(settlement, maturity, frequency, basis)
+  )
 }
 
-// TODO
 /**
- * -- Not implemented --
  *
  * Returns the next coupon date after the settlement date.
  *
@@ -202,13 +298,39 @@ export function COUPDAYSNC() {
  * @param {*} basis Optional. The type of day count basis to use.
  * @returns
  */
-export function COUPNCD() {
-  throw new Error('COUPNCD is not implemented')
+export function COUPNCD(settlement, maturity, frequency, basis) {
+  if (arguments.length < 3 || arguments.length > 4 || utils.anyIsUndefined(settlement, maturity, frequency)) {
+    return error.na
+  }
+
+  if (utils.anyIsBoolean(...arguments) || utils.anyIsNull(...arguments)) {
+    return error.value
+  }
+
+  settlement = utils.parseDate(settlement)
+  maturity = utils.parseDate(maturity)
+  frequency = utils.parseNumber(frequency)
+  basis = utils.parseNumber(basis)
+
+  if (utils.anyIsError(settlement, maturity, frequency, basis)) {
+    return error.value
+  }
+
+  let matur = maturity
+  matur.setFullYear(settlement.getFullYear())
+
+  if (matur - settlement > 0) {
+    matur = new Date(matur.getFullYear() - 1, matur.getMonth(), matur.getDate())
+  }
+
+  while (matur - settlement <= 0) {
+    matur = new Date(matur.getFullYear(), matur.getMonth() + 12 / frequency, matur.getDate())
+  }
+
+  return Math.floor(utils.dateToSerialNumber(matur))
 }
 
-// TODO
 /**
- * -- Not implemented --
  *
  * Returns the number of coupons payable between the settlement date and maturity date.
  *
@@ -220,13 +342,35 @@ export function COUPNCD() {
  * @param {*} basis Optional. The type of day count basis to use.
  * @returns
  */
-export function COUPNUM() {
-  throw new Error('COUPNUM is not implemented')
+export function COUPNUM(settlement, maturity, frequency, basis) {
+  if (arguments.length < 3 || arguments.length > 4 || utils.anyIsUndefined(settlement, maturity, frequency)) {
+    return error.na
+  }
+
+  if (utils.anyIsBoolean(...arguments) || utils.anyIsNull(...arguments)) {
+    return error.value
+  }
+
+  settlement = utils.parseDate(settlement)
+  maturity = utils.parseDate(maturity)
+  frequency = utils.parseNumber(frequency)
+  basis = utils.parseNumber(basis)
+
+  if (utils.anyIsError(settlement, maturity, frequency, basis)) {
+    return error.value
+  }
+
+  const settlementSN = utils.dateToSerialNumber(settlement)
+  const maturitySN = utils.dateToSerialNumber(maturity)
+  let pcd = COUPPCD(settlementSN, maturitySN, frequency, basis)
+
+  pcd = utils.parseDate(pcd)
+
+  const months = (maturity.getFullYear() - pcd.getFullYear()) * 12 + maturity.getMonth() - pcd.getMonth()
+  return (months * frequency) / 12
 }
 
-// TODO
 /**
- * -- Not implemented --
  *
  * Returns the previous coupon date before the settlement date.
  *
@@ -238,8 +382,36 @@ export function COUPNUM() {
  * @param {*} basis Optional. The type of day count basis to use.
  * @returns
  */
-export function COUPPCD() {
-  throw new Error('COUPPCD is not implemented')
+export function COUPPCD(settlement, maturity, frequency, basis = 0) {
+  if (arguments.length < 3 || arguments.length > 4 || utils.anyIsUndefined(settlement, maturity, frequency)) {
+    return error.na
+  }
+
+  if (utils.anyIsBoolean(...arguments) || utils.anyIsNull(...arguments)) {
+    return error.value
+  }
+
+  settlement = utils.parseDate(settlement)
+  maturity = utils.parseDate(maturity)
+  frequency = utils.parseNumber(frequency)
+  basis = utils.parseNumber(basis)
+
+  if (utils.anyIsError(settlement, maturity, frequency, basis)) {
+    return error.value
+  }
+
+  let result = maturity
+  result.setFullYear(settlement.getFullYear())
+
+  if (result - settlement < 0) {
+    result = new Date(result.getFullYear() + 1, result.getMonth(), result.getDate())
+  }
+
+  while (result - settlement > 0) {
+    result = new Date(result.getFullYear(), result.getMonth() + -12 / frequency, result.getDate())
+  }
+
+  return Math.floor(utils.dateToSerialNumber(result))
 }
 
 /**
@@ -938,9 +1110,7 @@ export function FVSCHEDULE(principal, schedule) {
   return future
 }
 
-// TODO
 /**
- * -- Not implemented --
  *
  * Returns the interest rate for a fully invested security.
  *
@@ -953,8 +1123,69 @@ export function FVSCHEDULE(principal, schedule) {
  * @param {*} basis Optional. The type of day count basis to use.
  * @returns
  */
-export function INTRATE() {
-  throw new Error('INTRATE is not implemented')
+export function INTRATE(settlement, maturity, investment, redemption, basis = 0) {
+  if (
+    arguments.length < 4 ||
+    arguments.length > 5 ||
+    utils.anyIsUndefined(settlement, maturity, investment, redemption)
+  ) {
+    return error.na
+  }
+
+  const anyError = utils.anyError(settlement, maturity, investment, redemption, basis)
+
+  if (anyError) {
+    return anyError
+  }
+
+  if (
+    utils.anyIsBoolean(settlement, maturity, investment, redemption) ||
+    utils.anyIsNot('single', ...arguments) ||
+    utils.anyIsNull(...arguments)
+  ) {
+    return error.value
+  }
+
+  settlement = utils.parseDate(settlement)
+  maturity = utils.parseDate(maturity)
+  investment = utils.parseNumber(investment)
+  redemption = utils.parseNumber(redemption)
+  basis = utils.parseNumber(basis)
+
+  if (utils.anyIsError(settlement, maturity, investment, redemption, basis)) {
+    return error.value
+  }
+
+  settlement = utils.dateToSerialNumber(settlement)
+  maturity = utils.dateToSerialNumber(maturity)
+
+  let basisVal, diff
+  switch (basis) {
+    case 0:
+      basisVal = 360
+      diff = dateTime.DAYS360(settlement, maturity, false)
+      break
+    case 1:
+      basisVal = 365
+      diff = dateTime.DATEDIF(settlement, maturity, 'D')
+      break
+    case 2:
+      basisVal = 360
+      diff = dateTime.DATEDIF(settlement, maturity, 'D')
+      break
+    case 3:
+      basisVal = 365
+      diff = dateTime.DATEDIF(settlement, maturity, 'D')
+      break
+    case 4:
+      basisVal = 360
+      diff = dateTime.DAYS360(settlement, maturity, true)
+      break
+    default:
+      return error.num
+  }
+
+  return ((redemption - investment) / investment) * (basisVal / diff)
 }
 
 /**
@@ -1616,9 +1847,7 @@ export function PPMT(rate, per, nper, pv, fv = 0, type = 0) {
   return isFinite(result) ? result : error.num
 }
 
-// TODO
 /**
- * -- Not implemented --
  *
  * Returns the price per $100 face value of a security that pays periodic interest.
  *
@@ -1633,8 +1862,53 @@ export function PPMT(rate, per, nper, pv, fv = 0, type = 0) {
  * @param {*} basis Optional. The type of day count basis to use.
  * @returns
  */
-export function PRICE() {
-  throw new Error('PRICE is not implemented')
+export function PRICE(settlement, maturity, rate, yld, redemption, frequency, basis = 0) {
+  if (
+    arguments.length > 7 ||
+    arguments.length < 6 ||
+    utils.anyIsUndefined(settlement, maturity, rate, yld, redemption, frequency)
+  ) {
+    return error.na
+  }
+
+  if (utils.anyIsBoolean(settlement, maturity, rate, yld, redemption, frequency) || utils.anyIsNull(...arguments)) {
+    return error.value
+  }
+
+  const anyError = utils.anyError(...arguments)
+
+  if (anyError) {
+    return anyError
+  }
+
+  const sett = utils.parseDate(settlement)
+  const mat = utils.parseDate(maturity)
+  rate = utils.parseNumber(rate)
+  yld = utils.parseNumber(yld)
+  redemption = utils.parseNumber(redemption)
+  frequency = utils.parseNumber(frequency)
+  basis = utils.parseNumber(basis)
+
+  if (utils.anyIsError(sett, mat, rate, yld, redemption, frequency, basis)) {
+    return error.value
+  }
+
+  const E = COUPDAYS(settlement, maturity, frequency, basis)
+  const DSC_E = COUPDAYSNC(settlement, maturity, frequency, basis) / E
+  const N = COUPNUM(settlement, maturity, frequency, basis)
+  const A = COUPDAYBS(settlement, maturity, frequency, basis)
+
+  let ret = redemption / (1 + yld / frequency) ** (N - 1 + DSC_E)
+  ret -= 100 * (rate / frequency) * (A / E)
+
+  let t1 = 100 * (rate / frequency)
+  let t2 = 1 + yld / frequency
+
+  for (let i = 0; i < N; i++) {
+    ret += t1 / t2 ** (i + DSC_E)
+  }
+
+  return ret
 }
 
 /**
@@ -1730,8 +2004,73 @@ export function PRICEDISC(settlement, maturity, discount, redemption, basis = 0)
  * @param {*} basis Optional. The type of day count basis to use.
  * @returns
  */
-export function PRICEMAT() {
-  throw new Error('PRICEMAT is not implemented')
+export function PRICEMAT(settlement, maturity, issue, rate, yld, basis = 0) {
+  if (arguments.length < 5 || arguments.length > 6 || utils.anyIsUndefined(settlement, maturity, issue, rate, yld)) {
+    return error.na
+  }
+
+  const anyError = utils.anyError(...arguments)
+
+  if (anyError) {
+    return anyError
+  }
+
+  if (
+    utils.anyIsBoolean(settlement, maturity, issue, rate, yld) ||
+    utils.anyIsNot('single', ...arguments) ||
+    utils.anyIsNull(...arguments)
+  ) {
+    return error.value
+  }
+
+  settlement = utils.parseDate(settlement)
+  maturity = utils.parseDate(maturity)
+  issue = utils.parseDate(issue)
+  rate = utils.parseNumber(rate)
+  yld = utils.parseNumber(yld)
+
+  if (utils.anyIsError(settlement, maturity, issue, rate, yld, basis)) {
+    return error.value
+  }
+
+  settlement = utils.dateToSerialNumber(settlement)
+  maturity = utils.dateToSerialNumber(maturity)
+  issue = utils.dateToSerialNumber(issue)
+
+  let B, DSM, DIM, A
+  switch (basis) {
+    case 0:
+      B = 360
+      DSM = dateTime.DAYS360(settlement, maturity, false)
+      DIM = dateTime.DAYS360(issue, maturity, false)
+      A = dateTime.DAYS360(issue, settlement, false)
+      break
+    case 1:
+      B = 365
+      DSM = dateTime.DATEDIF(settlement, maturity, 'D')
+      DIM = dateTime.DATEDIF(issue, maturity, 'D')
+      A = dateTime.DATEDIF(issue, settlement, 'D')
+      break
+    case 2:
+      B = 360
+      DSM = dateTime.DATEDIF(settlement, maturity, 'D')
+      DIM = dateTime.DATEDIF(issue, maturity, 'D')
+      break
+    case 3:
+      B = 365
+      DSM = dateTime.DATEDIF(settlement, maturity, 'D')
+      DIM = dateTime.DATEDIF(issue, maturity, 'D')
+      break
+    case 4:
+      B = 360
+      DSM = dateTime.DAYS360(settlement, maturity, true)
+      DIM = dateTime.DAYS360(issue, maturity, true)
+      break
+    default:
+      return error.num
+  }
+
+  return (100 + (DIM / B) * rate * 100) / (1 + (DSM / B) * yld) - (A / B) * rate * 100
 }
 
 /**
@@ -2354,9 +2693,7 @@ export function XNPV(rate, values, dates) {
   return result
 }
 
-// TODO
 /**
- * -- Not implemented --
  *
  * Returns the yield on a security that pays periodic interest.
  *
@@ -2371,8 +2708,72 @@ export function XNPV(rate, values, dates) {
  * @param {*} basis Optional. The type of day count basis to use.
  * @returns
  */
-export function YIELD() {
-  throw new Error('YIELD is not implemented')
+export function YIELD(settlement, maturity, rate, pr, redemption, frequency, basis = 0) {
+  if (
+    arguments.length > 7 ||
+    arguments.length < 6 ||
+    utils.anyIsUndefined(settlement, maturity, rate, pr, redemption, frequency)
+  ) {
+    return error.na
+  }
+
+  if (utils.anyIsBoolean(settlement, maturity, rate, pr, redemption, frequency) || utils.anyIsNull(...arguments)) {
+    return error.value
+  }
+
+  const anyError = utils.anyError(...arguments)
+
+  if (anyError) {
+    return anyError
+  }
+
+  const sett = utils.parseDate(settlement)
+  const mat = utils.parseDate(maturity)
+  rate = utils.parseNumber(rate)
+  pr = utils.parseNumber(pr)
+  redemption = utils.parseNumber(redemption)
+  frequency = utils.parseNumber(frequency)
+  basis = utils.parseNumber(basis)
+
+  if (utils.anyIsError(sett, mat, rate, pr, redemption, frequency, basis)) {
+    return error.value
+  }
+
+  let prn = 0
+  let yld1 = 0
+  let yld2 = 1
+  let pr1 = PRICE(settlement, maturity, rate, yld1, redemption, frequency, basis)
+  let pr2 = PRICE(settlement, maturity, rate, yld2, redemption, frequency, basis)
+  let yldn = (yld2 - yld1) * 0.5
+
+  for (let i = 0; i < 100 && prn !== pr; i++) {
+    prn = PRICE(settlement, maturity, rate, yldn, redemption, frequency, basis)
+
+    if (pr == pr1) {
+      return yld1
+    } else if (pr == pr2) {
+      return yld2
+    } else if (pr == prn) {
+      return yldn
+    } else if (pr < pr2) {
+      yld2 *= 2
+      pr2 = PRICE(settlement, maturity, rate, yld2, redemption, frequency, basis)
+
+      yldn = (yld2 - yld1) * 0.5
+    } else {
+      if (pr < prn) {
+        yld1 = yldn
+        pr1 = prn
+      } else {
+        yld2 = yldn
+        pr2 = prn
+      }
+
+      yldn = yld2 - (yld2 - yld1) * ((pr - pr2) / (pr1 - pr2))
+    }
+  }
+
+  return yldn
 }
 
 // TODO

@@ -16,10 +16,28 @@ describe('Text', () => {
       '在梁思成先生作品提到的古建筑的「角叶」的含义及其图片'
     )
     expect(text.ASC('ａｂｃ')).to.equal('abc')
+
+    expect(text.ASC([['ｈｅｌｌｏ', 'ｈｅｌｌｏ']])).to.eql([['hello', 'hello']])
   })
 
   it('BAHTTEXT', () => {
-    expect(text.BAHTTEXT).to.throw('BAHTTEXT is not implemented')
+    expect(text.BAHTTEXT(1234)).to.equal('หนึ่งพันสองร้อยสามสิบสี่บาทถ้วน')
+    expect(text.BAHTTEXT(1)).to.equal('หนึ่งบาทถ้วน')
+    expect(text.BAHTTEXT(0)).to.equal('ศูนย์บาทถ้วน')
+    expect(text.BAHTTEXT(true)).to.equal('หนึ่งบาทถ้วน')
+    expect(text.BAHTTEXT(false)).to.equal('ศูนย์บาทถ้วน')
+    expect(text.BAHTTEXT('1234')).to.equal('หนึ่งพันสองร้อยสามสิบสี่บาทถ้วน')
+    expect(text.BAHTTEXT(null)).to.equal('ศูนย์บาทถ้วน')
+    expect(text.BAHTTEXT('true')).to.equal(error.value)
+    expect(text.BAHTTEXT([[1234, 1234]])).to.equal(error.value)
+
+    expect(text.BAHTTEXT('string')).to.equal(error.value)
+    expect(text.BAHTTEXT()).to.equal(error.na)
+    expect(text.BAHTTEXT(1234, 1234)).to.equal(error.na)
+
+    Object.values(error).forEach((err) => {
+      expect(text.BAHTTEXT(err)).to.equal(err)
+    })
   })
 
   it('CHAR', () => {
@@ -236,6 +254,23 @@ describe('Text', () => {
       '在梁思成先生作品提到的古建筑的「角叶」的含义及其图片'
     )
     expect(text.DBCS('abc')).to.equal('ａｂｃ')
+
+    expect(text.DBCS([['hello', 'hello']])).to.eql([['ｈｅｌｌｏ', 'ｈｅｌｌｏ']])
+  })
+
+  it('JIS', () => {
+    expect(text.JIS('hello')).to.equal('ｈｅｌｌｏ')
+    expect(text.JIS()).to.equal(error.na)
+    expect(text.JIS('abc', 'def')).to.equal(error.na)
+    expect(text.JIS(1)).to.equal('１')
+    expect(text.JIS(false)).to.equal('ｆａｌｓｅ')
+    expect(text.JIS(null)).to.equal('')
+    expect(text.JIS([['hello'], ['iutchub']])).to.eql([['ｈｅｌｌｏ'], ['ｉｕｔｃｈｕｂ']])
+    expect(text.JIS('在梁思成先生作品提到的古建筑的「角叶」的含义及其图片')).to.equal(
+      '在梁思成先生作品提到的古建筑的「角叶」的含义及其图片'
+    )
+    expect(text.JIS('abc')).to.equal('ａｂｃ')
+    expect(text.JIS([['hello', 'hello']])).to.eql([['ｈｅｌｌｏ', 'ｈｅｌｌｏ']])
   })
 
   it('DOLLAR', () => {
