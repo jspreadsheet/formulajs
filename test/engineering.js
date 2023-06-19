@@ -234,7 +234,7 @@ describe('Engineering', () => {
     expect(engineering.ERF.PRECISE('a')).to.equal(error.value)
     expect(engineering.ERF.PRECISE([])).to.equal(error.value)
     expect(engineering.ERF.PRECISE(null)).to.equal(0)
-    expect(engineering.ERF.PRECISE()).to.equal(0)
+    expect(engineering.ERF.PRECISE()).to.equal(error.na)
   })
 
   it('ERFC', () => {
