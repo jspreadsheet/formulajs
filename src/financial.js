@@ -146,6 +146,27 @@ export function AMORLINC() {
  * @returns
  */
 export function COUPDAYBS(settlement, maturity, frequency, basis = 0) {
+  if (arguments.length < 3 || arguments.length > 4 || utils.anyIsUndefined(settlement, maturity, frequency)) {
+    return error.na
+  }
+  
+  if (utils.anyIsBoolean(settlement, maturity, frequency, basis) || utils.anyIsNull(settlement, maturity, frequency, basis)) {
+    return error.value
+  }
+
+  settlement = utils.parseDate(settlement)
+  maturity = utils.parseDate(maturity)
+  
+  frequency = utils.parseNumber(frequency)
+  basis = utils.parseNumber(basis)
+
+  if (utils.anyIsError(settlement, maturity, frequency, basis)) {
+    return error.value
+  }
+
+  maturity = utils.dateToSerialNumber(maturity)
+  settlement = utils.dateToSerialNumber(settlement)
+
   const pcd = COUPPCD(settlement, maturity, frequency)
 
   if ([0, 4].includes(basis)) {
@@ -389,8 +410,6 @@ export function COUPPCD(settlement, maturity, frequency, basis = 0) {
   while (result - settlement > 0) {
     result = new Date(result.getFullYear(), result.getMonth() + -12 / frequency, result.getDate())
   }
-
-  result.setHours(result.getHours() - 3)
 
   return Math.floor(utils.dateToSerialNumber(result))
 }
