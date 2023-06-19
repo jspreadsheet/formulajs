@@ -2676,7 +2676,7 @@ export function PROB(x_range, prob_range, lower_limit, upper_limit) {
  */
 export function QUARTILE(array, quart) {
   if (quart === undefined) {
-    return error.value;
+    return error.value
   }
 
   array = utils.parseNumberArray(utils.flatten(array))
@@ -2686,49 +2686,49 @@ export function QUARTILE(array, quart) {
     return error.value
   }
 
-  const sortedArray = array.slice().sort((a, b) => a - b);
-  const n = sortedArray.length;
-  
+  const sortedArray = array.slice().sort((a, b) => a - b)
+  const n = sortedArray.length
+
   if (n === 0) {
-    return error.num;
+    return error.num
   }
-  
+
   if (quart === 0) {
-    return sortedArray[0];
+    return sortedArray[0]
   } else if (quart === 1) {
-    const index = (n - 1) * 0.25;
-    const lower = Math.floor(index);
-    const upper = Math.ceil(index);
-    
+    const index = (n - 1) * 0.25
+    const lower = Math.floor(index)
+    const upper = Math.ceil(index)
+
     if (lower === upper) {
-      return sortedArray[lower];
+      return sortedArray[lower]
     }
-    
-    return sortedArray[lower] + (sortedArray[upper] - sortedArray[lower]) * (index - lower);
+
+    return sortedArray[lower] + (sortedArray[upper] - sortedArray[lower]) * (index - lower)
   } else if (quart === 2) {
-    const index = (n - 1) * 0.5;
-    const lower = Math.floor(index);
-    const upper = Math.ceil(index);
-    
+    const index = (n - 1) * 0.5
+    const lower = Math.floor(index)
+    const upper = Math.ceil(index)
+
     if (lower === upper) {
-      return sortedArray[lower];
+      return sortedArray[lower]
     }
-    
-    return sortedArray[lower] + (sortedArray[upper] - sortedArray[lower]) * (index - lower);
+
+    return sortedArray[lower] + (sortedArray[upper] - sortedArray[lower]) * (index - lower)
   } else if (quart === 3) {
-    const index = (n - 1) * 0.75;
-    const lower = Math.floor(index);
-    const upper = Math.ceil(index);
-    
+    const index = (n - 1) * 0.75
+    const lower = Math.floor(index)
+    const upper = Math.ceil(index)
+
     if (lower === upper) {
-      return sortedArray[lower];
+      return sortedArray[lower]
     }
-    
-    return sortedArray[lower] + (sortedArray[upper] - sortedArray[lower]) * (index - lower);
+
+    return sortedArray[lower] + (sortedArray[upper] - sortedArray[lower]) * (index - lower)
   } else if (quart === 4) {
-    return sortedArray[n - 1];
+    return sortedArray[n - 1]
   } else {
-    return error.num;
+    return error.num
   }
 }
 
