@@ -960,7 +960,11 @@ export function ERF(lower_limit, upper_limit) {
  * @param {*} x The lower bound for integrating ERF.PRECISE.
  * @returns
  */
-ERF.PRECISE = (x) => {
+ERF.PRECISE = function (x) {
+  if (!arguments.length || arguments.length > 1) {
+    return error.na
+  }
+
   x = utils.parseNumber(x)
 
   if (utils.anyIsError(x)) {
@@ -982,6 +986,9 @@ ERF.PRECISE = (x) => {
  * @returns
  */
 export function ERFC(x) {
+  if (!arguments.length || arguments.length > 1) {
+    return error.na
+  }
   // Return error if x is not a number
   x = utils.parseNumber(x)
 
@@ -1003,7 +1010,7 @@ export function ERFC(x) {
  * @param {*} x The lower bound for integrating ERFC.PRECISE.
  * @returns
  */
-ERFC.PRECISE = (x) => ERFC(x)
+ERFC.PRECISE = ERFC
 
 /**
  * Tests whether a number is greater than a threshold value.

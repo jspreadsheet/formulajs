@@ -452,6 +452,90 @@ export function SORT(array, sort_index = 1, sort_order = 1, by_col = false) {
 }
 
 /**
+ * Returns a sorted array of the elements in an array. The returned array is the same shape as the provided array argument.
+ *
+ * Category: Lookup and reference
+ *
+ * @param {*} array Array to sort
+ * @param {*} sort_index Optional. A number indicating the row or column to sort by
+ * @param {*} sort_order Optional. A number indicating the desired sort order; 1 for ascending order (default), -1 for descending order
+ * @param {*} by_col Optional. A logical value indicating the desired sort direction; FALSE to sort by row (default), TRUE to sort by column
+ * @returns
+ */
+export function SORTBY(array, ...sort) {
+  if (arguments.length < 2) {
+    return error.na
+  }
+
+  const anyError = utils.anyError(array, ...sort)
+
+  if (anyError) {
+    return anyError
+  }
+
+  if (
+    !array ||
+    !Array.isArray(array) ||
+    sort.filter((_, i) => i % 2 == 1).some((e) => e !== 1 && e !== -1 && typeof e !== 'undefined')
+  ) {
+    return error.value
+  }
+
+  const sortLength = sort.length
+
+  if (utils.getVariableType(arguments[1]) === 'column') {
+    if (arguments[1].length !== array.length) {
+      return error.value
+    }
+
+    array = array.sort((a, b) => {
+      for (let i = 0; i < sortLength; i += 2) {
+        let indexA = array.indexOf(a)
+        let indexB = array.indexOf(b)
+        let criteria = sort[i]
+        let criteriaOrder = sort[i + 1] | 1
+
+        if (criteria[indexA] > criteria[indexB]) {
+          return criteriaOrder
+        } else if (criteria[indexA] < criteria[indexB]) {
+          return -criteriaOrder
+        }
+      }
+      return 0
+    })
+  } else if (utils.getVariableType(arguments[1]) === 'line') {
+    if (arguments[1][0].length !== array[0].length) {
+      return error.value
+    }
+
+    const arrayLength = array.length
+
+    for (let c = 0; c < arrayLength; c++) {
+      let current = array[c]
+      current = current.sort((a, b) => {
+        for (let i = 0; i < sortLength; i += 2) {
+          let indexA = current.indexOf(a)
+          let indexB = current.indexOf(b)
+          let criteria = sort[i][0]
+          let criteriaOrder = sort[i + 1] | 1
+
+          if (criteria[indexA] > criteria[indexB]) {
+            return criteriaOrder
+          } else if (criteria[indexA] < criteria[indexB]) {
+            return -criteriaOrder
+          }
+        }
+        return 0
+      })
+    }
+  } else {
+    return error.value
+  }
+
+  return array
+}
+
+/**
  * Returns the transpose of an array.
  *
  * Category: Lookup and reference
@@ -1082,16 +1166,32 @@ export function HSTACK(...arrays) {
  * @returns
  */
 export function CHOOSECOLS(array, col_num1, ...col_numN) {
-  if (!Array.isArray(array) || !array.length) {
-    return error.value
+  if (!arguments.length || arguments.length === 1) {
+    return error.na
   }
 
-  if (array.some((item) => !Array.isArray(item))) {
+  if (utils.getVariableType(array) === 'single' || arguments[0] === undefined || arguments[1] === undefined) {
     return error.value
   }
 
   const result = []
+
+  col_num1 = utils.parseNumber(col_num1)
+  col_numN = col_numN.map((v) => utils.parseNumber(v))
+
   const indices = [col_num1, ...col_numN]
+
+  if (utils.anyIsError(...indices)) {
+    return error.value
+  }
+
+  const firstRow = array[0]
+
+  for (let j = 0; j < indices.length; j++) {
+    if (indices[j] < 1 || indices[j] > firstRow.length) {
+      return error.value
+    }
+  }
 
   for (let i = 0; i < array.length; i++) {
     const row = array[i]
@@ -1100,13 +1200,9 @@ export function CHOOSECOLS(array, col_num1, ...col_numN) {
     for (let j = 0; j < indices.length; j++) {
       const index = indices[j]
 
-      if (typeof index !== 'number' || index < 1 || index > row.length) {
-        return error.value
-      }
-
       let v = row[index - 1]
 
-      if ((typeof v !== 'number' && !v) || typeof v === 'boolean') {
+      if (v === null) {
         v = utils.parseNumber(v)
       }
 
@@ -1130,16 +1226,23 @@ export function CHOOSECOLS(array, col_num1, ...col_numN) {
  * @returns
  */
 export function CHOOSEROWS(array, row_num1, ...row_numN) {
-  if (!Array.isArray(array) || !array.length) {
+  if (!arguments.length || arguments.length === 1) {
+    return error.na
+  }
+
+  if (utils.getVariableType(array) === 'single' || arguments[0] === undefined || arguments[1] === undefined) {
     return error.value
   }
 
-  if (array.some((item) => !Array.isArray(item))) {
-    return error.value
-  }
+  row_num1 = utils.parseNumber(row_num1)
+  row_numN = row_numN.map((v) => utils.parseNumber(v))
 
   const result = []
   const indices = [row_num1, ...row_numN]
+
+  if (utils.anyIsError(...indices)) {
+    return error.value
+  }
 
   // processamento de erro anterior ao cálculo da matriz
   if (indices.some((index) => typeof index !== 'number' || index < 1 || !array[index - 1])) {
@@ -1149,12 +1252,421 @@ export function CHOOSEROWS(array, row_num1, ...row_numN) {
   for (let i = 0; i < indices.length; i++) {
     const index = indices[i]
 
-    const row = [...array[index - 1]].map((v) => {
-      return (typeof v !== 'number' && !v) || typeof v === 'boolean' ? utils.parseNumber(v) : v
+    const row = array[index - 1].map((v) => {
+      return v === null ? utils.parseNumber(v) : v
     })
 
     result.push(row)
   }
 
   return result
+}
+
+/**
+ * converts a generic value based on its type to handle comparisons between types that follow excel's comparison logic.
+ * In excel a boolean is considered greater than any primitive type e.g.
+ * @param {*} valueA any javascript type
+ * @returns
+ */
+const excelTypesComparator = function (valueA) {
+  const isBoolean = (v) => typeof v === 'boolean'
+  const isString = (v) => typeof v === 'string'
+
+  const TBoolean = (bool) => {
+    const isGreaterThan = (v) => {
+      if (!isBoolean(v)) return true
+      return bool > v
+    }
+
+    const isGreaterOrEqualThan = (v) => {
+      if (!isBoolean(v)) return true
+      return bool >= v
+    }
+
+    const isLessThan = (v) => {
+      if (!isBoolean(v)) return false
+      return bool < v
+    }
+
+    const isLessOrEqualThan = (v) => {
+      if (!isBoolean(v)) return false
+      return bool <= v
+    }
+
+    const isEqualsTo = (v) => {
+      return bool === v
+    }
+
+    return {
+      isGreaterThan,
+      isGreaterOrEqualThan,
+      isLessThan,
+      isLessOrEqualThan,
+      isEqualsTo
+    }
+  }
+
+  const TString = (string) => {
+    const isGreaterThan = (v) => {
+      if (isBoolean(v)) return false
+      if (!isString(v)) return true
+      if (isString(v)) return string > v
+    }
+
+    const isGreaterOrEqualThan = (v) => {
+      if (isBoolean(v)) return false
+      if (!isString(v)) return true
+      if (isString(v)) return string >= v
+    }
+
+    const isLessThan = (v) => {
+      if (isBoolean(v)) return true
+      if (!isString(v)) return false
+      if (isString(v)) return string < v
+    }
+
+    const isLessOrEqualThan = (v) => {
+      if (isBoolean(v)) return true
+      if (!isString(v)) return false
+      if (isString(v)) return string <= v
+    }
+
+    const isEqualsTo = (v) => {
+      return v === string
+    }
+
+    return {
+      isGreaterThan,
+      isGreaterOrEqualThan,
+      isLessThan,
+      isLessOrEqualThan,
+      isEqualsTo
+    }
+  }
+
+  const TNumber = (number) => {
+    const isGreaterThan = (v) => {
+      if (isBoolean(v) || isString(v)) return false
+      return number > v
+    }
+
+    const isGreaterOrEqualThan = (v) => {
+      if (isBoolean(v) || isString(v)) return false
+      return number >= v
+    }
+
+    const isLessThan = (v) => {
+      if (isBoolean(v) || isString(v)) return true
+      return number < v
+    }
+
+    const isLessOrEqualThan = (v) => {
+      if (isBoolean(v) || isString(v)) return true
+      return number <= v
+    }
+
+    const isEqualsTo = (v) => {
+      return number === v
+    }
+
+    return {
+      isGreaterThan,
+      isGreaterOrEqualThan,
+      isLessThan,
+      isLessOrEqualThan,
+      isEqualsTo
+    }
+  }
+
+  const TGeneric = (genericValue) => {
+    const isGreaterThan = (v) => {
+      if (isBoolean(v) || isString(v)) return false
+      return genericValue > v
+    }
+
+    const isGreaterOrEqualThan = (v) => {
+      if (isBoolean(v) || isString(v)) return false
+      return genericValue >= v
+    }
+
+    const isLessThan = (v) => {
+      if (isBoolean(v) || isString(v)) return true
+      return genericValue < v
+    }
+
+    const isLessOrEqualThan = (v) => {
+      if (isBoolean(v) || isString(v)) return true
+      return genericValue <= v
+    }
+
+    const isEqualsTo = (v) => {
+      return genericValue === v
+    }
+
+    return {
+      isGreaterThan,
+      isGreaterOrEqualThan,
+      isLessThan,
+      isLessOrEqualThan,
+      isEqualsTo
+    }
+  }
+
+  const convertToType = (genericValue) => {
+    switch (typeof genericValue) {
+      case 'boolean':
+        return TBoolean(genericValue)
+      case 'number':
+        return TNumber(genericValue)
+      case 'string':
+        return TString(genericValue)
+      default:
+        return TGeneric(genericValue)
+    }
+  }
+
+  const T = convertToType(valueA)
+  return T
+}
+
+/**
+ * Performs a binary search to find a value that follows specified match mode and search mode rules.
+ * @param {*} lookupValue The value to search for.
+ * @param {*} lookupArray The range to consider for the search. This range must be a singular row or column.
+ * @param {*} match_mode [OPTIONAL: 0 by default] The manner in which to find a match for the search_key.
+ *  - 0 is for an exact match.
+ *  - 1 is for an exact match or the next value that's greater than the search_key.
+ *  - -1 is for an exact match or the next value that's lesser than the search_key.
+ * @param {*} search_mode [OPTIONAL: 1 by default] The manner in which to search through the lookup range.
+ * - 1 is to search from the first entry to the last.
+ * - -1 is to search from the last entry to the first.
+ * - 2 is to search through the range with binary search. The range needs to be sorted in ascending order first.
+ * - -2 is to search through the range with binary search. The range needs to be sorted in descending order first.
+ * @returns
+ */
+const xmatchCustomBinarySearch = (lookupValue, lookupArray, match_mode = 1, search_mode = 2) => {
+  let low = 0
+  let up = lookupArray.length - 1
+  let mid = undefined
+  let lastMatch = undefined
+  let exactMatch = undefined
+
+  // enquanto o indice inicial do array for menor que o maior indice
+  while (low <= up) {
+    // calcula o indice do meio do array
+    mid = (low + up) >> 1
+
+    if (match_mode === 0 && search_mode === 2) {
+      // Caso "mid" seja exatamente igual ao valor procurado
+      if (lookupArray[mid] === lookupValue) {
+        // Atribuimos a referência do índice de match à variável lastMatch
+        exactMatch = mid
+        // Como é exatamente igual e supomos que a lista está ordenada em ordem crescente, então iremos olhar para os valores
+        // anteriores de lookup_range, para verificar se existem outros possiveis matches menores ou iguais a lookupValue
+        up = mid - 1
+      }
+      // Verificamos se a referência de mid em lookupArray é um valor menor que lookupValue
+      else if (excelTypesComparator(lookupArray[mid]).isLessThan(lookupValue)) {
+        // como supomos que a lista ser ordenada em ordem crescente, isso significa que o ponteiro
+        // "low" deve apontar para o próximo valor de "mid", já que se a referencia de mid é menor que lookupValue, então,
+        // teoricamente, os valores maiores estão à direita da lista.
+        low = mid + 1
+      }
+      // Caso a referência de mid em lookupArray seja um valor maior que lookupValue
+      else {
+        up = mid - 1
+      }
+      continue
+    }
+
+    if (match_mode === 0 && search_mode === -2) {
+      if (lookupArray[mid] === lookupValue) {
+        exactMatch = mid
+        // Encaminha a referência de low para a direita (valores menores)
+        low = mid + 1
+      } else if (excelTypesComparator(lookupArray[mid]).isLessThan(lookupValue)) {
+        // Encaminha a referência de up para a esquerda (valores maiores)
+        up = mid - 1
+      } else {
+        // Encaminha a referência de low para a direita (valores menores)
+        low = mid + 1
+      }
+      continue
+    }
+
+    // supomos que a lista está ordenada em ordem crescente
+    if (match_mode === 1 && search_mode === 2) {
+      // Caso "mid" seja exatamente igual ao valor procurado
+      if (lookupArray[mid] === lookupValue) {
+        // Atribuimos a referência do índice de match à variável lastMatch
+        exactMatch = mid
+        // Como é exatamente igual e supomos que a lista está ordenada em ordem crescente, então iremos olhar para os valores
+        // anteriores de lookup_range, para verificar se existem outros possiveis matches menores ou iguais a lookupValue
+        up = mid - 1
+      }
+      // Verificamos se a referência de mid em lookupArray é um valor menor que lookupValue
+      else if (excelTypesComparator(lookupArray[mid]).isLessThan(lookupValue)) {
+        // como supomos que a lista ser ordenada em ordem crescente, isso significa que o ponteiro
+        // "low" deve apontar para o próximo valor de "mid", já que se a referencia de mid é menor que lookupValue, então,
+        // teoricamente, os valores maiores estão à direita da lista.
+        low = mid + 1
+      }
+      // Caso a referência de mid em lookupArray seja um valor maior que lookupValue
+      else {
+        // Esse é um caso de match, portanto devemos guardar a referencia do match
+        lastMatch = mid
+
+        up = mid - 1
+      }
+      continue
+    }
+
+    // supomos que a lista está ordenada em ordem crescente e queremos achar um valor menor ou igual
+    // ao valor de busca (match_mode = -1)
+    if (match_mode === -1 && search_mode === 2) {
+      if (lookupArray[mid] === lookupValue) {
+        // Caso o valor seja igual, guardamos a referência deste match
+        exactMatch = mid
+        // Como supomos que a lista está ordenada em ordem crescente, significa que podem existir outros valores iguais a
+        // searchKey anteriormente, como o caso [1, 1, 7, 7, 8, 9, 10], caso simplesmente retornassemos o match aqui, seria
+        // retornado a posição 4, porém o primeiro match está na posição 3.
+        up = mid - 1
+      } else if (excelTypesComparator(lookupArray[mid]).isLessThan(lookupValue)) {
+        // Caso o valor seja menor que searchKey, guardamos a referência deste match
+        lastMatch = mid
+        // Atualizamos low para ter a referência da proxima posição referente a mid, pois, se o valor de referência de mid
+        // é menor que o valor procurado, isso significa que podem existir elementos posteriores que se aproximam mais
+        // da chave de busca.
+        low = mid + 1
+      } else {
+        // Caso o valor atual referente a mid seja maior que lookupValue, então podemos diminuir a referência do tamanho
+        // do array (up) para mid - 1;
+        up = mid - 1
+      }
+      continue
+    }
+    // supomos que a lista está ordenada em ordem decrescente
+    if (match_mode === 1 && search_mode === -2) {
+      if (lookupArray[mid] === lookupValue) {
+        exactMatch = mid
+        // Encaminha a referência de low para a direita (valores menores)
+        low = mid + 1
+      } else if (excelTypesComparator(lookupArray[mid]).isLessThan(lookupValue)) {
+        // Encaminha a referência de up para a esquerda (valores maiores)
+        up = mid - 1
+      } else {
+        lastMatch = mid
+        // Encaminha a referência de low para a direita (valores menores)
+        low = mid + 1
+      }
+      continue
+    }
+
+    if (match_mode === -1 && search_mode === -2) {
+      if (lookupArray[mid] === lookupValue) {
+        exactMatch = mid
+        // Encaminha a referência de up para a esquerda (valores maiores)
+        low = mid + 1
+      } else if (excelTypesComparator(lookupArray[mid]).isLessThan(lookupValue)) {
+        lastMatch = mid
+
+        // Encaminha a referência de up para a esquerda (valores maiores)
+        up = mid - 1
+      } else {
+        low = mid + 1
+      }
+    }
+  }
+
+  const referenceIndex = exactMatch !== undefined ? exactMatch : lastMatch !== undefined ? lastMatch : -1
+  return referenceIndex
+}
+
+/**
+ *
+ * @param {*} searchKey The value to search for.
+ * @param {*} lookup_range The range to consider for the search. This range must be a singular row or column.
+ * @param {*} match_mode [OPTIONAL: 0 by default] The manner in which to find a match for the search_key.
+ *  - 0 is for an exact match.
+ *  - 1 is for an exact match or the next value that's greater than the search_key.
+ *  - -1 is for an exact match or the next value that's lesser than the search_key.
+ * @param {*} search_mode [OPTIONAL: 1 by default] The manner in which to search through the lookup range.
+ * - 1 is to search from the first entry to the last.
+ * - -1 is to search from the last entry to the first.
+ * - 2 is to search through the range with binary search. The range needs to be sorted in ascending order first.
+ * - -2 is to search through the range with binary search. The range needs to be sorted in descending order first.
+ * @returns
+ */
+export function XMATCH(searchKey, lookup_range, match_mode = 0, search_mode = 1) {
+  if (!arguments.length || arguments.length === 1) {
+    return error.na
+  }
+
+  if (typeof searchKey === 'undefined') {
+    searchKey = null
+  }
+
+  match_mode = utils.parseNumber(match_mode)
+  search_mode = utils.parseNumber(search_mode)
+
+  const isInvalidLookupRange = ['matrix', 'single'].includes(utils.getVariableType(lookup_range))
+
+  if (utils.anyIsError(match_mode, search_mode) || isInvalidLookupRange) {
+    return error.value
+  }
+
+  if (![0, 1, -1].includes(match_mode) || ![1, -1, 2, -2].includes(search_mode)) {
+    return error.value
+  }
+
+  lookup_range = lookup_range.flat()
+
+  searchKey = typeof searchKey === 'string' ? searchKey.toLowerCase() : searchKey
+
+  lookup_range = lookup_range.map((v) => (typeof v === 'string' ? v.toLowerCase() : v))
+
+  let orderedList
+  let findedIndex
+
+  const checkMatchModeRules = (value, searchKey) => {
+    if (match_mode === 0) return excelTypesComparator(value).isEqualsTo(searchKey)
+    else if (match_mode === 1) return excelTypesComparator(value).isGreaterOrEqualThan(searchKey)
+    else if (match_mode === -1) return excelTypesComparator(value).isLessOrEqualThan(searchKey)
+  }
+
+  // is not a binary search
+  if (![2, -2].includes(search_mode)) {
+    orderedList = lookup_range
+      .slice()
+      .sort((a, b) => (excelTypesComparator(a).isLessThan(b) ? -1 : excelTypesComparator(a).isGreaterThan(b) ? 1 : 0))
+
+    if ((match_mode === -1 && search_mode !== -1) || (match_mode === 1 && search_mode === -1)) {
+      orderedList = orderedList.reverse()
+    }
+
+    if (search_mode === 1) {
+      for (let i = 0; i < orderedList.length; i++) {
+        if (checkMatchModeRules(orderedList[i], searchKey)) {
+          findedIndex = lookup_range.indexOf(orderedList[i])
+          break
+        }
+      }
+    } else if (search_mode === -1) {
+      for (let i = orderedList.length - 1; i >= 0; i--) {
+        if (checkMatchModeRules(orderedList[i], searchKey)) {
+          findedIndex = lookup_range.indexOf(orderedList[i])
+          break
+        }
+      }
+    }
+  } else {
+    orderedList = lookup_range
+    findedIndex = xmatchCustomBinarySearch(searchKey, orderedList, match_mode, search_mode)
+  }
+
+  if (typeof findedIndex === 'number' && findedIndex >= 0) {
+    return 1 + findedIndex
+  }
+
+  return error.na
 }
