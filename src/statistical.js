@@ -2156,55 +2156,62 @@ function hasDuplicates(array) {
 }
 
 export function MODE() {
-  const frequency = {};
-  let maxFrequency = 0;
+  if (!arguments.length || arguments.length > 255) {
+    return error.na
+  }
 
   const flatArguments = utils.flatten(arguments);
-  //console.log(flatArguments)
   
-  /*for(let i = 0; i < flatArguments.length; i++){
-    if (!isNaN(flatArguments[i]) || flatArguments[i] !== null) {
-      filteredArray.push(flatArguments[i]);
+  if (flatArguments.length === 1) {
+    return error.na;
+  }
+
+  let current;
+
+  const frequencies = {};
+
+  for (let i = 0; i < flatArguments.length; i ++) {
+    current = flatArguments[i];
+
+    if (utils.anyIsError(current)) {
+      return current;
     }
-  }*/
-  const filteredArray = flatArguments.filter((element) => !isNaN(element) || element !== null);
 
-  const anyError = utils.anyError(...filteredArray);
-  if (anyError) {
-    return anyError;
-  }
+    if (utils.anyIsUndefined(current)) {
+      return error.value;
+    }
 
-  if (utils.anyIsError(filteredArray)) {
-    return error.value
-  }
-
-  let numericElements = filteredArray.filter((element) => typeof element === 'number');
-  if(numericElements.length<2){
-    return error.na
-  }
-  
-  if(!(filteredArray.length>=1 && filteredArray.length<=255)){
-    return error.na
-  }
-
-  
-  if(!filteredArray.some((item, index) => filteredArray.includes(item, index + 1))){
-    return error.na
-  }
-
-  for(let i = 0; i < filteredArray.length; i++){
-    const currentNumber = filteredArray[i];
-    frequency[currentNumber] = (frequency[currentNumber] || 0) + 1;
-    maxFrequency = Math.max(maxFrequency, frequency[currentNumber]);
-  }
-
-  let mostFrequentNumbers = [];
-  for (const number in frequency) {
-    if (frequency[number] === maxFrequency) {
-      mostFrequentNumbers.push(Number(number));
+    if (typeof current === 'number') {
+      if (frequencies[current] === undefined) {
+        frequencies[current] = 1;
+      } else {
+        frequencies[current] += 1;
+      }
     }
   }
-  return mostFrequentNumbers[0];
+
+  const freqArr = Object.entries(frequencies);
+
+  if (!freqArr.length) {
+    return error.na;
+  }
+
+  let max = freqArr[0];
+  let value;
+
+  for (let i = 1; i < freqArr.length; i ++) {
+    value = freqArr[i][1];
+
+    if (value > max[1]) {
+      max = freqArr[i];    
+    }
+  }
+
+  if (max[1] === 1) {
+    return error.na;
+  }
+
+  return Number(max[0]);
 }
 
 /**

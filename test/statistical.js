@@ -1450,9 +1450,14 @@ describe('Statistical', () => {
     expect(statistical.MODE(1, 1, [[false], [true]])).to.equal(1)
     expect(statistical.MODE(1, [[null], [null]])).to.equal(error.na)
 
-    expect(statistical.MODE(1, undefined)).to.equal(error.na)
-    expect(statistical.MODE(1, undefined, undefined)).to.equal(error.na)
-    expect(statistical.MODE(1, 1, undefined)).to.equal(1)
+    expect(statistical.MODE([[1], [1], [1], [2], [2]], [[3], [3], [3], [3], [4], [4]])).to.equal(3);
+
+    expect(statistical.MODE(1, undefined)).to.equal(error.value)
+    expect(statistical.MODE(1, undefined, undefined)).to.equal(error.value)
+    expect(statistical.MODE(1, 1, undefined)).to.equal(error.value)
+    expect(statistical.MODE(1, undefined, error.na)).to.equal(error.value)
+    expect(statistical.MODE()).to.equal(error.na);
+    expect(statistical.MODE(9,5,3,3,6,6)).to.equal(3);
 
     Object.values(error).forEach((err) => {
       expect(statistical.MODE(1, 1, err)).to.equal(err)
