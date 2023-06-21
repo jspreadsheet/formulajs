@@ -40,6 +40,7 @@
   },
   "dependencies": {
     "bessel": "^1.0.2",
+    "date-fns": "^2.30.0",
     "jstat": "^1.9.6",
     "thai-baht-text": "^1.0.8"
   },

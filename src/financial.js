@@ -1,6 +1,7 @@
 import * as error from './utils/error.js'
 import * as dateTime from './date-time.js'
 import * as utils from './utils/common.js'
+import { addYears, subYears, setYear, compareAsc } from 'date-fns'
 
 /**
  * Returns the accrued interest for a security that pays periodic interest.
@@ -169,8 +170,10 @@ export function COUPDAYBS(settlement, maturity, frequency, basis = 0) {
 
   const pcd = COUPPCD(settlement, maturity, frequency)
 
-  if ([0, 4].includes(basis)) {
+  if (basis === 0) {
     return dateTime.DAYS360(pcd, settlement, false)
+  } else if (basis === 4) {
+    return dateTime.DAYS360(pcd, settlement, true)
   }
 
   return Math.floor(dateTime.DATEDIF(pcd, settlement, 'D'))
@@ -213,13 +216,12 @@ export function COUPDAYS(settlement, maturity, frequency, basis = 0) {
   if (basis === 1) {
     let pcd = utils.parseDate(COUPPCD(settlement, maturity, frequency))
 
-    let nextDate = new Date(pcd.getFullYear(), pcd.getMonth() + 12 / frequency, pcd.getDate())
-    nextDate.setHours(nextDate.getHours() - 3)
+    let nextDate = utils.subMonthsKeepDayFixed(pcd, -12/frequency, pcd.getDate())
 
     pcd = utils.dateToSerialNumber(pcd)
     nextDate = utils.dateToSerialNumber(nextDate)
 
-    return dateTime.DATEDIF(pcd, nextDate, 'D') + 1
+    return dateTime.DATEDIF(pcd, nextDate, 'D')
   }
 
   let B
@@ -278,7 +280,7 @@ export function COUPDAYSNC(settlement, maturity, frequency, basis = 0) {
 
   if (basis !== 0 && basis !== 4) {
     let ncd = COUPNCD(settlement, maturity, frequency, basis)
-    return Math.floor(dateTime.DATEDIF(settlement, ncd, 'D') + 1)
+    return dateTime.DATEDIF(settlement, ncd, 'D')
   }
 
   return Math.floor(
@@ -316,18 +318,21 @@ export function COUPNCD(settlement, maturity, frequency, basis) {
     return error.value
   }
 
-  let matur = maturity
-  matur.setFullYear(settlement.getFullYear())
+  maturity = setYear(maturity, settlement.getFullYear())
 
-  if (matur - settlement > 0) {
-    matur = new Date(matur.getFullYear() - 1, matur.getMonth(), matur.getDate())
+  if (compareAsc(maturity, settlement) > 0) {
+    maturity = subYears(maturity, 1)
   }
 
-  while (matur - settlement <= 0) {
-    matur = new Date(matur.getFullYear(), matur.getMonth() + 12 / frequency, matur.getDate())
+  const fixedDay = maturity.getDate()
+
+  while (compareAsc(maturity, settlement) <= 0) {
+    maturity = utils.subMonthsKeepDayFixed(maturity, -12/frequency, fixedDay)
   }
 
-  return Math.floor(utils.dateToSerialNumber(matur))
+  maturity = utils.dateToSerialNumber(maturity)
+
+  return Math.floor(maturity)
 }
 
 /**
@@ -401,17 +406,21 @@ export function COUPPCD(settlement, maturity, frequency, basis = 0) {
   }
 
   let result = maturity
-  result.setFullYear(settlement.getFullYear())
+  result = setYear(result, settlement.getFullYear())
 
-  if (result - settlement < 0) {
-    result = new Date(result.getFullYear() + 1, result.getMonth(), result.getDate())
+  if (compareAsc(result, settlement) < 0) {
+    result = addYears(result, 1)
   }
+
+  const fixedDay = result.getDate()
 
   while (result - settlement > 0) {
-    result = new Date(result.getFullYear(), result.getMonth() + -12 / frequency, result.getDate())
+    result = utils.subMonthsKeepDayFixed(result, 12/frequency, fixedDay)
   }
 
-  return Math.floor(utils.dateToSerialNumber(result))
+  result = utils.dateToSerialNumber(result)
+
+  return Math.floor(result)
 }
 
 /**
