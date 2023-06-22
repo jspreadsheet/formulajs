@@ -348,7 +348,7 @@ export function parseNumber(string) {
     string = +string
   }
 
-  if (!isNaN(string) && string !== '' && !Array.isArray(string)) {
+  if (!isNaN(string) && string !== '') {
     return parseFloat(string)
   }
 
