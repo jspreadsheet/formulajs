@@ -961,8 +961,16 @@ export function ERF(lower_limit, upper_limit) {
  * @returns
  */
 ERF.PRECISE = function (x) {
-  if (!arguments.length || arguments.length > 1) {
+  if (!arguments.length || arguments.length > 1 || arguments[0] === undefined) {
     return error.na
+  }
+
+  if (utils.anyIsError(x)) {
+    return x;
+  }
+
+  if (typeof x === 'boolean') {
+    return error.value;
   }
 
   x = utils.parseNumber(x)
@@ -986,9 +994,18 @@ ERF.PRECISE = function (x) {
  * @returns
  */
 export function ERFC(x) {
-  if (!arguments.length || arguments.length > 1) {
+  if (!arguments.length || arguments.length > 1 || arguments[0] === undefined) {
     return error.na
   }
+
+  if (utils.anyIsError(x)) {
+    return x;
+  }
+
+  if (typeof x === 'boolean') {
+    return error.value;
+  }
+
   // Return error if x is not a number
   x = utils.parseNumber(x)
 
