@@ -1180,14 +1180,13 @@ export function CHOOSECOLS(array, col_num1, ...col_numN) {
   col_numN = col_numN.map((v) => utils.parseNumber(v))
 
   const indices = [col_num1, ...col_numN]
-
-  if (utils.anyIsError(...indices)) {
-    return error.value
-  }
-
   const firstRow = array[0]
 
   for (let j = 0; j < indices.length; j++) {
+    if (indices[j] instanceof Error) {
+      return indices[j];
+    }
+
     if (indices[j] < 1 || indices[j] > firstRow.length) {
       return error.value
     }
@@ -1240,13 +1239,14 @@ export function CHOOSEROWS(array, row_num1, ...row_numN) {
   const result = []
   const indices = [row_num1, ...row_numN]
 
-  if (utils.anyIsError(...indices)) {
-    return error.value
-  }
+  for (let j = 0; j < indices.length; j ++) {
+    if (indices[j] instanceof Error) {
+      return indices[j];
+    }
 
-  // processamento de erro anterior ao cálculo da matriz
-  if (indices.some((index) => typeof index !== 'number' || index < 1 || !array[index - 1])) {
-    return error.value
+    if (typeof indices[j] !== 'number' || indices[j] < 1 || !array[indices[j] - 1]) {
+      return error.value;
+    }
   }
 
   for (let i = 0; i < indices.length; i++) {

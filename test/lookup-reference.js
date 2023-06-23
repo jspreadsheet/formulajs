@@ -3331,6 +3331,9 @@ describe('Lookup Reference', () => {
     expect(lookup.CHOOSECOLS(undefined)).to.equal(error.na)
     expect(lookup.CHOOSECOLS([[1, 2, 3]])).to.equal(error.na)
     expect(lookup.CHOOSECOLS([[1, 2, 3]], undefined, 1)).to.equal(error.value)
+    expect(lookup.CHOOSECOLS([[1, 2, 3]], error.calc)).to.equal(error.calc)
+    expect(lookup.CHOOSECOLS(undefined, error.calc)).to.equal(error.value)
+    expect(lookup.CHOOSECOLS([[1], [0], [2]], error.calc, error.na)).to.equal(error.calc)
   })
 
   it('CHOOSEROWS', () => {
@@ -3421,6 +3424,10 @@ describe('Lookup Reference', () => {
         [26, 27, 28, 29, 30]
       ])
     ).to.equal(error.na)
+
+    expect(lookup.CHOOSEROWS([[1, 2, 3]], error.calc)).to.equal(error.calc)
+    expect(lookup.CHOOSEROWS(undefined, error.calc)).to.equal(error.value)
+    expect(lookup.CHOOSEROWS([[1], [0], [2]], error.calc, error.na)).to.equal(error.calc)
   })
 
   it('XMATCH', () => {
