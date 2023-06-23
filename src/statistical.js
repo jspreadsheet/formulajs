@@ -1309,33 +1309,74 @@ export function FORECAST(x, known_ys, known_xs) {
  * @returns
  */
 FORECAST.LINEAR = function (x, known_ys, known_xs) {
-  if (known_ys.length !== known_xs.length) {
+  if (!arguments.length || arguments.length > 3 || (typeof known_xs !== typeof known_ys)) {
+    return error.na
+  }
+
+  let someError
+  
+  if (someError = [x, known_ys, known_xs].find(v => v instanceof Error)) {
+    return someError
+  }
+
+  if (known_ys === undefined || known_xs === undefined) {
     return error.value
   }
 
   x = utils.parseNumber(x)
-  known_ys = utils.parseNumberArray(utils.flatten(known_ys))
-  known_xs = utils.parseNumberArray(utils.flatten(known_xs))
 
-  if (utils.anyIsError(x, known_ys, known_xs)) {
+  known_ys = utils.flatten(known_ys)
+  known_xs = utils.flatten(known_xs)
+
+  if (known_ys.length !== known_xs.length) {
     return error.value
   }
 
-  const n = known_ys.length
+  let sumY = 0
+  let sumX = 0
+  let sumXY = 0
+  let sumXSquare = 0
 
-  const sumX = known_xs.reduce((total, val) => total + val, 0)
-  const sumY = known_ys.reduce((total, val) => total + val, 0)
-  const sumXY = known_xs.reduce((total, val, index) => total + val * known_ys[index], 0)
-  const sumXSquare = known_xs.reduce((total, val) => total + val * val, 0)
+  const xs = []
+  const ys = []
 
-  const meanX = jStat.mean(known_xs)
-  const meanY = jStat.mean(known_ys)
+  for (let i = 0; i < known_xs.length; i ++) {
+    if (known_xs[i] instanceof Error) {
+      return known_xs[i]
+    }
 
-  const b = (n * sumXY - sumX * sumY) / (n * sumXSquare - sumX * sumX)
+    if (known_ys[i] instanceof Error) {
+      return known_ys[i]
+    }
+
+    if (typeof known_ys[i] !== 'number' || typeof known_xs[i] !== 'number') {
+      continue
+    }
+
+    xs.push(known_xs[i])
+    ys.push(known_ys[i])
+
+    sumY += known_ys[i]
+    sumX += known_xs[i]
+    sumXY += known_xs[i] * known_ys[i]
+    sumXSquare += Math.pow(known_xs[i], 2)
+  }
+
+  const n = ys.length
+
+  const div = (n * sumXSquare - sumX * sumX)
+
+  if (div === 0) {
+    return error.div0
+  }
+
+  const meanX = jStat.mean(xs)
+  const meanY = jStat.mean(ys)
+
+  const b = (n * sumXY - sumX * sumY) / div
   const a = meanY - b * meanX
 
   const forecast = a + b * x
-
   return forecast
 }
 
@@ -2736,11 +2777,27 @@ export function PROB(x_range, prob_range, lower_limit, upper_limit) {
  * @returns
  */
 export function QUARTILE(array, quart) {
+  if (!arguments.length || arguments.length > 2) {
+    return error.na;
+  }
+
+  if (array === undefined) {
+    return 0;
+  }
+
+  if (utils.anyIsError(array)) {
+    return array;
+  }
+
+  if (utils.anyIsError(quart)) {
+    return quart;
+  }
+
   if (quart === undefined) {
     return error.value
   }
 
-  array = utils.parseNumberArray(utils.flatten(array))
+  array = utils.flatten(array).filter(v => typeof v === 'number');
   quart = utils.parseNumber(quart)
 
   if (utils.anyIsError(array, quart)) {
