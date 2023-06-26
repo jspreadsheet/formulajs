@@ -190,7 +190,6 @@ export function COUPDAYBS(settlement, maturity, frequency, basis = 0) {
  * @param {*} frequency The number of coupon payments per year. For annual payments, frequency = 1; for semiannual, frequency = 2; for quarterly, frequency = 4.
  * @param {*} basis Optional. The type of day count basis to use.
  * @returns
-  throw new Error('COUPDAYSNC is not implemented')
  */
 export function COUPDAYS(settlement, maturity, frequency, basis = 0) {
   if (arguments.length < 3 || arguments.length > 4 || utils.anyIsUndefined(settlement, maturity, frequency)) {
