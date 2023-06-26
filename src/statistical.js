@@ -1277,6 +1277,10 @@ export function FORECAST(x, known_ys, known_xs) {
     return error.value
   }
 
+  if (known_xs.length !== known_ys.length) {
+    return error.value
+  }
+
   const xmean = jStat.mean(known_xs)
   const ymean = jStat.mean(known_ys)
   const n = known_xs.length
@@ -1292,6 +1296,88 @@ export function FORECAST(x, known_ys, known_xs) {
   const a = ymean - b * xmean
 
   return a + b * x
+}
+
+/**
+ * Returns a value along a linear trend.
+ *
+ * Category: Statistical
+ *
+ * @param {*} x The data point for which you want to predict a value.
+ * @param {*} known_ys The dependent array or range of data.
+ * @param {*} known_xs The independent array or range of data.
+ * @returns
+ */
+FORECAST.LINEAR = function (x, known_ys, known_xs) {
+  if (!arguments.length || arguments.length > 3 || typeof known_xs !== typeof known_ys) {
+    return error.na
+  }
+
+  let someError
+
+  if ((someError = [x, known_ys, known_xs].find((v) => v instanceof Error))) {
+    return someError
+  }
+
+  if (known_ys === undefined || known_xs === undefined) {
+    return error.value
+  }
+
+  x = utils.parseNumber(x)
+
+  known_ys = utils.flatten(known_ys)
+  known_xs = utils.flatten(known_xs)
+
+  if (known_ys.length !== known_xs.length) {
+    return error.value
+  }
+
+  let sumY = 0
+  let sumX = 0
+  let sumXY = 0
+  let sumXSquare = 0
+
+  const xs = []
+  const ys = []
+
+  for (let i = 0; i < known_xs.length; i++) {
+    if (known_xs[i] instanceof Error) {
+      return known_xs[i]
+    }
+
+    if (known_ys[i] instanceof Error) {
+      return known_ys[i]
+    }
+
+    if (typeof known_ys[i] !== 'number' || typeof known_xs[i] !== 'number') {
+      continue
+    }
+
+    xs.push(known_xs[i])
+    ys.push(known_ys[i])
+
+    sumY += known_ys[i]
+    sumX += known_xs[i]
+    sumXY += known_xs[i] * known_ys[i]
+    sumXSquare += Math.pow(known_xs[i], 2)
+  }
+
+  const n = ys.length
+
+  const div = n * sumXSquare - sumX * sumX
+
+  if (div === 0) {
+    return error.div0
+  }
+
+  const meanX = jStat.mean(xs)
+  const meanY = jStat.mean(ys)
+
+  const b = (n * sumXY - sumX * sumY) / div
+  const a = meanY - b * meanX
+
+  const forecast = a + b * x
+  return forecast
 }
 
 /**
@@ -2106,7 +2192,64 @@ export function MINA() {
   return range.length === 0 ? 0 : Math.min.apply(Math, range)
 }
 
-export const MODE = {}
+export function MODE() {
+  if (!arguments.length || arguments.length > 255) {
+    return error.na
+  }
+
+  const flatArguments = utils.flatten(arguments)
+
+  if (flatArguments.length === 1) {
+    return error.na
+  }
+
+  let current
+
+  const frequencies = {}
+
+  for (let i = 0; i < flatArguments.length; i++) {
+    current = flatArguments[i]
+
+    if (utils.anyIsError(current)) {
+      return current
+    }
+
+    if (utils.anyIsUndefined(current)) {
+      return error.value
+    }
+
+    if (typeof current === 'number') {
+      if (frequencies[current] === undefined) {
+        frequencies[current] = 1
+      } else {
+        frequencies[current] += 1
+      }
+    }
+  }
+
+  const freqArr = Object.entries(frequencies)
+
+  if (!freqArr.length) {
+    return error.na
+  }
+
+  let max = freqArr[0]
+  let value
+
+  for (let i = 1; i < freqArr.length; i++) {
+    value = freqArr[i][1]
+
+    if (value > max[1]) {
+      max = freqArr[i]
+    }
+  }
+
+  if (max[1] === 1) {
+    return error.na
+  }
+
+  return Number(max[0])
+}
 
 /**
  * Returns a vertical array of the most frequently occurring, or repetitive values in an array or range of data.
@@ -2620,7 +2763,88 @@ export function PROB(x_range, prob_range, lower_limit, upper_limit) {
   return result
 }
 
-export const QUARTILE = {}
+/**
+ * Returns the quartile of a data set.
+ *
+ * Category: Statistical
+ *
+ * @param {*} array Required. The array or cell range of numeric values for which you want the quartile value.
+ * @param {*} quart Indicates which value to return.
+ * @returns
+ */
+export function QUARTILE(array, quart) {
+  if (!arguments.length || arguments.length > 2) {
+    return error.na
+  }
+
+  if (array === undefined) {
+    return 0
+  }
+
+  if (utils.anyIsError(array)) {
+    return array
+  }
+
+  if (utils.anyIsError(quart)) {
+    return quart
+  }
+
+  if (quart === undefined) {
+    return error.value
+  }
+
+  array = utils.flatten(array).filter((v) => typeof v === 'number')
+  quart = utils.parseNumber(quart)
+
+  if (utils.anyIsError(array, quart)) {
+    return error.value
+  }
+
+  const sortedArray = array.slice().sort((a, b) => a - b)
+  const n = sortedArray.length
+
+  if (n === 0) {
+    return error.num
+  }
+
+  if (quart === 0) {
+    return sortedArray[0]
+  } else if (quart === 1) {
+    const index = (n - 1) * 0.25
+    const lower = Math.floor(index)
+    const upper = Math.ceil(index)
+
+    if (lower === upper) {
+      return sortedArray[lower]
+    }
+
+    return sortedArray[lower] + (sortedArray[upper] - sortedArray[lower]) * (index - lower)
+  } else if (quart === 2) {
+    const index = (n - 1) * 0.5
+    const lower = Math.floor(index)
+    const upper = Math.ceil(index)
+
+    if (lower === upper) {
+      return sortedArray[lower]
+    }
+
+    return sortedArray[lower] + (sortedArray[upper] - sortedArray[lower]) * (index - lower)
+  } else if (quart === 3) {
+    const index = (n - 1) * 0.75
+    const lower = Math.floor(index)
+    const upper = Math.ceil(index)
+
+    if (lower === upper) {
+      return sortedArray[lower]
+    }
+
+    return sortedArray[lower] + (sortedArray[upper] - sortedArray[lower]) * (index - lower)
+  } else if (quart === 4) {
+    return sortedArray[n - 1]
+  } else {
+    return error.num
+  }
+}
 
 /**
  * Returns the quartile of the data set, based on percentile values from 0..1, exclusive.

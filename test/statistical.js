@@ -910,7 +910,62 @@ describe('Statistical', () => {
 
   it('FORECAST', () => {
     expect(statistical.FORECAST(30, [6, 7, 9, 15, 21], [20, 28, 31, 38, 40])).to.approximately(10.607253086419755, 1e-9)
+    expect(statistical.FORECAST(30, [9, 15, 21], [20, 28, 31, 38, 40])).to.equal(error.value)
     expect(statistical.FORECAST(30, [6, 7, 'invalid', 15, 21], [20, 28, 31, 38, 40])).to.equal(error.value)
+  })
+
+  it('FORECAST.LINEAR', () => {
+    expect(statistical.FORECAST.LINEAR(6, [[1, 4, 9, 16, 25]], [[1, 2, 3, 4, 5]])).to.equal(29)
+    expect(statistical.FORECAST.LINEAR(8.5, [[1, 4, 9, 16, 25]], [[6, 3, 8, 10, 24]])).to.approximately(
+      9.144637462,
+      1e-9
+    )
+    expect(statistical.FORECAST.LINEAR(44, [0, 4, 9.3, -6.3, 0], [[0.1235, 3, 88, 10, 543]])).to.approximately(
+      1.451875047,
+      1e-9
+    )
+    expect(statistical.FORECAST.LINEAR(30, [[6, 7, 'str', 15, 21]], [[20, 28, 31, 38, 40]])).to.approximately(
+      11.19305019,
+      1e-8
+    )
+    expect(statistical.FORECAST.LINEAR('invalid', [[6, 7, 15, 21]], [[20, 28, 31, 38, 40]])).to.equal(error.value)
+    expect(statistical.FORECAST.LINEAR(30, [[6, 15, 21]], [[20, 28, 31, 38, 40]])).to.equal(error.value)
+    expect(statistical.FORECAST.LINEAR(6, [[1, 4, 'abc', 6, 'def']], [[1, 2, 3, 4, 5]])).to.approximately(
+      9.428571429,
+      1e-9
+    )
+    expect(statistical.FORECAST.LINEAR(undefined, [[6, 7, 'str', 15, 21]], [[20, 28, 31, 38, 40]])).to.approximately(
+      -9.945945946,
+      1e-9
+    )
+    expect(statistical.FORECAST.LINEAR(6, [[1, 4, null, 6, null]], [[1, 2, 3, 4, 5]])).to.approximately(
+      9.428571429,
+      1e-9
+    )
+
+    expect(statistical.FORECAST.LINEAR()).to.equal(error.na)
+    expect(statistical.FORECAST.LINEAR(error.calc, [[1], [3], [9]], [[10], [3.45], [5.1]])).to.equal(error.calc)
+    expect(statistical.FORECAST.LINEAR(29, [[1], [error.div0], [9]], [[10], [3.45], [5.1]])).to.equal(error.div0)
+    expect(statistical.FORECAST.LINEAR(29, [[1], [error.div0], [9]], [[10], [3.45], [5.1]])).to.equal(error.div0)
+
+    expect(statistical.FORECAST.LINEAR(undefined, [[6, 7, 'str', 15, 21]], [[20, 28, 31, 38, 40]])).to.approximately(
+      -9.945945946,
+      1e-9
+    )
+    expect(statistical.FORECAST.LINEAR(false, [[6, 7, null, 15, 21]], [[20, 28, 31, 38, 40]])).to.approximately(
+      -9.945945946,
+      1e-9
+    )
+    expect(statistical.FORECAST.LINEAR(false, [[6, 7, 'str', 15, 21]], [[20, 28, 31, 38, 40]])).to.approximately(
+      -9.945945946,
+      1e-9
+    )
+    expect(statistical.FORECAST.LINEAR(true, [[6, 7, 'str', 15, 21]], [[20, 28, 31, 38, 40]])).to.approximately(
+      -9.241312741,
+      1e-9
+    )
+    expect(statistical.FORECAST.LINEAR(1, 1, 1)).to.equal(error.div0)
+    expect(statistical.FORECAST.LINEAR(1, [[2, 1, 1, 2]], 31.9)).to.equal(error.na)
   })
 
   it('FREQUENCY', () => {
@@ -1401,6 +1456,72 @@ describe('Statistical', () => {
     ).to.equal(0)
   })
 
+  it('MODE', () => {
+    expect(statistical.MODE(5.6, 3, [[4]], [[4]], [[3]], [[2]], [[4]])).to.equal(4)
+    expect(statistical.MODE(5.6, 4, 4, 3, 2, 4)).to.equal(4)
+    expect(statistical.MODE(1, 2, 3, 3, 4, 4, 5)).to.equal(3)
+    expect(statistical.MODE(1, 2, 3, 3, 4, 5)).to.equal(3)
+    expect(statistical.MODE(1, 2, 3, 4, 5)).to.equal(error.na)
+    expect(statistical.MODE(1.1, 2.1, 3.3, 3.3, 4.4, 4.4, 5.1)).to.equal(3.3)
+    expect(statistical.MODE(1)).to.equal(error.na)
+    expect(statistical.MODE()).to.equal(error.na)
+    expect(statistical.MODE(1, 'string', 'string')).to.equal(error.na)
+    expect(statistical.MODE(1, 1, 'string')).to.equal(1)
+    expect(statistical.MODE('string')).to.equal(error.na)
+    expect(statistical.MODE([[1, 1, 1, 1]])).to.equal(1)
+    expect(statistical.MODE([[1], [1], [1], [1]])).to.equal(1)
+    expect(
+      statistical.MODE([
+        [1, 1, 1],
+        [1, 1, 1],
+        [1, 1, 1],
+        [1, 1, 1]
+      ])
+    ).to.equal(1)
+    expect(statistical.MODE([1], [1], [1], [1])).to.equal(1)
+    expect(statistical.MODE([1, 1, ['string'], ['string']])).to.equal(1)
+    expect(statistical.MODE([1, 1, [true], [true]])).to.equal(1)
+    expect(statistical.MODE([1, 1, [false], [false]])).to.equal(1)
+    expect(statistical.MODE([1, 1, [true], [false]])).to.equal(1)
+    expect(statistical.MODE([1, [[], [], []]])).to.equal(error.na)
+    expect(statistical.MODE([1, [[0], [0], [0]]])).to.equal(0)
+    expect(statistical.MODE(1, '1')).to.equal(error.na)
+    expect(statistical.MODE(1, 1, '1')).to.equal(1)
+
+    expect(statistical.MODE(1, null)).to.equal(error.na)
+    expect(statistical.MODE(1, 1, null)).to.equal(1)
+    expect(statistical.MODE(1, 1, [[null, null]])).to.equal(1)
+    expect(statistical.MODE(1, null, null)).to.equal(error.na)
+    expect(statistical.MODE(null, null)).to.equal(error.na)
+    expect(statistical.MODE(1, 1, null)).to.equal(1)
+    expect(statistical.MODE(1, [[null], [null]])).to.equal(error.na)
+
+    expect(statistical.MODE(1, false, true)).to.equal(error.na)
+    expect(statistical.MODE(1, false, false)).to.equal(error.na)
+    expect(statistical.MODE(1, false, true)).to.equal(error.na)
+    expect(statistical.MODE(1, true, false)).to.equal(error.na)
+
+    expect(statistical.MODE(1, 1, true, true)).to.equal(1)
+    expect(statistical.MODE(1, 1, false, false)).to.equal(1)
+    expect(statistical.MODE(1, 1, false, true)).to.equal(1)
+    expect(statistical.MODE(1, 1, true, false)).to.equal(1)
+    expect(statistical.MODE(1, 1, [[false], [true]])).to.equal(1)
+    expect(statistical.MODE(1, [[null], [null]])).to.equal(error.na)
+
+    expect(statistical.MODE([[1], [1], [1], [2], [2]], [[3], [3], [3], [3], [4], [4]])).to.equal(3)
+
+    expect(statistical.MODE(1, undefined)).to.equal(error.value)
+    expect(statistical.MODE(1, undefined, undefined)).to.equal(error.value)
+    expect(statistical.MODE(1, 1, undefined)).to.equal(error.value)
+    expect(statistical.MODE(1, undefined, error.na)).to.equal(error.value)
+    expect(statistical.MODE()).to.equal(error.na)
+    expect(statistical.MODE(9, 5, 3, 3, 6, 6)).to.equal(3)
+
+    Object.values(error).forEach((err) => {
+      expect(statistical.MODE(1, 1, err)).to.equal(err)
+    })
+  })
+
   it('MODE.MULT', () => {
     const data = [1, 2, 3, 4, 3, 2, 1, 2, 3, 5, 6, 1]
     const modes = statistical.MODE.MULT(data)
@@ -1591,6 +1712,38 @@ describe('Statistical', () => {
     expect(statistical.PROB(x, prob)).to.equal(0)
     x.push('invalid')
     expect(statistical.PROB(x, prob, 1, 3)).to.equal(error.value)
+  })
+
+  it('QUARTILE', () => {
+    const data = [[1, 2, 4, 7, 8, 9, 10, 12]]
+    const data2 = [[1, 2, 3, 7.9827856, 8, 9, 10, 12]]
+    const data3 = [[1], [2], [4], [7], [8], [9], [10], [12]]
+    const data4 = ['abc', 'def', true, 'ghi', false, 'j', true, 12]
+
+    expect(statistical.QUARTILE(data, 1)).to.equal(3.5)
+    expect(statistical.QUARTILE(data, 2)).to.equal(7.5)
+    expect(statistical.QUARTILE(data, 3)).to.equal(9.25)
+    expect(statistical.QUARTILE(data, 4)).to.equal(12)
+    expect(statistical.QUARTILE(data, 0)).to.equal(1)
+    expect(statistical.QUARTILE(data, 0)).to.equal(1)
+    expect(statistical.QUARTILE(data)).to.equal(error.value)
+    expect(statistical.QUARTILE(data2, 2)).to.approximately(7.9913928, 1e-9)
+    expect(statistical.QUARTILE(data3, 4)).to.equal(12)
+    expect(statistical.QUARTILE(data4, 4)).to.equal(12)
+    expect(statistical.QUARTILE(1, 4)).to.equal(1)
+    expect(statistical.QUARTILE([[null]], 4)).to.equal(error.num)
+    expect(statistical.QUARTILE(undefined, 4)).to.equal(0)
+    expect(statistical.QUARTILE(undefined)).to.equal(0)
+    expect(statistical.QUARTILE(data, 'invalid')).to.equal(error.value)
+    expect(statistical.QUARTILE(data, 'invalid')).to.equal(error.value)
+    expect(statistical.QUARTILE()).to.equal(error.na)
+
+    expect(statistical.QUARTILE(error.na)).to.equal(error.na)
+    expect(statistical.QUARTILE(error.value)).to.equal(error.value)
+    expect(statistical.QUARTILE(error.calc)).to.equal(error.calc)
+    expect(statistical.QUARTILE(error.data)).to.equal(error.data)
+
+    expect(statistical.QUARTILE(data, error.na)).to.equal(error.na)
   })
 
   it('QUARTILE.EXC', () => {

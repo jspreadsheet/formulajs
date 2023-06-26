@@ -950,24 +950,43 @@ export function ERF(lower_limit, upper_limit) {
   return jStat.erf(lower_limit)
 }
 
-// TODO
-
 /**
- * -- Not implemented --
  *
- * Returns the error function.
+ * Returns the error function..
+ * The current return of ERF.PRECISE(x) has the same precision as the return of ERF(x)
+ * due to accuracy issues
  *
  * Category: Engineering
- *
  * @param {*} x The lower bound for integrating ERF.PRECISE.
  * @returns
  */
-ERF.PRECISE = () => {
-  throw new Error('ERF.PRECISE is not implemented')
+ERF.PRECISE = function (x) {
+  if (!arguments.length || arguments.length > 1 || arguments[0] === undefined) {
+    return error.na
+  }
+
+  if (utils.anyIsError(x)) {
+    return x
+  }
+
+  if (typeof x === 'boolean') {
+    return error.value
+  }
+
+  x = utils.parseNumber(x)
+
+  if (utils.anyIsError(x)) {
+    return error.value
+  }
+
+  const erf = jStat.erf(x)
+  const result = Math.abs(erf) < 1e-15 ? 0 : erf
+
+  return result
 }
 
 /**
- * Returns the complementary error function.
+ * Returns the complementary ERF function integrated between x and infinity.
  *
  * Category: Engineering
  *
@@ -975,29 +994,40 @@ ERF.PRECISE = () => {
  * @returns
  */
 export function ERFC(x) {
-  // Return error if x is not a number
-  if (isNaN(x)) {
+  if (!arguments.length || arguments.length > 1 || arguments[0] === undefined) {
+    return error.na
+  }
+
+  if (utils.anyIsError(x)) {
+    return x
+  }
+
+  if (typeof x === 'boolean') {
     return error.value
   }
 
+  // Return error if x is not a number
+  x = utils.parseNumber(x)
+
+  if (utils.anyIsError(x)) {
+    return error.value
+  }
+
+  // Cálculo do ERFC.PRECISE utilizando a função erfc
   return jStat.erfc(x)
 }
 
-// TODO
-
 /**
- * -- Not implemented --
  *
  * Returns the complementary ERF function integrated between x and infinity.
- *
+ * The current return of ERFC.PRECISE(x) has the same precision as the return of ERFC(x)
+ * due to accuracy issues.
  * Category: Engineering
  *
  * @param {*} x The lower bound for integrating ERFC.PRECISE.
  * @returns
  */
-ERFC.PRECISE = () => {
-  throw new Error('ERFC.PRECISE is not implemented')
-}
+ERFC.PRECISE = ERFC
 
 /**
  * Tests whether a number is greater than a threshold value.

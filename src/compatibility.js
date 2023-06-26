@@ -43,6 +43,7 @@ export const PERCENTILEINC = statistical.PERCENTILE.INC
 export const PERCENTRANKEXC = statistical.PERCENTRANK.EXC
 export const PERCENTRANKINC = statistical.PERCENTRANK.INC
 export const POISSONDIST = statistical.POISSON.DIST
+export const QUARTILE = statistical.QUARTILE
 export const QUARTILEEXC = statistical.QUARTILE.EXC
 export const QUARTILEINC = statistical.QUARTILE.INC
 export const RANKAVG = statistical.RANK.AVG
