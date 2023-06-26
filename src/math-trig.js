@@ -1625,7 +1625,7 @@ function roundSingle(number, num_digits) {
   if (utils.anyIsError(number, num_digits)) {
     return error.value
   }
-  
+
   const signal = Math.sign(number)
   number = Math.abs(number)
 

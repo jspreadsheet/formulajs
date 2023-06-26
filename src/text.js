@@ -1,37 +1,10 @@
 import * as error from './utils/error.js'
 import * as utils from './utils/common.js'
 import { ROUND } from './math-trig.js'
-import THBText from 'thai-baht-text'
 
-function halfWidthStr(str) {
-  let halfWidthStr = ''
-  for (var i = 0; i < str.length; i++) {
-    let charCode = str.charCodeAt(i)
-    if (charCode >= 65313 && charCode <= 65406) {
-      charCode = charCode - 65248
-    } else if (charCode == 32) {
-      charCode = 12288
-    }
-    halfWidthStr += String.fromCharCode(charCode)
-  }
-  return halfWidthStr
-}
-
-function fullWidthStr(str) {
-  let fullWidthStr = ''
-  for (var i = 0; i < str.length; i++) {
-    let charCode = str.charCodeAt(i)
-    if (charCode >= 33 && charCode <= 126) {
-      charCode = charCode - 33 + 65281
-    } else if (charCode == 32) {
-      charCode = 12288
-    }
-    fullWidthStr += String.fromCharCode(charCode)
-  }
-  return fullWidthStr
-}
-
+// TODO
 /**
+ * -- Not implemented --
  *
  * Changes full-width (double-byte) English letters or katakana within a character string to half-width (single-byte) characters.
  *
@@ -40,39 +13,13 @@ function fullWidthStr(str) {
  * @param {*} text The text or a reference to a value that contains the text you want to change. If text does not contain any full-width letters, text is not changed.
  * @returns
  */
-export function ASC(text) {
-  if (arguments.length !== 1) {
-    return error.na
-  }
-
-  if (utils.getVariableType(text) !== 'single') {
-    let matrix = []
-    let rows = text.length
-    let columns = text[0].length
-
-    for (let i = 0; i < rows; i++) {
-      let row = []
-
-      for (let j = 0; j < columns; j++) {
-        row.push(halfWidthStr(text[i][j]))
-      }
-      matrix.push(row)
-    }
-
-    return matrix
-  }
-
-  text = utils.parseString(text)
-
-  if (text.formulaError) {
-    return error.value
-  }
-
-  return halfWidthStr(text)
+export function ASC() {
+  throw new Error('ASC is not implemented')
 }
 
-// TODO: Implement negative number support
+// TODO
 /**
+ * -- Not implemented --
  *
  * Converts a number to text, using the ß (baht) currency format.
  *
@@ -81,26 +28,8 @@ export function ASC(text) {
  * @param {*} number A number you want to convert to text, or a reference to a value containing a number, or a formula that evaluates to a number.
  * @returns
  */
-export function BAHTTEXT(num) {
-  if (arguments.length != 1) {
-    return error.na
-  }
-
-  if (num && num.formulaError) {
-    return num
-  }
-
-  num = utils.parseNumber(num)
-
-  if (utils.anyIsError(num) || num < 0) {
-    return error.value
-  }
-
-  if (num === 0) {
-    return 'ศูนย์บาทถ้วน'
-  }
-
-  return THBText(num)
+export function BAHTTEXT() {
+  throw new Error('BAHTTEXT is not implemented')
 }
 
 /**
@@ -249,7 +178,9 @@ export function CONCATENATE() {
 
 export const CONCAT = CONCATENATE
 
+// TODO
 /**
+ * -- Not implemented --
  *
  * Changes half-width (single-byte) English letters or katakana within a character string to full-width (double-byte) characters.
  *
@@ -258,48 +189,8 @@ export const CONCAT = CONCATENATE
  * @param {*} text The text or a reference to a value that contains the text you want to change. If text does not contain any half-width English letters or katakana, text is not changed.
  * @returns
  */
-export function DBCS(text) {
-  if (arguments.length !== 1) {
-    return error.na
-  }
-
-  if (utils.getVariableType(text) !== 'single') {
-    let matrix = []
-    let rows = text.length
-    let columns = text[0].length
-
-    for (let i = 0; i < rows; i++) {
-      let row = []
-
-      for (let j = 0; j < columns; j++) {
-        row.push(fullWidthStr(text[i][j]))
-      }
-      matrix.push(row)
-    }
-
-    return matrix
-  }
-
-  text = utils.parseString(text)
-
-  if (text.formulaError) {
-    return error.value
-  }
-
-  return fullWidthStr(text)
-}
-
-/**
- *
- * Old name of DBCS. Changes half-width (single-byte) English letters or katakana within a character string to full-width (double-byte) characters.
- *
- * Category: Text
- *
- * @param {*} text The text or a reference to a value that contains the text you want to change. If text does not contain any half-width English letters or katakana, text is not changed.
- * @returns
- */
-export function JIS() {
-  return DBCS.apply(this, arguments)
+export function DBCS() {
+  throw new Error('DBCS is not implemented')
 }
 
 /**

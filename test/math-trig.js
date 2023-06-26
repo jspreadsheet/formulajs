@@ -1424,7 +1424,12 @@ describe('Math & Trig', () => {
     expect(mathTrig.SUM(null, error.na)).to.equal(error.na)
     expect(mathTrig.SUM(error.na, 1)).to.equal(error.na)
     expect(mathTrig.SUM([[1]])).to.equal(1)
-    expect(mathTrig.SUM([[1, 5], [4, 6]])).to.equal(16)
+    expect(
+      mathTrig.SUM([
+        [1, 5],
+        [4, 6]
+      ])
+    ).to.equal(16)
 
     expect(mathTrig.SUM(null, error.div0)).to.equal(error.div0)
 
