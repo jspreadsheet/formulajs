@@ -150,14 +150,17 @@ export function COUPDAYBS(settlement, maturity, frequency, basis = 0) {
   if (arguments.length < 3 || arguments.length > 4 || utils.anyIsUndefined(settlement, maturity, frequency)) {
     return error.na
   }
-  
-  if (utils.anyIsBoolean(settlement, maturity, frequency, basis) || utils.anyIsNull(settlement, maturity, frequency, basis)) {
+
+  if (
+    utils.anyIsBoolean(settlement, maturity, frequency, basis) ||
+    utils.anyIsNull(settlement, maturity, frequency, basis)
+  ) {
     return error.value
   }
 
   settlement = utils.parseDate(settlement)
   maturity = utils.parseDate(maturity)
-  
+
   frequency = utils.parseNumber(frequency)
   basis = utils.parseNumber(basis)
 
@@ -215,7 +218,7 @@ export function COUPDAYS(settlement, maturity, frequency, basis = 0) {
   if (basis === 1) {
     let pcd = utils.parseDate(COUPPCD(settlement, maturity, frequency))
 
-    let nextDate = utils.subMonthsKeepDayFixed(pcd, -12/frequency, pcd.getDate())
+    let nextDate = utils.subMonthsKeepDayFixed(pcd, -12 / frequency, pcd.getDate())
 
     pcd = utils.dateToSerialNumber(pcd)
     nextDate = utils.dateToSerialNumber(nextDate)
@@ -326,7 +329,7 @@ export function COUPNCD(settlement, maturity, frequency, basis) {
   const fixedDay = maturity.getDate()
 
   while (compareAsc(maturity, settlement) <= 0) {
-    maturity = utils.subMonthsKeepDayFixed(maturity, -12/frequency, fixedDay)
+    maturity = utils.subMonthsKeepDayFixed(maturity, -12 / frequency, fixedDay)
   }
 
   maturity = utils.dateToSerialNumber(maturity)
@@ -414,7 +417,7 @@ export function COUPPCD(settlement, maturity, frequency, basis = 0) {
   const fixedDay = result.getDate()
 
   while (result - settlement > 0) {
-    result = utils.subMonthsKeepDayFixed(result, 12/frequency, fixedDay)
+    result = utils.subMonthsKeepDayFixed(result, 12 / frequency, fixedDay)
   }
 
   result = utils.dateToSerialNumber(result)

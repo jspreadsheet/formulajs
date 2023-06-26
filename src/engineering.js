@@ -966,11 +966,11 @@ ERF.PRECISE = function (x) {
   }
 
   if (utils.anyIsError(x)) {
-    return x;
+    return x
   }
 
   if (typeof x === 'boolean') {
-    return error.value;
+    return error.value
   }
 
   x = utils.parseNumber(x)
@@ -999,11 +999,11 @@ export function ERFC(x) {
   }
 
   if (utils.anyIsError(x)) {
-    return x;
+    return x
   }
 
   if (typeof x === 'boolean') {
-    return error.value;
+    return error.value
   }
 
   // Return error if x is not a number

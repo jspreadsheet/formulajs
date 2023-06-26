@@ -7,7 +7,7 @@ export function ENCODEURL(url) {
   }
 
   if (utils.anyIsError(url)) {
-    return url;
+    return url
   }
 
   url = utils.parseString(url)

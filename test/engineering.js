@@ -237,17 +237,17 @@ describe('Engineering', () => {
     expect(engineering.ERF.PRECISE(null)).to.equal(0)
     expect(engineering.ERF.PRECISE()).to.equal(error.na)
 
-    expect(engineering.ERF.PRECISE(true)).to.equal(error.value);
-    expect(engineering.ERF.PRECISE(false)).to.equal(error.value);
+    expect(engineering.ERF.PRECISE(true)).to.equal(error.value)
+    expect(engineering.ERF.PRECISE(false)).to.equal(error.value)
 
-    expect(engineering.ERF.PRECISE([[1, 2]])).to.equal(error.value);
-    expect(engineering.ERF.PRECISE([[1, 2]], undefined)).to.equal(error.na);
+    expect(engineering.ERF.PRECISE([[1, 2]])).to.equal(error.value)
+    expect(engineering.ERF.PRECISE([[1, 2]], undefined)).to.equal(error.na)
 
-    expect(engineering.ERF.PRECISE(undefined)).to.equal(error.na);
-    expect(engineering.ERF.PRECISE(error.na)).to.equal(error.na);
-    expect(engineering.ERF.PRECISE(error.value)).to.equal(error.value);
-    expect(engineering.ERF.PRECISE(error.calc)).to.equal(error.calc);
-    expect(engineering.ERF.PRECISE(error.data)).to.equal(error.data);
+    expect(engineering.ERF.PRECISE(undefined)).to.equal(error.na)
+    expect(engineering.ERF.PRECISE(error.na)).to.equal(error.na)
+    expect(engineering.ERF.PRECISE(error.value)).to.equal(error.value)
+    expect(engineering.ERF.PRECISE(error.calc)).to.equal(error.calc)
+    expect(engineering.ERF.PRECISE(error.data)).to.equal(error.data)
   })
 
   it('ERFC', () => {
@@ -257,22 +257,22 @@ describe('Engineering', () => {
     expect(engineering.ERFC(0.2)).to.be.approximately(0.7772974108, 1e-9)
     expect(engineering.ERFC(1)).to.approximately(0.1572992070502851, 1e-9)
     expect(engineering.ERFC([[1]])).to.approximately(0.1572992070502851, 1e-9)
-    expect(engineering.ERFC([[1, 2]])).to.equal(error.value);
-    expect(engineering.ERFC([[1, 2]], undefined)).to.equal(error.na);
-    expect(engineering.ERFC('str')).to.equal(error.value);
-    expect(engineering.ERFC([['str']])).to.equal(error.value);
+    expect(engineering.ERFC([[1, 2]])).to.equal(error.value)
+    expect(engineering.ERFC([[1, 2]], undefined)).to.equal(error.na)
+    expect(engineering.ERFC('str')).to.equal(error.value)
+    expect(engineering.ERFC([['str']])).to.equal(error.value)
 
     expect(engineering.ERFC(null)).to.be.approximately(1, 1e-9)
-    expect(engineering.ERFC()).to.equal(error.na);
+    expect(engineering.ERFC()).to.equal(error.na)
 
-    expect(engineering.ERFC(true)).to.equal(error.value);
-    expect(engineering.ERFC(false)).to.equal(error.value);
+    expect(engineering.ERFC(true)).to.equal(error.value)
+    expect(engineering.ERFC(false)).to.equal(error.value)
 
-    expect(engineering.ERFC(undefined)).to.equal(error.na);
-    expect(engineering.ERFC(error.na)).to.equal(error.na);
-    expect(engineering.ERFC(error.value)).to.equal(error.value);
-    expect(engineering.ERFC(error.calc)).to.equal(error.calc);
-    expect(engineering.ERFC(error.data)).to.equal(error.data);
+    expect(engineering.ERFC(undefined)).to.equal(error.na)
+    expect(engineering.ERFC(error.na)).to.equal(error.na)
+    expect(engineering.ERFC(error.value)).to.equal(error.value)
+    expect(engineering.ERFC(error.calc)).to.equal(error.calc)
+    expect(engineering.ERFC(error.data)).to.equal(error.data)
   })
 
   it('ERFC.PRECISE', () => {
@@ -282,24 +282,22 @@ describe('Engineering', () => {
     expect(engineering.ERFC.PRECISE(0.2)).to.be.approximately(0.7772974108, 1e-9)
     expect(engineering.ERFC.PRECISE(1)).to.approximately(0.1572992070502851, 1e-9)
     expect(engineering.ERFC.PRECISE([[1]])).to.approximately(0.1572992070502851, 1e-9)
-    expect(engineering.ERFC.PRECISE([[1, 2]])).to.equal(error.value);
-    expect(engineering.ERFC.PRECISE([[1, 2]], undefined)).to.equal(error.na);
-    expect(engineering.ERFC.PRECISE('str')).to.equal(error.value);
-    expect(engineering.ERFC.PRECISE([['str']])).to.equal(error.value);
+    expect(engineering.ERFC.PRECISE([[1, 2]])).to.equal(error.value)
+    expect(engineering.ERFC.PRECISE([[1, 2]], undefined)).to.equal(error.na)
+    expect(engineering.ERFC.PRECISE('str')).to.equal(error.value)
+    expect(engineering.ERFC.PRECISE([['str']])).to.equal(error.value)
 
     expect(engineering.ERFC.PRECISE(null)).to.be.approximately(1, 1e-9)
-    expect(engineering.ERFC.PRECISE()).to.equal(error.na);
+    expect(engineering.ERFC.PRECISE()).to.equal(error.na)
 
-    expect(engineering.ERFC.PRECISE(true)).to.equal(error.value);
-    expect(engineering.ERFC.PRECISE(false)).to.equal(error.value);
+    expect(engineering.ERFC.PRECISE(true)).to.equal(error.value)
+    expect(engineering.ERFC.PRECISE(false)).to.equal(error.value)
 
-    expect(engineering.ERFC.PRECISE(undefined)).to.equal(error.na);
-    expect(engineering.ERFC.PRECISE(error.na)).to.equal(error.na);
-    expect(engineering.ERFC.PRECISE(error.value)).to.equal(error.value);
-    expect(engineering.ERFC.PRECISE(error.calc)).to.equal(error.calc);
-    expect(engineering.ERFC.PRECISE(error.data)).to.equal(error.data);
-
-
+    expect(engineering.ERFC.PRECISE(undefined)).to.equal(error.na)
+    expect(engineering.ERFC.PRECISE(error.na)).to.equal(error.na)
+    expect(engineering.ERFC.PRECISE(error.value)).to.equal(error.value)
+    expect(engineering.ERFC.PRECISE(error.calc)).to.equal(error.calc)
+    expect(engineering.ERFC.PRECISE(error.data)).to.equal(error.data)
   })
 
   it('GESTEP', () => {

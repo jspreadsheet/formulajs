@@ -1309,13 +1309,13 @@ export function FORECAST(x, known_ys, known_xs) {
  * @returns
  */
 FORECAST.LINEAR = function (x, known_ys, known_xs) {
-  if (!arguments.length || arguments.length > 3 || (typeof known_xs !== typeof known_ys)) {
+  if (!arguments.length || arguments.length > 3 || typeof known_xs !== typeof known_ys) {
     return error.na
   }
 
   let someError
-  
-  if (someError = [x, known_ys, known_xs].find(v => v instanceof Error)) {
+
+  if ((someError = [x, known_ys, known_xs].find((v) => v instanceof Error))) {
     return someError
   }
 
@@ -1340,7 +1340,7 @@ FORECAST.LINEAR = function (x, known_ys, known_xs) {
   const xs = []
   const ys = []
 
-  for (let i = 0; i < known_xs.length; i ++) {
+  for (let i = 0; i < known_xs.length; i++) {
     if (known_xs[i] instanceof Error) {
       return known_xs[i]
     }
@@ -1364,7 +1364,7 @@ FORECAST.LINEAR = function (x, known_ys, known_xs) {
 
   const n = ys.length
 
-  const div = (n * sumXSquare - sumX * sumX)
+  const div = n * sumXSquare - sumX * sumX
 
   if (div === 0) {
     return error.div0
@@ -2192,67 +2192,63 @@ export function MINA() {
   return range.length === 0 ? 0 : Math.min.apply(Math, range)
 }
 
-function hasDuplicates(array) {
-  return array.some((item, index) => array.includes(item, index + 1))
-}
-
 export function MODE() {
   if (!arguments.length || arguments.length > 255) {
     return error.na
   }
 
-  const flatArguments = utils.flatten(arguments);
-  
+  const flatArguments = utils.flatten(arguments)
+
   if (flatArguments.length === 1) {
-    return error.na;
+    return error.na
   }
 
-  let current;
+  let current
 
-  const frequencies = {};
+  const frequencies = {}
 
-  for (let i = 0; i < flatArguments.length; i ++) {
-    current = flatArguments[i];
+  for (let i = 0; i < flatArguments.length; i++) {
+    current = flatArguments[i]
 
     if (utils.anyIsError(current)) {
-      return current;
+      return current
     }
 
     if (utils.anyIsUndefined(current)) {
-      return error.value;
+      return error.value
     }
 
     if (typeof current === 'number') {
       if (frequencies[current] === undefined) {
-        frequencies[current] = 1;
+        frequencies[current] = 1
       } else {
-        frequencies[current] += 1;
+        frequencies[current] += 1
       }
     }
   }
 
-  const freqArr = Object.entries(frequencies);
+  const freqArr = Object.entries(frequencies)
 
   if (!freqArr.length) {
-    return error.na;
+    return error.na
   }
 
-  let max = freqArr[0];
-  let value;
+  let max = freqArr[0]
+  let value
 
-  for (let i = 1; i < freqArr.length; i ++) {
-    value = freqArr[i][1];
+  for (let i = 1; i < freqArr.length; i++) {
+    value = freqArr[i][1]
 
     if (value > max[1]) {
-      max = freqArr[i];    
+      max = freqArr[i]
     }
   }
 
   if (max[1] === 1) {
-    return error.na;
+    return error.na
   }
 
-  return Number(max[0]);
+  return Number(max[0])
 }
 
 /**
@@ -2778,26 +2774,26 @@ export function PROB(x_range, prob_range, lower_limit, upper_limit) {
  */
 export function QUARTILE(array, quart) {
   if (!arguments.length || arguments.length > 2) {
-    return error.na;
+    return error.na
   }
 
   if (array === undefined) {
-    return 0;
+    return 0
   }
 
   if (utils.anyIsError(array)) {
-    return array;
+    return array
   }
 
   if (utils.anyIsError(quart)) {
-    return quart;
+    return quart
   }
 
   if (quart === undefined) {
     return error.value
   }
 
-  array = utils.flatten(array).filter(v => typeof v === 'number');
+  array = utils.flatten(array).filter((v) => typeof v === 'number')
   quart = utils.parseNumber(quart)
 
   if (utils.anyIsError(array, quart)) {

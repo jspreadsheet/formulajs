@@ -1184,7 +1184,7 @@ export function CHOOSECOLS(array, col_num1, ...col_numN) {
 
   for (let j = 0; j < indices.length; j++) {
     if (indices[j] instanceof Error) {
-      return indices[j];
+      return indices[j]
     }
 
     if (indices[j] < 1 || indices[j] > firstRow.length) {
@@ -1239,13 +1239,13 @@ export function CHOOSEROWS(array, row_num1, ...row_numN) {
   const result = []
   const indices = [row_num1, ...row_numN]
 
-  for (let j = 0; j < indices.length; j ++) {
+  for (let j = 0; j < indices.length; j++) {
     if (indices[j] instanceof Error) {
-      return indices[j];
+      return indices[j]
     }
 
     if (typeof indices[j] !== 'number' || indices[j] < 1 || !array[indices[j] - 1]) {
-      return error.value;
+      return error.value
     }
   }
 

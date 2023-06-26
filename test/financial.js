@@ -520,7 +520,7 @@ describe('Financial', () => {
     expect(financial.COUPDAYS('2011-01-25', '2011-11-15', 'true', 0)).to.equal(error.value)
     expect(financial.COUPDAYS('2011-01-25', '2011-11-15', 2, 'true')).to.equal(error.value)
     expect(financial.COUPDAYS(undefined, '2011-11-15', 2, 0)).to.equal(error.na)
-      expect(financial.COUPDAYS('2011-01-25', undefined, 2, 0)).to.equal(error.na)
+    expect(financial.COUPDAYS('2011-01-25', undefined, 2, 0)).to.equal(error.na)
     expect(financial.COUPDAYS('2011-01-25', '2011-11-15', undefined, 0)).to.equal(error.na)
     expect(financial.COUPDAYS('2011-01-25', '2011-11-15', 2, undefined)).to.equal(180)
     expect(financial.COUPDAYS(null, '2011-11-15', 2, 0)).to.equal(error.value)
@@ -621,7 +621,7 @@ describe('Financial', () => {
     expect(financial.COUPNCD('2019-01-31', '2020-01-01', 4, 4)).to.equal(43556)
     expect(financial.COUPNCD('2019-01-31', '2020-01-01', 2, 4)).to.equal(43647)
     expect(financial.COUPNCD('2019-01-31', '2020-01-01', 1, 4)).to.equal(43831)
-    
+
     expect(financial.COUPNCD('2017-03-23', '2025-05-15', 4, 0)).to.equal(42870)
     expect(financial.COUPNCD('2017-03-23', '2025-05-15', 2, 0)).to.equal(42870)
     expect(financial.COUPNCD('2017-03-23', '2025-05-15', 1, 0)).to.equal(42870)
@@ -695,7 +695,7 @@ describe('Financial', () => {
     expect(financial.COUPNUM('2017-03-23', '2025-05-15', 4, 0)).to.equal(33)
     expect(financial.COUPNUM('2017-03-23', '2025-05-15', 2, 0)).to.equal(17)
     expect(financial.COUPNUM('2017-03-23', '2025-05-15', 1, 0)).to.equal(9)
-  
+
     expect(financial.COUPNUM('2017-03-23', '2025-05-15', 4, 1)).to.equal(33)
     expect(financial.COUPNUM('2017-03-23', '2025-05-15', 2, 1)).to.equal(17)
     expect(financial.COUPNUM('2017-03-23', '2025-05-15', 1, 1)).to.equal(9)
@@ -771,7 +771,7 @@ describe('Financial', () => {
     expect(financial.COUPPCD('2012-06-01', '2018-06-01', 2, 4)).to.equal(41061)
     expect(financial.COUPPCD('2011-01-25', '2011-11-15', 2, 1)).to.equal(40497)
     expect(financial.COUPPCD('2019-09-01', '2029-01-01', 2, 0)).to.equal(43647)
-    
+
     expect(financial.COUPPCD('2012-06-01', '2018-05-30', 2, 4)).to.equal(41059)
     expect(financial.COUPPCD('2012-06-01', '2018-06-01', 2, 4)).to.equal(41061)
     expect(financial.COUPPCD('2012-06-01', '2018-06-02', 2, 4)).to.equal(40879)
