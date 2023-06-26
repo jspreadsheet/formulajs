@@ -17,5 +17,7 @@ describe('Text', () => {
     expect(web.ENCODEURL(error.value)).to.equal(error.value)
     expect(web.ENCODEURL(error.na)).to.equal(error.na)
     expect(web.ENCODEURL(null)).to.equal('')
+    expect(web.ENCODEURL(25)).to.equal('25')
+    expect(web.ENCODEURL(0.343)).to.equal('0.343')
   })
 })
