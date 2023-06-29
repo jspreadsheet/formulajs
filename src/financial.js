@@ -1021,6 +1021,9 @@ export function DURATION(settlement, maturity, coupon, yld, frequency, basis = 0
     return error.value;
   }
 
+  frequency = parseInt(frequency);
+  basis = parseInt(basis);
+
   if (coupon < 0 || yld < 0 || ![1, 2, 4].includes(frequency) || basis < 0 || basis > 4) {
     return error.num;
   }
@@ -1506,11 +1509,9 @@ export function ISPMT(rate, per, nper, pv) {
   return pv * rate * (per / nper - 1)
 }
 
-// TODO
 /**
- * -- Not implemented --
- *
- * Returns the Macauley modified duration for a security with an assumed par value of $100.
+ * 
+ * Returns the modified Macauley duration for a security with an assumed par value of $100.
  *
  * Category: Financial
  *
@@ -1522,8 +1523,18 @@ export function ISPMT(rate, per, nper, pv) {
  * @param {*} basis Optional. The type of day count basis to use.
  * @returns
  */
-export function MDURATION() {
-  throw new Error('MDURATION is not implemented')
+export function MDURATION(settlement, maturity, coupon, yld, frequency, basis = 0) {
+  let mDur = DURATION(settlement, maturity, coupon, yld, frequency, basis);
+
+  if (mDur instanceof Error) {
+    return mDur;
+  }
+
+  basis = parseInt(basis);
+  frequency = parseInt(frequency);
+
+  const modifiedDuration = mDur /= 1.0 + (parseFloat(yld) / parseFloat(frequency));
+  return modifiedDuration;
 }
 
 /**

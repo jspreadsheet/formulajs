@@ -1548,7 +1548,30 @@ describe('Financial', () => {
 
   // TODO: implement
   it('MDURATION', () => {
-    expect(financial.MDURATION).to.throw('MDURATION is not implemented')
+    expect(financial.MDURATION('01-Feb-2018', '25-Nov-2028', 0.08, 0.08, 1, 0)).to.approximately(6.969211172, 1e-9)
+    expect(financial.MDURATION('01-Feb-2018', '25-Nov-2028', 0.08, 0.08, 1.923, 0)).to.approximately(6.969211172, 1e-9)
+
+    expect(financial.MDURATION('10-Jan-2009', '11-Apr-2017', 0.3, 0.5, 2, 0)).to.approximately(1.828844171, 1e-9)
+    expect(financial.MDURATION('10-Jan-2009', '11-Apr-2017', 0.3, 0.5, 4, 0)).to.approximately(1.810934424, 1e-9)
+    expect(financial.MDURATION('10-Jan-2009', '11-Apr-2017', 0.3, 0.5, 4, 1)).to.approximately(1.808363879, 1e-9)
+    expect(financial.MDURATION('10-Jan-2009', '10-Jan-2039', 2, 4, 2, 0)).to.approximately(0.25, 1e-9)
+    expect(financial.MDURATION('10-Jan-2009', '10-Jan-2039', 2, 4, 2, 1)).to.approximately(0.250244116, 1e-9)
+    expect(financial.MDURATION([['01-Feb-2028']], [['25-Nov-2028']], 0.08, 0.08, 1, 0)).to.approximately(0.75617284, 1e-9)
+    expect(financial.MDURATION([[43132]], [[47082]], 0.08, 0.08, 1, 4)).to.approximately(6.969211172, 1e-9)
+    expect(financial.MDURATION([[43132]], [[47082]], [[0.08]], [[0.08]], [[1]], [[4]])).to.approximately(6.969211172, 1e-9)
+    expect(financial.MDURATION(43132, 47082, 0.32, 0.08, 1, 4)).to.approximately(5.524718655, 1e-9)
+    expect(financial.MDURATION(43132, 47082, 0.08, 0.08, 2, 3)).to.approximately(7.054324790, 1e-9)
+    expect(financial.MDURATION(43132, 47082, 0.16, 0.08, 1, 0)).to.approximately(6.137655136, 1e-9)
+    expect(financial.MDURATION(43132, 47082, 6, 2, 1, 0)).to.approximately(0.438874149, 1e-9)
+
+    expect(financial.MDURATION(48132, 47082, 0.08, 0.08, 1, 0)).to.equal(error.num);
+    expect(financial.MDURATION(null, '25-Nov-2028', 0.08, 0.08, 1, 0)).to.equal(error.num)
+    expect(financial.MDURATION()).to.equal(error.na)
+    expect(financial.MDURATION('str', 47082, 0.08, 0.08, 1, 0)).to.equal(error.value)
+    expect(financial.MDURATION(43132, 47082, true, 0.08, 1, 0)).to.equal(error.value)
+    expect(financial.MDURATION(43132, 47082, 0.16, 0.08, 1, 6)).to.equal(error.num)
+    expect(financial.MDURATION(43132, 47082, 0.16, 0.08, 5, 2)).to.equal(error.num)
+    expect(financial.MDURATION(undefined, '25-Nov-2028', 0.08, 0.08, 1, 0)).to.equal(error.na)
   })
 
   it('MIRR', () => {
