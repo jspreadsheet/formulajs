@@ -1236,7 +1236,34 @@ describe('Financial', () => {
 
   // TODO: implement
   it('DURATION', () => {
-    expect(financial.DURATION).to.throw('DURATION is not implemented')
+    expect(financial.DURATION('01-Feb-2028', '25-Nov-2028', 0.08, 0.08, 1, 0)).to.approximately(0.816666667, 1e-9)
+    expect(financial.DURATION('01-Feb-2018', '25-Nov-2028', 0.08, 0.08, 1, 0)).to.approximately(7.526748066, 1e-9)
+    expect(financial.DURATION('10-Jan-2009', '11-Apr-2017', 0.3, 0.5, 2, 0)).to.approximately(2.286055214, 1e-9)
+    expect(financial.DURATION('10-Jan-2009', '11-Apr-2017', 0.3, 0.5, 4, 0)).to.approximately(2.037301228, 1e-9)
+    expect(financial.DURATION('10-Jan-2009', '11-Apr-2017', 0.3, 0.5, 4, 1)).to.approximately(2.034409364, 1e-9)
+    expect(financial.DURATION('10-Jan-2009', '10-Jan-2039', 2, 4, 2, 0)).to.approximately(0.75, 1e-9)
+    expect(financial.DURATION('10-Jan-2009', '10-Jan-2039', 2, 4, 2, 1)).to.approximately(0.75073235, 1e-9)
+    expect(financial.DURATION('10-Jan-2009', '10-Jan-2039', 0.2, 0.4, 2, 2)).to.approximately(3.436652772, 1e-9)
+    expect(financial.DURATION('01/10/2009', '01/10/2039', 0.2, 0.4, 2, 2)).to.approximately(3.436652772, 1e-9)
+    expect(financial.DURATION([['01-Feb-2028']], [['25-Nov-2028']], 0.08, 0.08, 1, 0)).to.approximately(0.816666667, 1e-9)
+    expect(financial.DURATION([[43132]], [[47082]], 0.08, 0.08, 1, 4)).to.approximately(7.526748066, 1e-9)
+    expect(financial.DURATION([[43132]], [[47082]], [[0.08]], [[0.08]], [[1]], [[4]])).to.approximately(7.526748066, 1e-9)
+
+    expect(financial.DURATION(43132, 47082, 0.08, 0.08, 1, 4)).to.approximately(7.526748066, 1e-9)
+    expect(financial.DURATION(43132, 47082, 0.08, 0.08, 2, 3)).to.approximately(7.336497781761335, 1e-9)
+    expect(financial.DURATION(43132, 47082, 0.16, 0.08, 1, 0)).to.approximately(6.628667547, 1e-9)
+    expect(financial.DURATION(43132, 47082, 6, 2, 1, 0)).to.approximately(1.316622447, 1e-9)
+
+    expect(financial.DURATION(43132, 47082, 0.08, 0.08, 1, 0)).to.approximately(7.526748066, 1e-9)
+    expect(financial.DURATION(48132, 47082, 0.08, 0.08, 1, 0)).to.equal(error.num);
+
+    expect(financial.DURATION(null, '25-Nov-2028', 0.08, 0.08, 1, 0)).to.equal(error.num)
+    expect(financial.DURATION()).to.equal(error.na)
+    expect(financial.DURATION('str', 47082, 0.08, 0.08, 1, 0)).to.equal(error.value)
+    expect(financial.DURATION(43132, 47082, true, 0.08, 1, 0)).to.equal(error.value)
+    expect(financial.DURATION(43132, 47082, 0.16, 0.08, 1, 6)).to.equal(error.num)
+    expect(financial.DURATION(43132, 47082, 0.16, 0.08, 5, 2)).to.equal(error.num)
+    expect(financial.DURATION(undefined, '25-Nov-2028', 0.08, 0.08, 1, 0)).to.equal(error.na)
   })
 
   it('EFFECT', () => {

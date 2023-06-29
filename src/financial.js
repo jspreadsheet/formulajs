@@ -958,10 +958,8 @@ export function DOLLARFR(decimal_dollar, fraction) {
   return result
 }
 
-// TODO
 /**
- * -- Not implemented --
- *
+ * 
  * Returns the annual duration of a security with periodic interest payments.
  *
  * Category: Financial
@@ -974,8 +972,105 @@ export function DOLLARFR(decimal_dollar, fraction) {
  * @param {*} basis Optional. The type of day count basis to use.
  * @returns
  */
-export function DURATION() {
-  throw new Error('DURATION is not implemented')
+export function DURATION(settlement, maturity, coupon, yld, frequency, basis = 0) {
+  if (!arguments.length || arguments.length > 6 || utils.anyIsUndefined(...arguments)) {
+    return error.na;
+  }
+
+  if (utils.anyIsBoolean(settlement, maturity, coupon, yld, frequency, basis)) {
+    return error.value;
+  }
+
+  if (settlement instanceof Error) {
+    return settlement;
+  }
+
+  if (maturity instanceof Error) {
+    return maturity;
+  }
+
+  if (coupon instanceof Error) {
+    return coupon;
+  }
+
+  if (yld instanceof Error) {
+    return yld;
+  }
+
+  if (frequency instanceof Error) {
+    return frequency;
+  }
+
+  if (basis instanceof Error) {
+    return basis;
+  }
+
+  if (settlement == null || maturity == null) {
+    return error.num;
+  }
+
+  coupon = utils.parseNumber(coupon)
+  yld = utils.parseNumber(yld)
+  frequency = utils.parseNumber(frequency)
+  basis = utils.parseNumber(basis)
+
+  settlement = typeof settlement === 'number' ? utils.parseNumber(settlement) : utils.parseString(settlement);
+  maturity = typeof maturity === 'number' ? utils.parseNumber(maturity) : utils.parseString(maturity);
+
+  if (utils.anyIsError(coupon, yld, frequency, basis, settlement, maturity)) {
+    return error.value;
+  }
+
+  if (coupon < 0 || yld < 0 || ![1, 2, 4].includes(frequency) || basis < 0 || basis > 4) {
+    return error.num;
+  }
+
+  const yearFrac = dateTime.YEARFRAC(settlement, maturity, basis);
+
+  if (yearFrac instanceof Error) {
+    return yearFrac;
+  }
+
+  const fNumOfCoups = COUPNUM(settlement, maturity, frequency, basis);
+
+  if (fNumOfCoups instanceof Error) {
+    return fNumOfCoups;
+  }
+
+  const serialSett = utils.dateToSerialNumber(utils.parseDate(settlement));
+  const serialMaturity = utils.dateToSerialNumber(utils.parseDate(maturity));
+
+  if (serialSett > serialMaturity) {
+    return error.num;
+  }
+
+  let fDur = 0;
+  let f100 = 100;
+
+  let fCoup = coupon * (f100 / frequency);
+  let fYield = (yld / frequency);
+
+  fYield = 1 + fYield;
+
+  const nDiff = (yearFrac * frequency) - fNumOfCoups;
+
+  for (let T = 1; T < Math.trunc(fNumOfCoups); T++) {
+    fDur += ((T + nDiff) * fCoup) / (Math.pow(fYield, (T + nDiff)));
+  }
+
+  fDur += ((fNumOfCoups + nDiff) * (fCoup + f100)) / (Math.pow(fYield, fNumOfCoups + nDiff));
+
+  let p = 0.0;
+
+  for (let T = 1; T < Math.trunc(fNumOfCoups); T++) {
+    p += fCoup / Math.pow(fYield, T + nDiff);
+  }
+
+  p += (fCoup + f100) / Math.pow(fYield, fNumOfCoups + nDiff);
+
+  fDur /= (p * frequency);
+
+  return fDur;
 }
 
 /**
