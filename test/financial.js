@@ -5,315 +5,315 @@ import * as financial from '../src/financial.js'
 
 describe('Financial', () => {
   it('ACCRINT', () => {
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, 1, 0, true)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, 1, 0, true)).to.approximately(
       183.88888888888889,
       1e-9,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, 1, 0, true)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, 1, 0, true)).to.approximately(
       183.88888888888889,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, 2, 0, true)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, 2, 0, true)).to.approximately(
       183.88888888888889,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, 4, 0, true)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, 4, 0, true)).to.approximately(
       183.88888888888889,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, 1, 1, true)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, 1, 1, true)).to.approximately(
       183.58413132694938,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, 2, 1, true)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, 2, 1, true)).to.approximately(
       183.58413132694938,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, 4, 1, true)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, 4, 1, true)).to.approximately(
       183.58413132694938,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, 1, 2, true)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, 1, 2, true)).to.approximately(
       186.38888888888889,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, 2, 2, true)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, 2, 2, true)).to.approximately(
       186.38888888888889,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, 4, 2, true)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, 4, 2, true)).to.approximately(
       186.38888888888889,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, 1, 3, true)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, 1, 3, true)).to.approximately(
       183.83561643835617,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, 2, 3, true)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, 2, 3, true)).to.approximately(
       183.83561643835617,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, 4, 3, true)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, 4, 3, true)).to.approximately(
       183.83561643835617,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, 1, 4, true)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, 1, 4, true)).to.approximately(
       183.88888888888889,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, 2, 4, true)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, 2, 4, true)).to.approximately(
       183.88888888888889,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, 4, 4, true)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, 4, 4, true)).to.approximately(
       183.88888888888889,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, 1, 0, false)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, 1, 0, false)).to.approximately(
       183.88888888888889,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, 2, 0, false)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, 2, 0, false)).to.approximately(
       183.88888888888889,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, 4, 0, false)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, 4, 0, false)).to.approximately(
       183.88888888888889,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, 1, 1, false)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, 1, 1, false)).to.approximately(
       183.58413132694938,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, 2, 1, false)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, 2, 1, false)).to.approximately(
       183.58413132694938,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, 4, 1, false)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, 4, 1, false)).to.approximately(
       183.58413132694938,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, 1, 2, false)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, 1, 2, false)).to.approximately(
       186.38888888888889,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, 2, 2, false)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, 2, 2, false)).to.approximately(
       186.38888888888889,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, 4, 2, false)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, 4, 2, false)).to.approximately(
       186.38888888888889,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, 1, 3, false)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, 1, 3, false)).to.approximately(
       183.83561643835617,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, 2, 3, false)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, 2, 3, false)).to.approximately(
       183.83561643835617,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, 4, 3, false)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, 4, 3, false)).to.approximately(
       183.83561643835617,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, 1, 4, false)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, 1, 4, false)).to.approximately(
       183.88888888888889,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, 2, 4, false)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, 2, 4, false)).to.approximately(
       183.88888888888889,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, 4, 4, false)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, 4, 4, false)).to.approximately(
       183.88888888888889,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '12/4/2013', '3/30/2012', 0.1, 1000, 1, 0, true)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2013-12-04', '2012-03-30', 0.1, 1000, 1, 0, true)).to.approximately(
       16.11111111111111,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '12/4/2013', '3/30/2012', 0.1, 1000, 2, 0, true)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2013-12-04', '2012-03-30', 0.1, 1000, 2, 0, true)).to.approximately(
       16.11111111111111,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '12/4/2013', '3/30/2012', 0.1, 1000, 4, 0, true)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2013-12-04', '2012-03-30', 0.1, 1000, 4, 0, true)).to.approximately(
       16.11111111111111,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '12/4/2013', '3/30/2012', 0.1, 1000, 1, 1, true)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2013-12-04', '2012-03-30', 0.1, 1000, 1, 1, true)).to.approximately(
       15.573770491803279,
       1e-9
     ) // TODO :1e-9);
-    expect(financial.ACCRINT('2/2/2012', '12/4/2013', '3/30/2012', 0.1, 1000, 2, 1, true)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2013-12-04', '2012-03-30', 0.1, 1000, 2, 1, true)).to.approximately(
       15.573770491803279,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '12/4/2013', '3/30/2012', 0.1, 1000, 4, 1, true)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2013-12-04', '2012-03-30', 0.1, 1000, 4, 1, true)).to.approximately(
       15.573770491803279,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '12/4/2013', '3/30/2012', 0.1, 1000, 1, 2, true)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2013-12-04', '2012-03-30', 0.1, 1000, 1, 2, true)).to.approximately(
       15.833333333333332,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '12/4/2013', '3/30/2012', 0.1, 1000, 2, 2, true)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2013-12-04', '2012-03-30', 0.1, 1000, 2, 2, true)).to.approximately(
       15.833333333333332,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '12/4/2013', '3/30/2012', 0.1, 1000, 4, 2, true)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2013-12-04', '2012-03-30', 0.1, 1000, 4, 2, true)).to.approximately(
       15.833333333333332,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '12/4/2013', '3/30/2012', 0.1, 1000, 1, 3, true)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2013-12-04', '2012-03-30', 0.1, 1000, 1, 3, true)).to.approximately(
       15.616438356164384,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '12/4/2013', '3/30/2012', 0.1, 1000, 2, 3, true)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2013-12-04', '2012-03-30', 0.1, 1000, 2, 3, true)).to.approximately(
       15.616438356164384,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '12/4/2013', '3/30/2012', 0.1, 1000, 4, 3, true)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2013-12-04', '2012-03-30', 0.1, 1000, 4, 3, true)).to.approximately(
       15.616438356164384,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '12/4/2013', '3/30/2012', 0.1, 1000, 1, 4, true)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2013-12-04', '2012-03-30', 0.1, 1000, 1, 4, true)).to.approximately(
       16.11111111111111,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '12/4/2013', '3/30/2012', 0.1, 1000, 2, 4, true)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2013-12-04', '2012-03-30', 0.1, 1000, 2, 4, true)).to.approximately(
       16.11111111111111,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '12/4/2013', '3/30/2012', 0.1, 1000, 4, 4, true)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2013-12-04', '2012-03-30', 0.1, 1000, 4, 4, true)).to.approximately(
       16.11111111111111,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '12/4/2013', '3/30/2012', 0.1, 1000, 1, 0, false)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2013-12-04', '2012-03-30', 0.1, 1000, 1, 0, false)).to.approximately(
       16.11111111111111,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '12/4/2013', '3/30/2012', 0.1, 1000, 2, 0, false)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2013-12-04', '2012-03-30', 0.1, 1000, 2, 0, false)).to.approximately(
       16.11111111111111,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '12/4/2013', '3/30/2012', 0.1, 1000, 4, 0, false)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2013-12-04', '2012-03-30', 0.1, 1000, 4, 0, false)).to.approximately(
       16.11111111111111,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '12/4/2013', '3/30/2012', 0.1, 1000, 1, 1, false)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2013-12-04', '2012-03-30', 0.1, 1000, 1, 1, false)).to.approximately(
       15.573770491803279,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '12/4/2013', '3/30/2012', 0.1, 1000, 2, 1, false)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2013-12-04', '2012-03-30', 0.1, 1000, 2, 1, false)).to.approximately(
       15.573770491803279,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '12/4/2013', '3/30/2012', 0.1, 1000, 4, 1, false)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2013-12-04', '2012-03-30', 0.1, 1000, 4, 1, false)).to.approximately(
       15.573770491803279,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '12/4/2013', '3/30/2012', 0.1, 1000, 1, 2, false)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2013-12-04', '2012-03-30', 0.1, 1000, 1, 2, false)).to.approximately(
       15.833333333333332,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '12/4/2013', '3/30/2012', 0.1, 1000, 2, 2, false)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2013-12-04', '2012-03-30', 0.1, 1000, 2, 2, false)).to.approximately(
       15.833333333333332,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '12/4/2013', '3/30/2012', 0.1, 1000, 4, 2, false)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2013-12-04', '2012-03-30', 0.1, 1000, 4, 2, false)).to.approximately(
       15.833333333333332,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '12/4/2013', '3/30/2012', 0.1, 1000, 1, 3, false)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2013-12-04', '2012-03-30', 0.1, 1000, 1, 3, false)).to.approximately(
       15.616438356164384,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '12/4/2013', '3/30/2012', 0.1, 1000, 2, 3, false)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2013-12-04', '2012-03-30', 0.1, 1000, 2, 3, false)).to.approximately(
       15.616438356164384,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '12/4/2013', '3/30/2012', 0.1, 1000, 4, 3, false)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2013-12-04', '2012-03-30', 0.1, 1000, 4, 3, false)).to.approximately(
       15.616438356164384,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '12/4/2013', '3/30/2012', 0.1, 1000, 1, 4, false)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2013-12-04', '2012-03-30', 0.1, 1000, 1, 4, false)).to.approximately(
       16.11111111111111,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '12/4/2013', '3/30/2012', 0.1, 1000, 2, 4, false)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2013-12-04', '2012-03-30', 0.1, 1000, 2, 4, false)).to.approximately(
       16.11111111111111,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '12/4/2013', '3/30/2012', 0.1, 1000, 4, 4, false)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2013-12-04', '2012-03-30', 0.1, 1000, 4, 4, false)).to.approximately(
       16.11111111111111,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '12/4/2013', '3/30/2012', '0.1', 1000, 4, 4, false)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2013-12-04', '2012-03-30', '0.1', 1000, 4, 4, false)).to.approximately(
       16.11111111111111,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '12/4/2013', '3/30/2012', 0.1, '1000', 4, 4, false)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2013-12-04', '2012-03-30', 0.1, '1000', 4, 4, false)).to.approximately(
       16.11111111111111,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '12/4/2013', '3/30/2012', 0.1, 1000, '4', 4, false)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2013-12-04', '2012-03-30', 0.1, 1000, '4', 4, false)).to.approximately(
       16.11111111111111,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '12/4/2013', '3/30/2012', 0.1, 1000, 4, '4', false)).to.approximately(
+    expect(financial.ACCRINT('2012-02-02', '2013-12-04', '2012-03-30', 0.1, 1000, 4, '4', false)).to.approximately(
       16.11111111111111,
       1e-9
     )
-    expect(financial.ACCRINT(40001, '3/30/2012', '12/4/2013', 0.1, 1000, 1, 0, true)).to.approximately(
+    expect(financial.ACCRINT(40001, '2012-03-30', '2013-12-04', 0.1, 1000, 1, 0, true)).to.approximately(
       440.8333333333333,
       1e-9,
       1e-9
     )
-    expect(financial.ACCRINT('2/2/2012', '12/4/2013', '2/1/2012', 0.1, 1000, 4, 4, false)).to.equal(error.num)
-    expect(financial.ACCRINT('Hello World!', '3/30/2012', '12/4/2013', 0.1, 1000, 2, 0)).to.equal(error.value)
-    expect(financial.ACCRINT('2/2/2012', 'Hello World!', '12/4/2013', 0.1, 1000, 2, 0)).to.equal(error.value)
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', 'Hello World!', 0.1, 1000, 2, 0)).to.equal(error.value)
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0, 1000, 2, 0)).to.equal(error.num)
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', -0.1, 1000, 2, 0)).to.equal(error.num)
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 0, 2, 0)).to.equal(error.num)
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, -1000, 2, 0)).to.equal(error.num)
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, 3, 0)).to.equal(error.num)
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, 2, 5)).to.equal(error.num)
-    expect(financial.ACCRINT([['2/2/2012'], ['2/2/2012']], '3/30/2012', '12/4/2013', 0.1, 1000, 2, 5)).to.equal(
+    expect(financial.ACCRINT('2012-02-02', '2013-12-04', '2012-02-01', 0.1, 1000, 4, 4, false)).to.equal(error.num)
+    expect(financial.ACCRINT('Hello World!', '2012-03-30', '2013-12-04', 0.1, 1000, 2, 0)).to.equal(error.value)
+    expect(financial.ACCRINT('2012-02-02', 'Hello World!', '2013-12-04', 0.1, 1000, 2, 0)).to.equal(error.value)
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', 'Hello World!', 0.1, 1000, 2, 0)).to.equal(error.value)
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0, 1000, 2, 0)).to.equal(error.num)
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', -0.1, 1000, 2, 0)).to.equal(error.num)
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 0, 2, 0)).to.equal(error.num)
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, -1000, 2, 0)).to.equal(error.num)
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, 3, 0)).to.equal(error.num)
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, 2, 5)).to.equal(error.num)
+    expect(financial.ACCRINT([['2012-02-02'], ['2012-02-02']], '2012-03-30', '2013-12-04', 0.1, 1000, 2, 5)).to.equal(
       error.value
     )
-    expect(financial.ACCRINT('2/2/2012', [['3/30/2012'], ['3/30/2012']], '12/4/2013', 0.1, 1000, 2, 5)).to.equal(
+    expect(financial.ACCRINT('2012-02-02', [['2012-03-30'], ['2012-03-30']], '2013-12-04', 0.1, 1000, 2, 5)).to.equal(
       error.value
     )
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', [['12/4/2013'], ['12/4/2013']], 0.1, 1000, 2, 5)).to.equal(
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', [['2013-12-04'], ['2013-12-04']], 0.1, 1000, 2, 5)).to.equal(
       error.value
     )
-    expect(financial.ACCRINT(undefined, '3/30/2012', '12/4/2013', 0.1, 1000, 2, 5)).to.equal(error.value)
-    expect(financial.ACCRINT('2/2/2012', undefined, '12/4/2013', 0.1, 1000, 2, 5)).to.equal(error.value)
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', undefined, 0.1, 1000, 2, 5)).to.equal(error.value)
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', undefined, 1000, 2, 5)).to.equal(error.num)
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, undefined, 2, 5)).to.equal(error.num)
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, undefined, 5)).to.equal(error.num)
-    expect(financial.ACCRINT(null, '3/30/2012', '12/4/2013', 0.1, 1000, 2, 5)).to.equal(error.num)
-    expect(financial.ACCRINT('2/2/2012', null, '12/4/2013', 0.1, 1000, 2, 5)).to.equal(error.num)
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', null, 0.1, 1000, 2, 5)).to.equal(error.num)
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', null, 1000, 2, 5)).to.equal(error.num)
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, null, 2, 5)).to.equal(error.num)
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, null, 5)).to.equal(error.num)
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, 2, 5, true, 4)).to.equal(error.na)
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000)).to.equal(error.na)
-    expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013')).to.equal(error.na)
+    expect(financial.ACCRINT(undefined, '2012-03-30', '2013-12-04', 0.1, 1000, 2, 5)).to.equal(error.value)
+    expect(financial.ACCRINT('2012-02-02', undefined, '2013-12-04', 0.1, 1000, 2, 5)).to.equal(error.value)
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', undefined, 0.1, 1000, 2, 5)).to.equal(error.value)
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', undefined, 1000, 2, 5)).to.equal(error.num)
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, undefined, 2, 5)).to.equal(error.num)
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, undefined, 5)).to.equal(error.num)
+    expect(financial.ACCRINT(null, '2012-03-30', '2013-12-04', 0.1, 1000, 2, 5)).to.equal(error.num)
+    expect(financial.ACCRINT('2012-02-02', null, '2013-12-04', 0.1, 1000, 2, 5)).to.equal(error.num)
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', null, 0.1, 1000, 2, 5)).to.equal(error.num)
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', null, 1000, 2, 5)).to.equal(error.num)
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, null, 2, 5)).to.equal(error.num)
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, null, 5)).to.equal(error.num)
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, 2, 5, true, 4)).to.equal(error.na)
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000)).to.equal(error.na)
+    expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04')).to.equal(error.na)
     expect(financial.ACCRINT()).to.equal(error.na)
 
     Object.values(error).forEach((err) => {
-      expect(financial.ACCRINT(err, '3/30/2012', '12/4/2013', 0.1, 1000, 2, 5)).to.equal(err)
-      expect(financial.ACCRINT('2/2/2012', err, '12/4/2013', 0.1, 1000, 2, 5)).to.equal(err)
-      expect(financial.ACCRINT('2/2/2012', '3/30/2012', err, 0.1, 1000, 2, 5)).to.equal(err)
-      expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', err, 1000, 2, 5)).to.equal(err)
-      expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, err, 2, 5)).to.equal(err)
-      expect(financial.ACCRINT('2/2/2012', '3/30/2012', '12/4/2013', 0.1, 1000, err, 5)).to.equal(err)
+      expect(financial.ACCRINT(err, '2012-03-30', '2013-12-04', 0.1, 1000, 2, 5)).to.equal(err)
+      expect(financial.ACCRINT('2012-02-02', err, '2013-12-04', 0.1, 1000, 2, 5)).to.equal(err)
+      expect(financial.ACCRINT('2012-02-02', '2012-03-30', err, 0.1, 1000, 2, 5)).to.equal(err)
+      expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', err, 1000, 2, 5)).to.equal(err)
+      expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, err, 2, 5)).to.equal(err)
+      expect(financial.ACCRINT('2012-02-02', '2012-03-30', '2013-12-04', 0.1, 1000, err, 5)).to.equal(err)
     })
   })
 
@@ -1330,60 +1330,60 @@ describe('Financial', () => {
   })
 
   it('INTRATE', () => {
-    expect(financial.INTRATE('07/06/2017', '01/15/2020', 895, 1000, 0)).to.approximately(0.046462747, 1e-9)
-    expect(financial.INTRATE('07/06/2017', '01/15/2020', '895', '1000', 0)).to.approximately(0.046462747, 1e-9)
-    expect(financial.INTRATE('07/06/2017', '01/15/2020', 895, 1000)).to.approximately(0.046462747, 1e-9)
-    expect(financial.INTRATE('02/15/2008', '05/15/2008', 1000000, 1014420, 2)).to.approximately(0.05768, 1e-9)
-    expect(financial.INTRATE('01/01/2022', '02/01/2022', 100000, 100100, 0)).to.approximately(0.012, 1e-9)
-    expect(financial.INTRATE('01/01/2022', '02/01/2022', 100000, 100100, 1)).to.approximately(0.011774, 1e-5)
-    expect(financial.INTRATE('01/01/2022', '02/01/2022', 100000, 100100, 2)).to.approximately(0.011613, 1e-5)
-    expect(financial.INTRATE('01/01/2022', '02/01/2022', 100000, 100100, 3)).to.approximately(0.011774, 1e-5)
-    expect(financial.INTRATE('01/01/2022', '02/01/2022', 100000, 100100, 4)).to.approximately(0.012, 1e-9)
+    expect(financial.INTRATE('2017-07-06', '2020-01-15', 895, 1000, 0)).to.approximately(0.046462747, 1e-9)
+    expect(financial.INTRATE('2017-07-06', '2020-01-15', '895', '1000', 0)).to.approximately(0.046462747, 1e-9)
+    expect(financial.INTRATE('2017-07-06', '2020-01-15', 895, 1000)).to.approximately(0.046462747, 1e-9)
+    expect(financial.INTRATE('2008-02-15', '2008-05-15', 1000000, 1014420, 2)).to.approximately(0.05768, 1e-9)
+    expect(financial.INTRATE('2022-01-01', '2022-02-01', 100000, 100100, 0)).to.approximately(0.012, 1e-9)
+    expect(financial.INTRATE('2022-01-01', '2022-02-01', 100000, 100100, 1)).to.approximately(0.011774, 1e-5)
+    expect(financial.INTRATE('2022-01-01', '2022-02-01', 100000, 100100, 2)).to.approximately(0.011613, 1e-5)
+    expect(financial.INTRATE('2022-01-01', '2022-02-01', 100000, 100100, 3)).to.approximately(0.011774, 1e-5)
+    expect(financial.INTRATE('2022-01-01', '2022-02-01', 100000, 100100, 4)).to.approximately(0.012, 1e-9)
 
-    expect(financial.INTRATE('string', '01/15/2020', 895, 1000, 0)).to.equal(error.value)
-    expect(financial.INTRATE(false, '01/15/2020', 895, 1000, 0)).to.equal(error.value)
-    expect(financial.INTRATE(true, '01/15/2020', 895, 1000, 0)).to.equal(error.value)
-    expect(financial.INTRATE('07/06/2017', false, 895, 1000, 0)).to.equal(error.value)
-    expect(financial.INTRATE('07/06/2017', true, 895, 1000, 0)).to.equal(error.value)
-    expect(financial.INTRATE('07/06/2017', '01/15/2020', true, 1000, 0)).to.equal(error.value)
-    expect(financial.INTRATE('07/06/2017', '01/15/2020', false, 1000, 0)).to.equal(error.value)
-    expect(financial.INTRATE('07/06/2017', '01/15/2020', 895, true, 0)).to.equal(error.value)
-    expect(financial.INTRATE('07/06/2017', '01/15/2020', 895, false, 0)).to.equal(error.value)
-    expect(financial.INTRATE('false', '01/15/2020', 895, 1000, 0)).to.equal(error.value)
-    expect(financial.INTRATE('true', '01/15/2020', 895, 1000, 0)).to.equal(error.value)
-    expect(financial.INTRATE('07/06/2017', 'false', 895, 1000, 0)).to.equal(error.value)
-    expect(financial.INTRATE('07/06/2017', 'true', 895, 1000, 0)).to.equal(error.value)
-    expect(financial.INTRATE('07/06/2017', '01/15/2020', 'true', 1000, 0)).to.equal(error.value)
-    expect(financial.INTRATE('07/06/2017', '01/15/2020', 'false', 1000, 0)).to.equal(error.value)
-    expect(financial.INTRATE('07/06/2017', '01/15/2020', 895, 'true', 0)).to.equal(error.value)
-    expect(financial.INTRATE('07/06/2017', '01/15/2020', 895, 'false', 0)).to.equal(error.value)
-    expect(financial.INTRATE([['07/06/2017']], '01/15/2020', 895, 1000, 0)).to.equal(error.value)
-    expect(financial.INTRATE('07/06/2017', [['01/15/2020']], 895, 1000, 0)).to.equal(error.value)
-    expect(financial.INTRATE('07/06/2017', '01/15/2020', [[895]], 1000, 0)).to.equal(error.value)
-    expect(financial.INTRATE('07/06/2017', '01/15/2020', [[895, 895]], 1000, 0)).to.equal(error.value)
-    expect(financial.INTRATE('07/06/2017', '01/15/2020', 800, [[895]], 0)).to.equal(error.value)
-    expect(financial.INTRATE('07/06/2017', '01/15/2020', 800, [[895, 895]], 0)).to.equal(error.value)
-    expect(financial.INTRATE(null, '01/15/2020', 895, 1000, 0)).to.equal(error.value)
-    expect(financial.INTRATE(undefined, '01/15/2020', 895, 1000, 0)).to.equal(error.na)
-    expect(financial.INTRATE('07/06/2017', null, 895, 1000, 0)).to.equal(error.value)
-    expect(financial.INTRATE('07/06/2017', undefined, 895, 1000, 0)).to.equal(error.na)
-    expect(financial.INTRATE('07/06/2017', '01/15/2020', undefined, 1000, 0)).to.equal(error.na)
-    expect(financial.INTRATE('07/06/2017', '01/15/2020', null, 1000, 0)).to.equal(error.value)
-    expect(financial.INTRATE('07/06/2017', '01/15/2020', 895, undefined, 0)).to.equal(error.na)
-    expect(financial.INTRATE('07/06/2017', '01/15/2020', 895, null, 0)).to.equal(error.value)
+    expect(financial.INTRATE('string', '2020-01-15', 895, 1000, 0)).to.equal(error.value)
+    expect(financial.INTRATE(false, '2020-01-15', 895, 1000, 0)).to.equal(error.value)
+    expect(financial.INTRATE(true, '2020-01-15', 895, 1000, 0)).to.equal(error.value)
+    expect(financial.INTRATE('2017-07-06', false, 895, 1000, 0)).to.equal(error.value)
+    expect(financial.INTRATE('2017-07-06', true, 895, 1000, 0)).to.equal(error.value)
+    expect(financial.INTRATE('2017-07-06', '2020-01-15', true, 1000, 0)).to.equal(error.value)
+    expect(financial.INTRATE('2017-07-06', '2020-01-15', false, 1000, 0)).to.equal(error.value)
+    expect(financial.INTRATE('2017-07-06', '2020-01-15', 895, true, 0)).to.equal(error.value)
+    expect(financial.INTRATE('2017-07-06', '2020-01-15', 895, false, 0)).to.equal(error.value)
+    expect(financial.INTRATE('false', '2020-01-15', 895, 1000, 0)).to.equal(error.value)
+    expect(financial.INTRATE('true', '2020-01-15', 895, 1000, 0)).to.equal(error.value)
+    expect(financial.INTRATE('2017-07-06', 'false', 895, 1000, 0)).to.equal(error.value)
+    expect(financial.INTRATE('2017-07-06', 'true', 895, 1000, 0)).to.equal(error.value)
+    expect(financial.INTRATE('2017-07-06', '2020-01-15', 'true', 1000, 0)).to.equal(error.value)
+    expect(financial.INTRATE('2017-07-06', '2020-01-15', 'false', 1000, 0)).to.equal(error.value)
+    expect(financial.INTRATE('2017-07-06', '2020-01-15', 895, 'true', 0)).to.equal(error.value)
+    expect(financial.INTRATE('2017-07-06', '2020-01-15', 895, 'false', 0)).to.equal(error.value)
+    expect(financial.INTRATE([['2017-07-06']], '2020-01-15', 895, 1000, 0)).to.equal(error.value)
+    expect(financial.INTRATE('2017-07-06', [['2020-01-15']], 895, 1000, 0)).to.equal(error.value)
+    expect(financial.INTRATE('2017-07-06', '2020-01-15', [[895]], 1000, 0)).to.equal(error.value)
+    expect(financial.INTRATE('2017-07-06', '2020-01-15', [[895, 895]], 1000, 0)).to.equal(error.value)
+    expect(financial.INTRATE('2017-07-06', '2020-01-15', 800, [[895]], 0)).to.equal(error.value)
+    expect(financial.INTRATE('2017-07-06', '2020-01-15', 800, [[895, 895]], 0)).to.equal(error.value)
+    expect(financial.INTRATE(null, '2020-01-15', 895, 1000, 0)).to.equal(error.value)
+    expect(financial.INTRATE(undefined, '2020-01-15', 895, 1000, 0)).to.equal(error.na)
+    expect(financial.INTRATE('2017-07-06', null, 895, 1000, 0)).to.equal(error.value)
+    expect(financial.INTRATE('2017-07-06', undefined, 895, 1000, 0)).to.equal(error.na)
+    expect(financial.INTRATE('2017-07-06', '2020-01-15', undefined, 1000, 0)).to.equal(error.na)
+    expect(financial.INTRATE('2017-07-06', '2020-01-15', null, 1000, 0)).to.equal(error.value)
+    expect(financial.INTRATE('2017-07-06', '2020-01-15', 895, undefined, 0)).to.equal(error.na)
+    expect(financial.INTRATE('2017-07-06', '2020-01-15', 895, null, 0)).to.equal(error.value)
 
-    expect(financial.INTRATE('07/06/2017', '01/15/2020', 895, 1000, 0, 1)).to.equal(error.na)
-    expect(financial.INTRATE('07/06/2017', '01/15/2020', 895)).to.equal(error.na)
-    expect(financial.INTRATE('07/06/2017', '01/15/2020')).to.equal(error.na)
-    expect(financial.INTRATE('07/06/2017')).to.equal(error.na)
+    expect(financial.INTRATE('2017-07-06', '2020-01-15', 895, 1000, 0, 1)).to.equal(error.na)
+    expect(financial.INTRATE('2017-07-06', '2020-01-15', 895)).to.equal(error.na)
+    expect(financial.INTRATE('2017-07-06', '2020-01-15')).to.equal(error.na)
+    expect(financial.INTRATE('2017-07-06')).to.equal(error.na)
     expect(financial.INTRATE()).to.equal(error.na)
 
     Object.values(error).forEach((err) => {
-      expect(financial.INTRATE(err, '01/15/2020', 895, 1000, 0)).to.equal(err)
-      expect(financial.INTRATE('07/06/2017', err, 895, 1000, 0)).to.equal(err)
-      expect(financial.INTRATE('07/06/2017', '01/15/2020', err, 1000, 0)).to.equal(err)
-      expect(financial.INTRATE('07/06/2017', '01/15/2020', 895, err, 0)).to.equal(err)
-      expect(financial.INTRATE('07/06/2017', '01/15/2020', 895, 1000, err)).to.equal(err)
+      expect(financial.INTRATE(err, '2020-01-15', 895, 1000, 0)).to.equal(err)
+      expect(financial.INTRATE('2017-07-06', err, 895, 1000, 0)).to.equal(err)
+      expect(financial.INTRATE('2017-07-06', '2020-01-15', err, 1000, 0)).to.equal(err)
+      expect(financial.INTRATE('2017-07-06', '2020-01-15', 895, err, 0)).to.equal(err)
+      expect(financial.INTRATE('2017-07-06', '2020-01-15', 895, 1000, err)).to.equal(err)
     })
   })
 
