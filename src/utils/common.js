@@ -1,5 +1,4 @@
 import * as error from './error.js'
-import { subMonths } from 'date-fns'
 
 // Arrays
 export function argsToArray(args) {
@@ -281,17 +280,14 @@ export function parseBool(bool) {
 
 // subtracts a given number of months from a date, while maintaining day consistency.
 export function subMonthsKeepDayFixed(date, months, fixedDay) {
-  date = subMonths(date, months)
+  const result = new Date(date)
+  result.setUTCMonth(result.getUTCMonth() - months, 1)
 
-  const lastDayOfNewMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()
+  const lastDayOfNewMonth = new Date(Date.UTC(result.getUTCFullYear(), result.getUTCMonth() + 1, 0)).getUTCDate()
 
-  if (fixedDay > lastDayOfNewMonth) {
-    date.setDate(lastDayOfNewMonth)
-  } else {
-    date.setDate(fixedDay)
-  }
+  result.setUTCDate(fixedDay > lastDayOfNewMonth ? lastDayOfNewMonth : fixedDay)
 
-  return date
+  return result
 }
 
 export function parseDate(date) {

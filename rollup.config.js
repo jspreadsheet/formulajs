@@ -12,7 +12,7 @@ const banner = `/* ${pkg.name} v${pkg.version} */`
 
 const baseConfig = {
   input: 'src/index.js',
-  external: ['bessel', 'jstat', 'date-fns'],
+  external: ['bessel', 'jstat'],
   plugins: [resolve(), commonjs()]
 }
 
