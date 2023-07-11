@@ -1,7 +1,6 @@
 import * as error from './utils/error.js'
 import * as dateTime from './date-time.js'
 import * as utils from './utils/common.js'
-import { addYears, subYears, setYear, compareAsc } from 'date-fns'
 
 /**
  * Returns the accrued interest for a security that pays periodic interest.
@@ -218,7 +217,7 @@ export function COUPDAYS(settlement, maturity, frequency, basis = 0) {
   if (basis === 1) {
     let pcd = utils.parseDate(COUPPCD(settlement, maturity, frequency))
 
-    let nextDate = utils.subMonthsKeepDayFixed(pcd, -12 / frequency, pcd.getDate())
+    let nextDate = utils.subMonthsKeepDayFixed(pcd, -12 / frequency, pcd.getUTCDate())
 
     pcd = utils.dateToSerialNumber(pcd)
     nextDate = utils.dateToSerialNumber(nextDate)
@@ -320,15 +319,15 @@ export function COUPNCD(settlement, maturity, frequency, basis) {
     return error.value
   }
 
-  maturity = setYear(maturity, settlement.getFullYear())
+  maturity.setUTCFullYear(settlement.getUTCFullYear())
 
-  if (compareAsc(maturity, settlement) > 0) {
-    maturity = subYears(maturity, 1)
+  if (maturity.getTime() > settlement.getTime()) {
+    maturity.setUTCFullYear(maturity.getUTCFullYear() - 1)
   }
 
-  const fixedDay = maturity.getDate()
+  const fixedDay = maturity.getUTCDate()
 
-  while (compareAsc(maturity, settlement) <= 0) {
+  while (maturity.getTime() <= settlement.getTime()) {
     maturity = utils.subMonthsKeepDayFixed(maturity, -12 / frequency, fixedDay)
   }
 
@@ -408,13 +407,14 @@ export function COUPPCD(settlement, maturity, frequency, basis = 0) {
   }
 
   let result = maturity
-  result = setYear(result, settlement.getFullYear())
 
-  if (compareAsc(result, settlement) < 0) {
-    result = addYears(result, 1)
+  result.setUTCFullYear(settlement.getUTCFullYear())
+
+  if (result.getTime() < settlement.getTime()) {
+    result.setUTCFullYear(result.getUTCFullYear() + 1)
   }
 
-  const fixedDay = result.getDate()
+  const fixedDay = result.getUTCDate()
 
   while (result - settlement > 0) {
     result = utils.subMonthsKeepDayFixed(result, 12 / frequency, fixedDay)
