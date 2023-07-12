@@ -1236,34 +1236,57 @@ describe('Financial', () => {
 
   // TODO: implement
   it('DURATION', () => {
-    expect(financial.DURATION('01-Feb-2028', '25-Nov-2028', 0.08, 0.08, 1, 0)).to.approximately(0.816666667, 1e-9)
-    expect(financial.DURATION('01-Feb-2018', '25-Nov-2028', 0.08, 0.08, 1, 0)).to.approximately(7.526748066, 1e-9)
-    expect(financial.DURATION('10-Jan-2009', '11-Apr-2017', 0.3, 0.5, 2, 0)).to.approximately(2.286055214, 1e-9)
-    expect(financial.DURATION('10-Jan-2009', '11-Apr-2017', 0.3, 0.5, 4, 0)).to.approximately(2.037301228, 1e-9)
-    expect(financial.DURATION('10-Jan-2009', '11-Apr-2017', 0.3, 0.5, 4, 1)).to.approximately(2.034409364, 1e-9)
-    expect(financial.DURATION('10-Jan-2009', '10-Jan-2039', 2, 4, 2, 0)).to.approximately(0.75, 1e-9)
-    expect(financial.DURATION('10-Jan-2009', '10-Jan-2039', 2, 4, 2, 1)).to.approximately(0.75073235, 1e-9)
-    expect(financial.DURATION('10-Jan-2009', '10-Jan-2039', 0.2, 0.4, 2, 2)).to.approximately(3.436652772, 1e-9)
-    expect(financial.DURATION('01/10/2009', '01/10/2039', 0.2, 0.4, 2, 2)).to.approximately(3.436652772, 1e-9)
-    expect(financial.DURATION([['01-Feb-2028']], [['25-Nov-2028']], 0.08, 0.08, 1, 0)).to.approximately(0.816666667, 1e-9)
+    expect(financial.DURATION('2028-02-01', '2028-11-25', 0.08, 0.08, 1, 0)).to.approximately(0.816666667, 1e-9)
+    expect(financial.DURATION('2028-02-01', '2028-11-25', 0.08, 0.08, 1, undefined)).to.approximately(0.816666667, 1e-9)
+    expect(financial.DURATION('2028-02-01', '2028-11-25', 0.08, 0.08, 1)).to.approximately(0.816666667, 1e-9)
+
+    expect(financial.DURATION('2018-02-01', '2028-11-25', 0.08, 0.08, 1, 0)).to.approximately(7.526748066, 1e-9)
+    expect(financial.DURATION('2009-01-10', '2017-04-11', 0.3, 0.5, 2, 0)).to.approximately(2.286055214, 1e-9)
+    expect(financial.DURATION('2009-01-10', '2017-04-11', 0.3, 0.5, 4, 0)).to.approximately(2.037301228, 1e-9)
+    expect(financial.DURATION('2009-01-10', '2017-04-11', 0.3, 0.5, 4, 1)).to.approximately(2.037240841, 1e-9)
+    expect(financial.DURATION('2009-01-10', '2039-01-10', 2, 4, 2, 0)).to.approximately(0.75, 1e-9)
+    expect(financial.DURATION('2009-01-10', '2039-01-10', 2, 4, 2, 1)).to.approximately(0.75, 1e-9)
+    expect(financial.DURATION('2009-01-10', '2039-01-10', 0.2, 0.4, 2, 2)).to.approximately(3.000425921, 1e-9)
+    expect(financial.DURATION('2009-10-01', '2039-10-01', 0.2, 0.4, 2, 2)).to.approximately(3.000425921, 1e-9)
+    expect(financial.DURATION([['2028-02-01']], [['2028-11-25']], 0.08, 0.08, 1, 0)).to.approximately(0.816666667, 1e-9)
     expect(financial.DURATION([[43132]], [[47082]], 0.08, 0.08, 1, 4)).to.approximately(7.526748066, 1e-9)
-    expect(financial.DURATION([[43132]], [[47082]], [[0.08]], [[0.08]], [[1]], [[4]])).to.approximately(7.526748066, 1e-9)
+    expect(financial.DURATION([[43132]], [[47082]], [[0.08]], [[0.08]], [[1]], [[4]])).to.approximately(
+      7.526748066,
+      1e-9
+    )
 
     expect(financial.DURATION(43132, 47082, 0.08, 0.08, 1, 4)).to.approximately(7.526748066, 1e-9)
-    expect(financial.DURATION(43132, 47082, 0.08, 0.08, 2, 3)).to.approximately(7.336497781761335, 1e-9)
+    expect(financial.DURATION(43132, 47082, 0.08, 0.08, 2, 3)).to.approximately(7.328278604, 1e-9)
     expect(financial.DURATION(43132, 47082, 0.16, 0.08, 1, 0)).to.approximately(6.628667547, 1e-9)
     expect(financial.DURATION(43132, 47082, 6, 2, 1, 0)).to.approximately(1.316622447, 1e-9)
 
     expect(financial.DURATION(43132, 47082, 0.08, 0.08, 1, 0)).to.approximately(7.526748066, 1e-9)
-    expect(financial.DURATION(48132, 47082, 0.08, 0.08, 1, 0)).to.equal(error.num);
+    expect(financial.DURATION(48132, 47082, 0.08, 0.08, 1, 0)).to.equal(error.num)
 
-    expect(financial.DURATION(null, '25-Nov-2028', 0.08, 0.08, 1, 0)).to.equal(error.num)
-    expect(financial.DURATION()).to.equal(error.na)
     expect(financial.DURATION('str', 47082, 0.08, 0.08, 1, 0)).to.equal(error.value)
     expect(financial.DURATION(43132, 47082, true, 0.08, 1, 0)).to.equal(error.value)
     expect(financial.DURATION(43132, 47082, 0.16, 0.08, 1, 6)).to.equal(error.num)
     expect(financial.DURATION(43132, 47082, 0.16, 0.08, 5, 2)).to.equal(error.num)
-    expect(financial.DURATION(undefined, '25-Nov-2028', 0.08, 0.08, 1, 0)).to.equal(error.na)
+
+    expect(financial.DURATION(null, '2028-11-25', 0.08, 0.08, 1, 0)).to.equal(error.num)
+    expect(financial.DURATION('2018-02-01', null, 0.08, 0.08, 1, 0)).to.equal(error.num)
+    expect(financial.DURATION('2018-02-01', '2028-11-25', null, 0.08, 1, 0)).to.approximately(10.81666667, 1e-9)
+    expect(financial.DURATION('2018-02-01', '2028-11-25', 0.08, null, 1, 0)).to.approximately(8.476241135, 1e-9)
+    expect(financial.DURATION('2018-02-01', '2028-11-25', 0.08, 0.08, null, 0)).to.equal(error.num)
+    expect(financial.DURATION('2018-02-01', '2028-11-25', 0.08, 0.08, 1, null)).to.approximately(7.526748066, 1e-9)
+
+    expect(financial.DURATION('2028-02-01', '2028-11-25', 0.08, 0.08, 1, 0, 1)).to.equal(error.na)
+    expect(financial.DURATION('2028-02-01', '2028-11-25', 0.08, 0.08)).to.equal(error.na)
+    expect(financial.DURATION('2028-02-01', '2028-11-25', 0.08)).to.equal(error.na)
+    expect(financial.DURATION('2028-02-01', '2028-11-25')).to.equal(error.na)
+    expect(financial.DURATION('2028-02-01')).to.equal(error.na)
+    expect(financial.DURATION()).to.equal(error.na)
+
+    expect(financial.DURATION('2028-02-01', '2028-11-25', 0.08, 0.08, undefined, 0)).to.equal(error.na)
+    expect(financial.DURATION('2028-02-01', '2028-11-25', 0.08, undefined, 1, 0)).to.equal(error.na)
+    expect(financial.DURATION('2028-02-01', '2028-11-25', undefined, 0.08, 1, 0)).to.equal(error.na)
+    expect(financial.DURATION('2028-02-01', undefined, 0.08, 0.08, 1, 0)).to.equal(error.na)
+    expect(financial.DURATION(undefined, '2028-11-25', 0.08, 0.08, 1, 0)).to.equal(error.na)
   })
 
   it('EFFECT', () => {
@@ -1556,15 +1579,21 @@ describe('Financial', () => {
     expect(financial.MDURATION('10-Jan-2009', '11-Apr-2017', 0.3, 0.5, 4, 1)).to.approximately(1.808363879, 1e-9)
     expect(financial.MDURATION('10-Jan-2009', '10-Jan-2039', 2, 4, 2, 0)).to.approximately(0.25, 1e-9)
     expect(financial.MDURATION('10-Jan-2009', '10-Jan-2039', 2, 4, 2, 1)).to.approximately(0.250244116, 1e-9)
-    expect(financial.MDURATION([['01-Feb-2028']], [['25-Nov-2028']], 0.08, 0.08, 1, 0)).to.approximately(0.75617284, 1e-9)
+    expect(financial.MDURATION([['01-Feb-2028']], [['25-Nov-2028']], 0.08, 0.08, 1, 0)).to.approximately(
+      0.75617284,
+      1e-9
+    )
     expect(financial.MDURATION([[43132]], [[47082]], 0.08, 0.08, 1, 4)).to.approximately(6.969211172, 1e-9)
-    expect(financial.MDURATION([[43132]], [[47082]], [[0.08]], [[0.08]], [[1]], [[4]])).to.approximately(6.969211172, 1e-9)
+    expect(financial.MDURATION([[43132]], [[47082]], [[0.08]], [[0.08]], [[1]], [[4]])).to.approximately(
+      6.969211172,
+      1e-9
+    )
     expect(financial.MDURATION(43132, 47082, 0.32, 0.08, 1, 4)).to.approximately(5.524718655, 1e-9)
-    expect(financial.MDURATION(43132, 47082, 0.08, 0.08, 2, 3)).to.approximately(7.054324790, 1e-9)
+    expect(financial.MDURATION(43132, 47082, 0.08, 0.08, 2, 3)).to.approximately(7.05432479, 1e-9)
     expect(financial.MDURATION(43132, 47082, 0.16, 0.08, 1, 0)).to.approximately(6.137655136, 1e-9)
     expect(financial.MDURATION(43132, 47082, 6, 2, 1, 0)).to.approximately(0.438874149, 1e-9)
 
-    expect(financial.MDURATION(48132, 47082, 0.08, 0.08, 1, 0)).to.equal(error.num);
+    expect(financial.MDURATION(48132, 47082, 0.08, 0.08, 1, 0)).to.equal(error.num)
     expect(financial.MDURATION(null, '25-Nov-2028', 0.08, 0.08, 1, 0)).to.equal(error.num)
     expect(financial.MDURATION()).to.equal(error.na)
     expect(financial.MDURATION('str', 47082, 0.08, 0.08, 1, 0)).to.equal(error.value)
