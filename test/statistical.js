@@ -337,9 +337,102 @@ describe('Statistical', () => {
     ).to.equal(error.value)
   })
 
+  it('CONFIDENCE', () => {
+    expect(statistical.CONFIDENCE(0.05, 2.5, 50)).to.approximately(0.692951912174839, 1e-9)
+    expect(statistical.CONFIDENCE(0.05, 2.5, 50.9)).to.approximately(0.692951912174839, 1e-9)
+
+    expect(statistical.CONFIDENCE(0.05, 1, 50)).to.approximately(0.277180764869935, 1e-9)
+    expect(statistical.CONFIDENCE(0.34, 0.4, 138)).to.approximately(0.0324895761265509, 1e-9)
+    expect(statistical.CONFIDENCE(0.81, 1.2, 264)).to.approximately(0.0177566391861301, 1e-9)
+    expect(statistical.CONFIDENCE(0.12, 3.9, 25)).to.approximately(1.21272340378555, 1e-9)
+
+    expect(statistical.CONFIDENCE('0.05', 2.5, 50)).to.approximately(0.692951912174839, 1e-9)
+    expect(statistical.CONFIDENCE(0.05, '2.5', 50)).to.approximately(0.692951912174839, 1e-9)
+    expect(statistical.CONFIDENCE(0.05, 2.5, '50')).to.approximately(0.692951912174839, 1e-9)
+
+    expect(statistical.CONFIDENCE(true, 2.5, 50)).to.equal(error.num)
+    expect(statistical.CONFIDENCE(0.05, true, 50)).to.approximately(0.277180764869935, 1e-9)
+    expect(statistical.CONFIDENCE(0.05, 2.5, true)).to.approximately(4.89990996135013, 1e-9)
+
+    expect(statistical.CONFIDENCE(false, 2.5, 50)).to.equal(error.num)
+    expect(statistical.CONFIDENCE(0.05, false, 50)).to.equal(error.num)
+    expect(statistical.CONFIDENCE(0.05, 2.5, false)).to.equal(error.num)
+
+    expect(statistical.CONFIDENCE('test', 2.5, 50)).to.equal(error.value)
+    expect(statistical.CONFIDENCE(0.05, 'test', 50)).to.equal(error.value)
+    expect(statistical.CONFIDENCE(0.05, 2.5, 'test')).to.equal(error.value)
+
+    expect(statistical.CONFIDENCE(null, 2.5, 50)).to.equal(error.num)
+    expect(statistical.CONFIDENCE(0.05, null, 50)).to.equal(error.num)
+    expect(statistical.CONFIDENCE(0.05, 2.5, null)).to.equal(error.num)
+
+    expect(statistical.CONFIDENCE(undefined, 2.5, 50)).to.equal(error.num)
+    expect(statistical.CONFIDENCE(0.05, undefined, 50)).to.equal(error.num)
+    expect(statistical.CONFIDENCE(0.05, 2.5, undefined)).to.equal(error.num)
+
+    expect(statistical.CONFIDENCE([[0.05, 0.25]], 2.5, 50)).to.equal(error.value)
+    expect(statistical.CONFIDENCE(0.05, [[2.5, 3]], 50)).to.equal(error.value)
+    expect(statistical.CONFIDENCE(0.05, 2.5, [[50, 60]])).to.equal(error.value)
+
+    expect(statistical.CONFIDENCE(0.05, 2.5, 50, 1)).to.equal(error.na)
+    expect(statistical.CONFIDENCE(0.05, 2.5)).to.equal(error.na)
+    expect(statistical.CONFIDENCE(0.05)).to.equal(error.na)
+    expect(statistical.CONFIDENCE()).to.equal(error.na)
+
+    Object.values(error).forEach((err) => {
+      expect(statistical.CONFIDENCE(err, 2.5, 50)).to.equal(err)
+      expect(statistical.CONFIDENCE(0.05, err, 50)).to.equal(err)
+      expect(statistical.CONFIDENCE(0.05, 2.5, err)).to.equal(err)
+    })
+  })
+
   it('CONFIDENCE.NORM', () => {
-    expect(statistical.CONFIDENCE.NORM(0.05, 2.5, 50)).to.approximately(0.6929519121748391, 1e-9)
-    expect(statistical.CONFIDENCE.NORM(0.05, 'invalid', 50)).to.equal(error.value)
+    expect(statistical.CONFIDENCE.NORM(0.05, 2.5, 50)).to.approximately(0.692951912174839, 1e-9)
+    expect(statistical.CONFIDENCE.NORM(0.05, 2.5, 50.9)).to.approximately(0.692951912174839, 1e-9)
+
+    expect(statistical.CONFIDENCE.NORM(0.05, 1, 50)).to.approximately(0.277180764869935, 1e-9)
+    expect(statistical.CONFIDENCE.NORM(0.34, 0.4, 138)).to.approximately(0.0324895761265509, 1e-9)
+    expect(statistical.CONFIDENCE.NORM(0.81, 1.2, 264)).to.approximately(0.0177566391861301, 1e-9)
+    expect(statistical.CONFIDENCE.NORM(0.12, 3.9, 25)).to.approximately(1.21272340378555, 1e-9)
+
+    expect(statistical.CONFIDENCE.NORM('0.05', 2.5, 50)).to.approximately(0.692951912174839, 1e-9)
+    expect(statistical.CONFIDENCE.NORM(0.05, '2.5', 50)).to.approximately(0.692951912174839, 1e-9)
+    expect(statistical.CONFIDENCE.NORM(0.05, 2.5, '50')).to.approximately(0.692951912174839, 1e-9)
+
+    expect(statistical.CONFIDENCE.NORM(true, 2.5, 50)).to.equal(error.num)
+    expect(statistical.CONFIDENCE.NORM(0.05, true, 50)).to.approximately(0.277180764869935, 1e-9)
+    expect(statistical.CONFIDENCE.NORM(0.05, 2.5, true)).to.approximately(4.89990996135013, 1e-9)
+
+    expect(statistical.CONFIDENCE.NORM(false, 2.5, 50)).to.equal(error.num)
+    expect(statistical.CONFIDENCE.NORM(0.05, false, 50)).to.equal(error.num)
+    expect(statistical.CONFIDENCE.NORM(0.05, 2.5, false)).to.equal(error.num)
+
+    expect(statistical.CONFIDENCE.NORM('test', 2.5, 50)).to.equal(error.value)
+    expect(statistical.CONFIDENCE.NORM(0.05, 'test', 50)).to.equal(error.value)
+    expect(statistical.CONFIDENCE.NORM(0.05, 2.5, 'test')).to.equal(error.value)
+
+    expect(statistical.CONFIDENCE.NORM(null, 2.5, 50)).to.equal(error.num)
+    expect(statistical.CONFIDENCE.NORM(0.05, null, 50)).to.equal(error.num)
+    expect(statistical.CONFIDENCE.NORM(0.05, 2.5, null)).to.equal(error.num)
+
+    expect(statistical.CONFIDENCE.NORM(undefined, 2.5, 50)).to.equal(error.num)
+    expect(statistical.CONFIDENCE.NORM(0.05, undefined, 50)).to.equal(error.num)
+    expect(statistical.CONFIDENCE.NORM(0.05, 2.5, undefined)).to.equal(error.num)
+
+    expect(statistical.CONFIDENCE.NORM([[0.05, 0.25]], 2.5, 50)).to.equal(error.value)
+    expect(statistical.CONFIDENCE.NORM(0.05, [[2.5, 3]], 50)).to.equal(error.value)
+    expect(statistical.CONFIDENCE.NORM(0.05, 2.5, [[50, 60]])).to.equal(error.value)
+
+    expect(statistical.CONFIDENCE.NORM(0.05, 2.5, 50, 1)).to.equal(error.na)
+    expect(statistical.CONFIDENCE.NORM(0.05, 2.5)).to.equal(error.na)
+    expect(statistical.CONFIDENCE.NORM(0.05)).to.equal(error.na)
+    expect(statistical.CONFIDENCE.NORM()).to.equal(error.na)
+
+    Object.values(error).forEach((err) => {
+      expect(statistical.CONFIDENCE.NORM(err, 2.5, 50)).to.equal(err)
+      expect(statistical.CONFIDENCE.NORM(0.05, err, 50)).to.equal(err)
+      expect(statistical.CONFIDENCE.NORM(0.05, 2.5, err)).to.equal(err)
+    })
   })
 
   it('CONFIDENCE.T', () => {

@@ -632,10 +632,8 @@ CHISQ.TEST = function (actual_range, expected_range) {
   return Math.round(ChiSq(xsqr, dof) * 1000000) / 1000000
 }
 
-export const CONFIDENCE = {}
-
 /**
- * Returns the confidence interval for a population mean.
+ * Returns the confidence interval for a population mean, using a normal distribution.
  *
  * Category: Statistical
  *
@@ -644,17 +642,78 @@ export const CONFIDENCE = {}
  * @param {*} size The sample size.
  * @returns
  */
-CONFIDENCE.NORM = (alpha, standard_dev, size) => {
-  alpha = utils.parseNumber(alpha)
-  standard_dev = utils.parseNumber(standard_dev)
-  size = utils.parseNumber(size)
+export const CONFIDENCE = function (alpha, standard_dev, size) {
+  if (arguments.length !== 3) {
+    return error.na
+  }
 
-  if (utils.anyIsError(alpha, standard_dev, size)) {
+  if (alpha === undefined || alpha === null) {
+    return error.num
+  }
+
+  alpha = utils.getNumber(alpha)
+  if (typeof alpha !== 'number') {
+    if (alpha instanceof Error) {
+      return alpha
+    }
+
     return error.value
   }
 
+  if (standard_dev === undefined || standard_dev === null) {
+    return error.num
+  }
+
+  standard_dev = utils.parseNumber(standard_dev)
+  if (typeof standard_dev !== 'number') {
+    if (standard_dev instanceof Error) {
+      return standard_dev
+    }
+
+    return error.value
+  }
+
+  if (size === undefined || size === null) {
+    return error.num
+  }
+
+  size = utils.parseNumber(size)
+  if (typeof size !== 'number') {
+    if (size instanceof Error) {
+      return size
+    }
+
+    return error.value
+  }
+
+  if (alpha <= 0 || alpha >= 1) {
+    return error.num
+  }
+
+  if (standard_dev <= 0) {
+    return error.num
+  }
+
+  if (size < 1) {
+    return error.num
+  }
+
+  size = Math.floor(size)
+
   return jStat.normalci(1, alpha, standard_dev, size)[1] - 1
 }
+
+/**
+ * Returns the confidence interval for a population mean, using a normal distribution.
+ *
+ * Category: Statistical
+ *
+ * @param {*} alpha The significance level used to compute the confidence level. The confidence level equals 100*(1 - alpha)%, or in other words, an alpha of 0.05 indicates a 95 percent confidence level.
+ * @param {*} standard_dev The population standard deviation for the data range and is assumed to be known.
+ * @param {*} size The sample size.
+ * @returns
+ */
+CONFIDENCE.NORM = CONFIDENCE
 
 /**
  * Returns the confidence interval for a population mean, using a Student's t distribution.
