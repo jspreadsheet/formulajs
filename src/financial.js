@@ -1705,8 +1705,39 @@ export function ODDFYIELD() {
  * @param {*} basis Optional. The type of day count basis to use.
  * @returns
  */
-export function ODDLPRICE() {
-  throw new Error('ODDLPRICE is not implemented')
+export function ODDLPRICE(settlement, maturity, last_interest, rate, yld, redemption, frequency, basis) {
+  if (arguments.length > 8 || arguments.length < 7) {
+    return error.na
+  }
+
+  const anyError = utils.anyError(...arguments)
+
+  if (anyError) {
+    return anyError
+  }
+  
+  let sett = utils.parseDate(settlement)
+  let mat = utils.parseDate(maturity)
+  let li = utils.parseDate(last_interest)
+  rate = utils.parseNumber(rate)
+  yld = utils.parseNumber(yld)
+  redemption = utils.parseNumber(redemption)
+  frequency = utils.parseNumber(frequency)
+  basis = utils.parseNumber(basis)
+
+  if (utils.anyIsError(sett, mat, li, rate, yld, redemption, frequency, basis)) {
+    return error.value
+  }
+
+  const flm = dateTime.YEARFRAC(last_interest, maturity, basis) * frequency
+  const fsm = dateTime.YEARFRAC(settlement, maturity, basis) * frequency
+  const fls = dateTime.YEARFRAC(last_interest, settlement, basis) * frequency
+
+  let p = redemption + flm * 100 * rate / frequency
+  p /= fsm * yld / frequency + 1
+  p -= fls * 100 * rate / frequency
+
+  return p
 }
 
 // TODO
