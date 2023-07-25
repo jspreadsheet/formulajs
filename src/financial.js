@@ -1687,9 +1687,7 @@ export function ODDFYIELD() {
   throw new Error('ODDFYIELD is not implemented')
 }
 
-// TODO
 /**
- * -- Not implemented --
  *
  * Returns the price per $100 face value of a security with an odd last period.
  *
@@ -1706,7 +1704,7 @@ export function ODDFYIELD() {
  * @returns
  */
 export function ODDLPRICE(settlement, maturity, last_interest, rate, yld, redemption, frequency, basis) {
-  if (arguments.length > 8 || arguments.length < 7) {
+  if (arguments.length > 8 || arguments.length < 7 || utils.anyIsUndefined(settlement, maturity, last_interest, rate, yld, redemption, frequency)) {
     return error.na
   }
 
@@ -1715,7 +1713,7 @@ export function ODDLPRICE(settlement, maturity, last_interest, rate, yld, redemp
   if (anyError) {
     return anyError
   }
-  
+
   let sett = utils.parseDate(settlement)
   let mat = utils.parseDate(maturity)
   let li = utils.parseDate(last_interest)
@@ -1725,8 +1723,12 @@ export function ODDLPRICE(settlement, maturity, last_interest, rate, yld, redemp
   frequency = utils.parseNumber(frequency)
   basis = utils.parseNumber(basis)
 
-  if (utils.anyIsError(sett, mat, li, rate, yld, redemption, frequency, basis)) {
+  if (utils.anyIsError(sett, mat, li, rate, yld, redemption, frequency, basis) || utils.anyIsBoolean(...arguments)) {
     return error.value
+  }
+
+  if (redemption <= 0 || utils.anyIsNull(settlement, maturity, last_interest) || ![1, 2, 4].includes(frequency)) {
+    return error.num
   }
 
   const flm = dateTime.YEARFRAC(last_interest, maturity, basis) * frequency
