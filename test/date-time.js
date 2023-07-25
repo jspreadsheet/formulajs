@@ -917,6 +917,12 @@ describe('Date & Time', () => {
   })
 
   it('YEARFRAC', () => {
+    expect(dateTime.YEARFRAC('2008-02-07', '2008-06-15')).to.approximately(0.355555556, 1e-5)
+    expect(dateTime.YEARFRAC('2007-10-15', '2008-06-15')).to.approximately(0.666666667, 1e-5)
+    expect(dateTime.YEARFRAC('2007-10-15', '2008-02-07')).to.approximately(0.311111111, 1e-5)
+    expect(dateTime.YEARFRAC('2008-02-07', '2008-06-15', 1)).to.approximately(0.352459016, 1e-5)
+    expect(dateTime.YEARFRAC('2008-02-07', '2008-06-15', 2)).to.approximately(0.358333333, 1e-5)
+    expect(dateTime.YEARFRAC('2008-02-07', '2008-06-15', 3)).to.approximately(0.353424658, 1e-5)
     expect(dateTime.YEARFRAC('1900-01-01', '1900-01-02')).to.approximately(0.002777778, 1e-5)
     expect(dateTime.YEARFRAC('1900-01-31', '1900-03-31', 0)).to.approximately(0.166666667, 1e-5)
     expect(dateTime.YEARFRAC('1900-01-31', '1900-02-01', 0)).to.approximately(0.002777778, 1e-5)

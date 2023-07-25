@@ -1687,6 +1687,7 @@ export function ODDFYIELD() {
   throw new Error('ODDFYIELD is not implemented')
 }
 
+// TODO: Need fix when basis equals 1, 2 or 3
 /**
  *
  * Returns the price per $100 face value of a security with an odd last period.
@@ -1703,7 +1704,7 @@ export function ODDFYIELD() {
  * @param {*} basis Optional. The type of day count basis to use.
  * @returns
  */
-export function ODDLPRICE(settlement, maturity, last_interest, rate, yld, redemption, frequency, basis) {
+export function ODDLPRICE(settlement, maturity, last_interest, rate, yld, redemption, frequency, basis = 0) {
   if (arguments.length > 8 || arguments.length < 7 || utils.anyIsUndefined(settlement, maturity, last_interest, rate, yld, redemption, frequency)) {
     return error.na
   }
@@ -1727,7 +1728,7 @@ export function ODDLPRICE(settlement, maturity, last_interest, rate, yld, redemp
     return error.value
   }
 
-  if (redemption <= 0 || utils.anyIsNull(settlement, maturity, last_interest) || ![1, 2, 4].includes(frequency)) {
+  if (redemption <= 0 || utils.anyIsNull(settlement, maturity, last_interest) || ![1, 2, 4].includes(frequency) || ![0, 1, 2, 3, 4].includes(basis) || !(mat > sett) || !(sett > li) || rate < 0 || yld < 0) {
     return error.num
   }
 
@@ -1736,7 +1737,7 @@ export function ODDLPRICE(settlement, maturity, last_interest, rate, yld, redemp
   const fls = dateTime.YEARFRAC(last_interest, settlement, basis) * frequency
 
   let p = redemption + flm * 100 * rate / frequency
-  p /= fsm * yld / frequency + 1
+  p /= fsm * yld / frequency + 1.0
   p -= fls * 100 * rate / frequency
 
   return p
