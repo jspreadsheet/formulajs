@@ -1687,6 +1687,21 @@ export function ODDFYIELD() {
   throw new Error('ODDFYIELD is not implemented')
 }
 
+function yf(start_date, end_date, basis) {
+  switch (basis) {
+    case 0:
+      return dateTime.DAYS360(start_date, end_date) / 360
+    case 1:
+      return dateTime.DATEDIF(start_date, end_date, 'D') / 366
+    case 2:
+      return dateTime.DATEDIF(start_date, end_date, 'D') / 366
+    case 3:
+      return dateTime.DATEDIF(start_date, end_date, 'D') / 366
+    case 4:
+      return dateTime.DAYS360(start_date, end_date, true) / 360
+  }
+}
+
 // TODO: Need fix when basis equals 1, 2 or 3
 /**
  *
@@ -1732,9 +1747,9 @@ export function ODDLPRICE(settlement, maturity, last_interest, rate, yld, redemp
     return error.num
   }
 
-  const flm = dateTime.YEARFRAC(last_interest, maturity, basis) * frequency
-  const fsm = dateTime.YEARFRAC(settlement, maturity, basis) * frequency
-  const fls = dateTime.YEARFRAC(last_interest, settlement, basis) * frequency
+  const flm = yf(last_interest, maturity, basis) * frequency
+  const fsm = yf(settlement, maturity, basis) * frequency
+  const fls = yf(last_interest, settlement, basis) * frequency
 
   let p = redemption + flm * 100 * rate / frequency
   p /= fsm * yld / frequency + 1.0
