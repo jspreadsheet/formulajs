@@ -1709,9 +1709,8 @@ export function ODDLPRICE() {
   throw new Error('ODDLPRICE is not implemented')
 }
 
-// TODO
+// TODO: Need fix when basis equals 1, 2 or 3
 /**
- * -- Not implemented --
  *
  * Returns the yield of a security with an odd last period.
  *
@@ -1727,8 +1726,44 @@ export function ODDLPRICE() {
  * @param {*} basis Optional. The type of day count basis to use.
  * @returns
  */
-export function ODDLYIELD() {
-  throw new Error('ODDLYIELD is not implemented')
+export function ODDLYIELD(settlement, maturity, last_interest, rate, pr, redemption, frequency, basis = 0) {
+  if (arguments.length > 8 || arguments.length < 7 || utils.anyIsUndefined(settlement, maturity, last_interest, rate, pr, redemption, frequency)) {
+    return error.na
+  }
+
+  const anyError = utils.anyError(...arguments)
+
+  if (anyError) {
+    return anyError
+  }
+
+  let sett = utils.parseDate(settlement)
+  let mat = utils.parseDate(maturity)
+  let li = utils.parseDate(last_interest)
+  rate = utils.parseNumber(rate)
+  pr = utils.parseNumber(pr)
+  redemption = utils.parseNumber(redemption)
+  frequency = utils.parseNumber(frequency)
+  basis = utils.parseNumber(basis)
+
+  if (utils.anyIsError(sett, mat, li, rate, pr, redemption, frequency, basis) || utils.anyIsBoolean(...arguments)) {
+    return error.value
+  }
+
+  if (redemption <= 0 || utils.anyIsNull(settlement, maturity, last_interest) || ![1, 2, 4].includes(frequency) || ![0, 1, 2, 3, 4].includes(basis) || !(mat > sett) || !(sett > li) || rate < 0 || pr <= 0) {
+    return error.num
+  }
+
+  let fDCi = dateTime.YEARFRAC(last_interest, maturity, basis) * frequency
+  let fDSCi = dateTime.YEARFRAC(settlement, maturity, basis) * frequency
+  let fAi = dateTime.YEARFRAC(last_interest, settlement, basis) * frequency
+
+  let y = redemption + fDCi * 100 * rate / frequency
+  y /= pr + fAi * 100 * rate / frequency
+  y--
+  y *= frequency / fDSCi
+
+  return y
 }
 
 /**
