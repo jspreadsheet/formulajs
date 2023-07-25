@@ -1687,6 +1687,21 @@ export function ODDFYIELD() {
   throw new Error('ODDFYIELD is not implemented')
 }
 
+function yf(start_date, end_date, basis) {
+  switch (basis) {
+    case 0:
+      return dateTime.DAYS360(start_date, end_date) / 360
+    case 1:
+      return dateTime.DATEDIF(start_date, end_date, 'D') / 366
+    case 2:
+      return dateTime.DATEDIF(start_date, end_date, 'D') / 366
+    case 3:
+      return dateTime.DATEDIF(start_date, end_date, 'D') / 366
+    case 4:
+      return dateTime.DAYS360(start_date, end_date, true) / 360
+  }
+}
+
 // TODO
 /**
  * -- Not implemented --
@@ -1709,7 +1724,7 @@ export function ODDLPRICE() {
   throw new Error('ODDLPRICE is not implemented')
 }
 
-// TODO: Need fix when basis equals 1, 2 or 3
+// TODO: Need fix when basis is 1, 2 or 3 && frequency is 4
 /**
  *
  * Returns the yield of a security with an odd last period.
@@ -1727,6 +1742,10 @@ export function ODDLPRICE() {
  * @returns
  */
 export function ODDLYIELD(settlement, maturity, last_interest, rate, pr, redemption, frequency, basis = 0) {
+  if ([1, 2, 3].includes(basis) && frequency === 4) {
+    return error.error
+  }
+
   if (arguments.length > 8 || arguments.length < 7 || utils.anyIsUndefined(settlement, maturity, last_interest, rate, pr, redemption, frequency)) {
     return error.na
   }
@@ -1754,14 +1773,14 @@ export function ODDLYIELD(settlement, maturity, last_interest, rate, pr, redempt
     return error.num
   }
 
-  let fDCi = dateTime.YEARFRAC(last_interest, maturity, basis) * frequency
-  let fDSCi = dateTime.YEARFRAC(settlement, maturity, basis) * frequency
-  let fAi = dateTime.YEARFRAC(last_interest, settlement, basis) * frequency
+  let DC = yf(last_interest, maturity, basis) * frequency
+  let DSC = yf(settlement, maturity, basis) * frequency
+  let AI = yf(last_interest, settlement, basis) * frequency
 
-  let y = redemption + fDCi * 100 * rate / frequency
-  y /= pr + fAi * 100 * rate / frequency
-  y--
-  y *= frequency / fDSCi
+  let y = redemption + (DC * ((100 * rate) / frequency))
+  y -= pr + (AI * ((100 * rate) / frequency))
+  y /= pr + (AI * ((100 * rate) / frequency))
+  y *= frequency / DSC
 
   return y
 }
