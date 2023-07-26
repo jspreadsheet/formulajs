@@ -2806,9 +2806,7 @@ export function YIELDDISC() {
   throw new Error('YIELDDISC is not implemented')
 }
 
-// TODO
 /**
- * -- Not implemented --
  *
  * Returns the annual yield of a security that pays interest at maturity.
  *
@@ -2822,6 +2820,40 @@ export function YIELDDISC() {
  * @param {*} basis Optional. The type of day count basis to use.
  * @returns
  */
-export function YIELDMAT() {
-  throw new Error('YIELDMAT is not implemented')
+export function YIELDMAT(settlement, maturity, issue, rate, pr, basis = 0) {
+  if (arguments.length > 6 || arguments.length < 5 || utils.anyIsUndefined(settlement, maturity, issue, rate, pr)) {
+    return error.na
+  }
+
+  const anyError = utils.anyError(...arguments)
+
+  if (anyError) {
+    return anyError
+  }
+
+  let sett = utils.parseDate(settlement)
+  let mat = utils.parseDate(maturity)
+  let iss = utils.parseDate(issue)
+  rate = utils.parseNumber(rate)
+  pr = utils.parseNumber(pr)
+  basis = utils.parseNumber(basis)
+
+  if (utils.anyIsError(sett, mat, iss, rate, pr, basis) || utils.anyIsBoolean(...arguments)) {
+    return error.value
+  }
+
+  if (rate < 0 || pr <= 0 || utils.anyIsNull(settlement, maturity, issue, pr)) {
+    return error.num
+  }
+
+  const im = dateTime.YEARFRAC(issue, maturity, basis)
+  const is = dateTime.YEARFRAC(issue, settlement, basis)
+  const sm = dateTime.YEARFRAC(settlement, maturity, basis)
+
+  let y = 1 + im * rate
+  y /= pr / 100 + is * rate
+  y--
+  y /= sm
+
+  return y
 }
