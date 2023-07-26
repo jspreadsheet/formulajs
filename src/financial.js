@@ -91,10 +91,19 @@ export function ACCRINTM() {
   throw new Error('ACCRINTM is not implemented')
 }
 
-// TODO
+const getDepreciationCoefficient = (lifeOfAssets) => {
+  if (lifeOfAssets <= 4) {
+    return 1.5
+  }
+
+  if (lifeOfAssets <= 6) {
+    return 2
+  }
+
+  return 2.5
+}
+
 /**
- * -- Not implemented --
- *
  * Returns the depreciation for each accounting period by using a depreciation coefficient.
  *
  * Category: Financial
@@ -108,8 +117,120 @@ export function ACCRINTM() {
  * @param {*} basis Optional. The year basis to be used.
  * @returns
  */
-export function AMORDEGRC() {
-  throw new Error('AMORDEGRC is not implemented')
+export function AMORDEGRC(cost, date_purchased, first_period, salvage, period, rate, basis = 0) {
+  const customGetNumber = (something) => {
+    const type = typeof something
+    if (type === 'undefined') {
+      throw error.na
+    }
+    if (type === 'boolean') {
+      throw error.value
+    }
+
+    const result = utils.getNumber(something)
+
+    if (result instanceof Error) {
+      throw result
+    }
+    if (typeof result !== 'number') {
+      throw error.value
+    }
+
+    return result
+  }
+
+  try {
+    cost = customGetNumber(cost)
+    date_purchased = customGetNumber(date_purchased)
+    first_period = customGetNumber(first_period)
+    salvage = customGetNumber(salvage)
+    period = customGetNumber(period)
+    rate = customGetNumber(rate)
+    basis = customGetNumber(basis)
+  } catch (error) {
+    return error
+  }
+
+  let availableValue = cost - salvage
+
+  if (availableValue < 0) {
+    return error.num
+  }
+
+  const lifeOfAssets = 1 / rate
+  const intLifeOfAssets = Math.ceil(lifeOfAssets)
+
+  const depreciationCoefficient = getDepreciationCoefficient(lifeOfAssets)
+
+  let firstPeriodYearFraction
+  if (date_purchased === first_period) {
+    firstPeriodYearFraction = 1
+  } else if (first_period > date_purchased) {
+    firstPeriodYearFraction = dateTime.YEARFRAC(date_purchased, first_period, basis)
+  } else {
+    return error.num
+  }
+
+  const straightLineRemaining = (cost / intLifeOfAssets) * firstPeriodYearFraction
+  const reducingBalance = cost * rate * depreciationCoefficient * firstPeriodYearFraction
+
+  let firstPeriodDepreciation = Math.max(straightLineRemaining, reducingBalance)
+
+  if (firstPeriodDepreciation > availableValue) {
+    firstPeriodDepreciation = availableValue
+  }
+
+  if (period === 0) {
+    return Math.round(firstPeriodDepreciation)
+  }
+
+  let remainingValue = cost - firstPeriodDepreciation
+
+  if (period >= intLifeOfAssets) {
+    return 0
+  }
+
+  if (period < intLifeOfAssets - 2) {
+    let periodDepreciation
+
+    for (let currentPeriod = 1; currentPeriod <= period; currentPeriod++) {
+      if (remainingValue < salvage) {
+        return 0
+      }
+
+      periodDepreciation = remainingValue * rate * depreciationCoefficient
+
+      remainingValue -= periodDepreciation
+    }
+
+    return Math.round(periodDepreciation)
+  }
+
+  for (let currentPeriod = 1; currentPeriod < intLifeOfAssets - 2; currentPeriod++) {
+    if (remainingValue < salvage) {
+      return 0
+    }
+
+    let periodDepreciation = remainingValue * rate * depreciationCoefficient
+
+    remainingValue -= periodDepreciation
+  }
+
+  if (remainingValue < salvage) {
+    return 0
+  }
+
+  const periodDepreciation = remainingValue / 2
+
+  if (period === intLifeOfAssets - 1) {
+    remainingValue -= periodDepreciation
+
+    if (remainingValue < salvage) {
+      return 0
+    }
+  }
+
+  return Math.round(periodDepreciation)
 }
 
 // TODO
