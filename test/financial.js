@@ -346,6 +346,14 @@ describe('Financial', () => {
     expect(financial.AMORLINC(50000, '2000-01-01', '2001-06-01', 0, 0, 0.04)).to.approximately(2833.33333333333, 1e-9)
     expect(financial.AMORLINC(50000, '2000-01-01', '2001-06-01', 0, 24, 0.04)).to.approximately(1166.66666666666, 1e-9)
 
+    expect(financial.AMORLINC([[50000, 51000]], '2000-01-01', '2001-01-01', 0, 0, 0.04)).to.equal(error.value)
+    expect(financial.AMORLINC(50000, [['2000-01-01', '2000-01-02']], '2001-01-01', 0, 0, 0.04)).to.equal(error.value)
+    expect(financial.AMORLINC(50000, '2000-01-01', [['2001-01-01', '2001-01-02']], 0, 0, 0.04)).to.equal(error.value)
+    expect(financial.AMORLINC(50000, '2000-01-01', '2001-01-01', [[0, 1000]], 0, 0.04)).to.equal(error.value)
+    expect(financial.AMORLINC(50000, '2000-01-01', '2001-01-01', 0, [[0, 1]], 0.04)).to.equal(error.value)
+    expect(financial.AMORLINC(50000, '2000-01-01', '2001-01-01', 0, 0, [[0.04, 0.05]])).to.equal(error.value)
+    expect(financial.AMORLINC(50000, '2000-01-01', '2001-01-01', 0, 0, 0.04, [[0, 1]])).to.equal(error.value)
+
     expect(financial.AMORLINC(100, '2005-06-12', '2008-12-28', 1, 0, 0.14)).to.approximately(49.622222222222, 1e-9)
     expect(financial.AMORLINC(100, '2005-06-12', '2008-12-28', -1, 0, 0.14)).to.equal(error.num)
     expect(financial.AMORLINC(100, '2005-06-12', '2008-12-28', 1, -1, 0.14)).to.equal(error.num)
