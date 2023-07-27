@@ -103,6 +103,27 @@ const getDepreciationCoefficient = (lifeOfAssets) => {
   return 2.5
 }
 
+const customGetNumber = (something) => {
+  const type = typeof something
+  if (type === 'undefined') {
+    throw error.na
+  }
+  if (type === 'boolean') {
+    throw error.value
+  }
+
+  const result = utils.getNumber(something)
+
+  if (result instanceof Error) {
+    throw result
+  }
+  if (typeof result !== 'number') {
+    throw error.value
+  }
+
+  return result
+}
+
 /**
  * Returns the depreciation for each accounting period by using a depreciation coefficient.
  *
@@ -120,27 +141,6 @@ const getDepreciationCoefficient = (lifeOfAssets) => {
 export function AMORDEGRC(cost, date_purchased, first_period, salvage, period, rate, basis = 0) {
   if (arguments.length < 6 || arguments.length > 7) {
     return error.na
-  }
-
-  const customGetNumber = (something) => {
-    const type = typeof something
-    if (type === 'undefined') {
-      throw error.na
-    }
-    if (type === 'boolean') {
-      throw error.value
-    }
-
-    const result = utils.getNumber(something)
-
-    if (result instanceof Error) {
-      throw result
-    }
-    if (typeof result !== 'number') {
-      throw error.value
-    }
-
-    return result
   }
 
   try {
@@ -252,27 +252,6 @@ export function AMORDEGRC(cost, date_purchased, first_period, salvage, period, r
 export function AMORLINC(cost, date_purchased, first_period, salvage, period, rate, basis = 0) {
   if (arguments.length < 6 || arguments.length > 7) {
     return error.na
-  }
-
-  const customGetNumber = (something) => {
-    const type = typeof something
-    if (type === 'undefined') {
-      throw error.na
-    }
-    if (type === 'boolean') {
-      throw error.value
-    }
-
-    const result = utils.getNumber(something)
-
-    if (result instanceof Error) {
-      throw result
-    }
-    if (typeof result !== 'number') {
-      throw error.value
-    }
-
-    return result
   }
 
   try {
