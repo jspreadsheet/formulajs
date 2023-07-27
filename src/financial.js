@@ -118,6 +118,10 @@ const getDepreciationCoefficient = (lifeOfAssets) => {
  * @returns
  */
 export function AMORDEGRC(cost, date_purchased, first_period, salvage, period, rate, basis = 0) {
+  if (arguments.length < 6 || arguments.length > 7) {
+    return error.na
+  }
+
   const customGetNumber = (something) => {
     const type = typeof something
     if (type === 'undefined') {
@@ -151,6 +155,14 @@ export function AMORDEGRC(cost, date_purchased, first_period, salvage, period, r
     return error
   }
 
+  if (period < 0 || salvage < 0 || cost <= 0 || rate <= 0 || rate >= 0.5) {
+    return error.num
+  }
+
+  if (period > 0 && period < 1) {
+    return 0
+  }
+
   let availableValue = cost - salvage
 
   if (availableValue < 0) {
@@ -160,7 +172,9 @@ export function AMORDEGRC(cost, date_purchased, first_period, salvage, period, r
   const lifeOfAssets = 1 / rate
   const intLifeOfAssets = Math.ceil(lifeOfAssets)
 
-  const depreciationCoefficient = getDepreciationCoefficient(lifeOfAssets)
+  if (period >= intLifeOfAssets) {
+    return 0
+  }
 
   let firstPeriodYearFraction
   if (date_purchased === first_period) {
@@ -171,10 +185,9 @@ export function AMORDEGRC(cost, date_purchased, first_period, salvage, period, r
     return error.num
   }
 
-  const straightLineRemaining = (cost / intLifeOfAssets) * firstPeriodYearFraction
-  const reducingBalance = cost * rate * depreciationCoefficient * firstPeriodYearFraction
+  const depreciationCoefficient = getDepreciationCoefficient(lifeOfAssets)
 
-  let firstPeriodDepreciation = Math.max(straightLineRemaining, reducingBalance)
+  let firstPeriodDepreciation = cost * rate * depreciationCoefficient * firstPeriodYearFraction
 
   if (firstPeriodDepreciation > availableValue) {
     firstPeriodDepreciation = availableValue
@@ -186,51 +199,40 @@ export function AMORDEGRC(cost, date_purchased, first_period, salvage, period, r
 
   let remainingValue = cost - firstPeriodDepreciation
 
-  if (period >= intLifeOfAssets) {
-    return 0
-  }
+  const lastCommonPeriod = intLifeOfAssets - 3
 
-  if (period < intLifeOfAssets - 2) {
-    let periodDepreciation
+  const lastCommonPeriodAnalyzed = Math.min(period, lastCommonPeriod)
 
-    for (let currentPeriod = 1; currentPeriod <= period; currentPeriod++) {
-      if (remainingValue < salvage) {
-        return 0
-      }
-
-      periodDepreciation = remainingValue * rate * depreciationCoefficient
-
-      remainingValue -= periodDepreciation
-    }
-
-    return Math.round(periodDepreciation)
-  }
-
-  for (let currentPeriod = 1; currentPeriod < intLifeOfAssets - 2; currentPeriod++) {
+  let periodDepreciation
+  for (let currentPeriod = 1; currentPeriod <= lastCommonPeriodAnalyzed; currentPeriod++) {
     if (remainingValue < salvage) {
       return 0
     }
 
-    let periodDepreciation = remainingValue * rate * depreciationCoefficient
+    periodDepreciation = remainingValue * rate * depreciationCoefficient
 
     remainingValue -= periodDepreciation
+  }
+
+  if (period === lastCommonPeriodAnalyzed) {
+    return Math.round(periodDepreciation)
   }
 
   if (remainingValue < salvage) {
     return 0
   }
 
-  const periodDepreciation = remainingValue / 2
+  const specialPeriodDepreciation = remainingValue / 2
 
   if (period === intLifeOfAssets - 1) {
-    remainingValue -= periodDepreciation
+    remainingValue -= specialPeriodDepreciation
 
     if (remainingValue < salvage) {
       return 0
     }
   }
 
-  return Math.round(periodDepreciation)
+  return Math.round(specialPeriodDepreciation)
 }
 
 // TODO
