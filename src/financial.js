@@ -2787,9 +2787,7 @@ export function YIELD(settlement, maturity, rate, pr, redemption, frequency, bas
   return yldn
 }
 
-// TODO
 /**
- * -- Not implemented --
  *
  * Returns the annual yield for a discounted security; for example, a Treasury bill.
  *
@@ -2802,8 +2800,35 @@ export function YIELD(settlement, maturity, rate, pr, redemption, frequency, bas
  * @param {*} basis Optional. The type of day count basis to use.
  * @returns
  */
-export function YIELDDISC() {
-  throw new Error('YIELDDISC is not implemented')
+export function YIELDDISC(settlement, maturity, pr, redemption, basis = 0) {
+  if (arguments.length > 5 || arguments.length < 4 || utils.anyIsUndefined(settlement, maturity, pr, redemption)) {
+    return error.na
+  }
+
+  const anyError = utils.anyError(...arguments)
+
+  if (anyError) {
+    return anyError
+  }
+
+  let sett = utils.parseDate(settlement)
+  let mat = utils.parseDate(maturity)
+  pr = utils.parseNumber(pr)
+  redemption = utils.parseNumber(redemption)
+  basis = utils.parseNumber(basis)
+
+  if (utils.anyIsError(sett, mat, pr, redemption, basis) || utils.anyIsBoolean(...arguments)) {
+    return error.value
+  }
+
+  if (![0, 1, 2, 3, 4].includes(basis) || pr <= 0 || redemption <= 0 || utils.anyIsNull(settlement, maturity)) {
+    return error.num
+  }
+
+  let ret = redemption / pr - 1
+  ret = ret / dateTime.YEARFRAC(settlement, maturity, basis)
+
+  return ret
 }
 
 // TODO
