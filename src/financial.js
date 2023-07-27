@@ -235,10 +235,7 @@ export function AMORDEGRC(cost, date_purchased, first_period, salvage, period, r
   return Math.round(specialPeriodDepreciation)
 }
 
-// TODO
 /**
- * -- Not implemented --
- *
  * Returns the depreciation for each accounting period.
  *
  * Category: Financial
@@ -252,8 +249,93 @@ export function AMORDEGRC(cost, date_purchased, first_period, salvage, period, r
  * @param {*} basis Optional. The year basis to be used.
  * @returns
  */
-export function AMORLINC() {
-  throw new Error('AMORLINC is not implemented')
+export function AMORLINC(cost, date_purchased, first_period, salvage, period, rate, basis = 0) {
+  if (arguments.length < 6 || arguments.length > 7) {
+    return error.na
+  }
+
+  const customGetNumber = (something) => {
+    const type = typeof something
+    if (type === 'undefined') {
+      throw error.na
+    }
+    if (type === 'boolean') {
+      throw error.value
+    }
+
+    const result = utils.getNumber(something)
+
+    if (result instanceof Error) {
+      throw result
+    }
+    if (typeof result !== 'number') {
+      throw error.value
+    }
+
+    return result
+  }
+
+  try {
+    cost = customGetNumber(cost)
+    date_purchased = customGetNumber(date_purchased)
+    first_period = customGetNumber(first_period)
+    salvage = customGetNumber(salvage)
+    period = customGetNumber(period)
+    rate = customGetNumber(rate)
+    basis = customGetNumber(basis)
+  } catch (error) {
+    return error
+  }
+
+  if (cost <= 0 || salvage < 0 || period < 0 || rate <= 0) {
+    return error.num
+  }
+
+  let remainingValue = cost - salvage
+
+  if (remainingValue < 0) {
+    return error.num
+  }
+
+  date_purchased = utils.getNumber(date_purchased)
+  first_period = utils.getNumber(first_period)
+
+  let firstPeriodYearFraction
+  if (date_purchased === first_period) {
+    firstPeriodYearFraction = 1
+  } else if (first_period > date_purchased) {
+    firstPeriodYearFraction = dateTime.YEARFRAC(date_purchased, first_period, basis)
+  } else {
+    return error.num
+  }
+
+  const defaultDepreciationByPeriod = cost * rate
+
+  let firstPeriodDepreciation = defaultDepreciationByPeriod * firstPeriodYearFraction
+
+  if (firstPeriodDepreciation > remainingValue) {
+    firstPeriodDepreciation = remainingValue
+  }
+
+  if (period === 0) {
+    return firstPeriodDepreciation
+  }
+
+  remainingValue -= firstPeriodDepreciation
+
+  const numberOfPeriods = remainingValue / defaultDepreciationByPeriod
+
+  const numOfPeriodsWithFullDepreciation = Math.floor(numberOfPeriods)
+
+  if (period < numOfPeriodsWithFullDepreciation + 1) {
+    return defaultDepreciationByPeriod
+  }
+
+  if (period === numOfPeriodsWithFullDepreciation + 1 && numberOfPeriods !== numOfPeriodsWithFullDepreciation) {
+    return remainingValue % defaultDepreciationByPeriod
+  }
+
+  return 0
 }
 
 /**

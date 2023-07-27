@@ -511,9 +511,131 @@ describe('Financial', () => {
     expect(financial.AMORDEGRC(10000, '2008-08-19', '2008-12-31', 500, 5, 0.2)).to.equal(0)
   })
 
-  // TODO: implement
   it('AMORLINC', () => {
-    expect(financial.AMORLINC).to.throw('AMORLINC is not implemented')
+    expect(financial.AMORLINC(10000, '2023-01-15', '2023-05-01', 2000, 1, 0.2)).to.equal(2000)
+    expect(financial.AMORLINC(2400, '2008-08-19', '2008-12-31', 300, 1, 0.5, 1)).to.equal(1200)
+
+    expect(financial.AMORLINC(50000, '2000-01-01', '2000-06-01', 0, 0, 0.04)).to.approximately(833.333333333333, 1e-9)
+
+    expect(financial.AMORLINC(50000, '2000-01-01', '2000-06-01', 150, 0, 0.04)).to.approximately(833.333333333333, 1e-9)
+    expect(financial.AMORLINC(50000, '2000-01-01', '2000-06-01', 150, 24, 0.04)).to.equal(2000)
+    expect(financial.AMORLINC(50000, '2000-01-01', '2000-06-01', 150, 25, 0.04)).to.approximately(
+      1016.66666666666,
+      1e-9
+    )
+    expect(financial.AMORLINC(50000, '2000-01-01', '2000-06-01', 150, 26, 0.04)).to.equal(0)
+
+    expect(financial.AMORLINC(50000, '2000-01-01', '2001-01-01', 0, 0, 0.04)).to.equal(2000)
+    expect(financial.AMORLINC(50000, '2000-01-01', '2001-01-01', 49000, 0, 0.04)).to.equal(1000)
+    expect(financial.AMORLINC(50000, '2000-01-01', '2001-06-01', 0, 0, 0.04)).to.approximately(2833.33333333333, 1e-9)
+    expect(financial.AMORLINC(50000, '2000-01-01', '2001-06-01', 0, 24, 0.04)).to.approximately(1166.66666666666, 1e-9)
+
+    expect(financial.AMORLINC([[50000, 51000]], '2000-01-01', '2001-01-01', 0, 0, 0.04)).to.equal(error.value)
+    expect(financial.AMORLINC(50000, [['2000-01-01', '2000-01-02']], '2001-01-01', 0, 0, 0.04)).to.equal(error.value)
+    expect(financial.AMORLINC(50000, '2000-01-01', [['2001-01-01', '2001-01-02']], 0, 0, 0.04)).to.equal(error.value)
+    expect(financial.AMORLINC(50000, '2000-01-01', '2001-01-01', [[0, 1000]], 0, 0.04)).to.equal(error.value)
+    expect(financial.AMORLINC(50000, '2000-01-01', '2001-01-01', 0, [[0, 1]], 0.04)).to.equal(error.value)
+    expect(financial.AMORLINC(50000, '2000-01-01', '2001-01-01', 0, 0, [[0.04, 0.05]])).to.equal(error.value)
+    expect(financial.AMORLINC(50000, '2000-01-01', '2001-01-01', 0, 0, 0.04, [[0, 1]])).to.equal(error.value)
+
+    expect(financial.AMORLINC(100, '2005-06-12', '2008-12-28', 1, 0, 0.14)).to.approximately(49.622222222222, 1e-9)
+    expect(financial.AMORLINC(100, '2005-06-12', '2008-12-28', -1, 0, 0.14)).to.equal(error.num)
+    expect(financial.AMORLINC(100, '2005-06-12', '2008-12-28', 1, -1, 0.14)).to.equal(error.num)
+    expect(financial.AMORLINC(100, '2005-06-12', '2008-12-28', 1, 0, 0)).to.equal(error.num)
+    expect(financial.AMORLINC(0, '2005-06-12', '2008-12-28', 0, 0, 0.14)).to.equal(error.num)
+
+    expect(financial.AMORLINC(100, '2005-06-12', '2008-12-28', 100, 0, 0.14)).to.equal(0)
+    expect(financial.AMORLINC(100, '2005-06-12', '2008-12-28', 100.0000001, 0, 0.14)).to.equal(error.num)
+
+    expect(financial.AMORLINC(100, '2005-06-12', '2005-06-12', 1, 0, 0.14)).to.approximately(14, 1e-9)
+    expect(financial.AMORLINC(100, '2005-06-12', '2006-06-12', 1, 0, 0.14)).to.approximately(14, 1e-9)
+    expect(financial.AMORLINC(100, '2005-06-12', '2005-06-13', 1, 0, 0.14)).to.approximately(0.038888888889, 1e-9)
+    expect(financial.AMORLINC(100, '2005-06-12', '2006-06-13', 1, 0, 0.14)).to.approximately(14.038888888889, 1e-9)
+
+    expect(financial.AMORLINC(1643, '2010-10-30', '2012-04-14', 100, 0, 0.06, 0)).to.approximately(
+      143.488666666667,
+      1e-9
+    )
+    expect(financial.AMORLINC('1643', '2010-10-30', '2012-04-14', 100, 0, 0.06, 0)).to.approximately(
+      143.488666666667,
+      1e-9
+    )
+    expect(financial.AMORLINC(1643, '2010-10-30', '2012-04-14', '100', 0, 0.06, 0)).to.approximately(
+      143.488666666667,
+      1e-9
+    )
+    expect(financial.AMORLINC(1643, '2010-10-30', '2012-04-14', 100, '0', 0.06, 0)).to.approximately(
+      143.488666666667,
+      1e-9
+    )
+    expect(financial.AMORLINC(1643, '2010-10-30', '2012-04-14', 100, 0, '0.06', 0)).to.approximately(
+      143.488666666667,
+      1e-9
+    )
+    expect(financial.AMORLINC(1643, '2010-10-30', '2012-04-14', 100, 0, 0.06, '0')).to.approximately(
+      143.488666666667,
+      1e-9
+    )
+
+    expect(financial.AMORLINC(50000, '2000-01-01', '2000-06-01', 0, 0.1, 0.04)).to.equal(2000)
+    expect(financial.AMORLINC(50000, '2000-01-01', '2000-06-01', 0, 24.1, 0.04)).to.equal(2000)
+    expect(financial.AMORLINC(50000, '2000-01-01', '2000-06-01', 0, 25.1, 0.04)).to.equal(0)
+    expect(financial.AMORLINC(50000, '2000-01-01', '2001-01-01', 0, 24.9, 0.04)).to.equal(2000)
+
+    expect(financial.AMORLINC('test', '2010-10-30', '2012-04-14', 100, 0, 0.06, 0)).to.equal(error.value)
+    expect(financial.AMORLINC(1643, '2010-10-30', '2012-04-14', 'test', 0, 0.06, 0)).to.equal(error.value)
+    expect(financial.AMORLINC(1643, '2010-10-30', '2012-04-14', 100, 'test', 0.06, 0)).to.equal(error.value)
+    expect(financial.AMORLINC(1643, '2010-10-30', '2012-04-14', 100, 0, 'test', 0)).to.equal(error.value)
+    expect(financial.AMORLINC(1643, '2010-10-30', '2012-04-14', 100, 0, 0.06, 'test')).to.equal(error.value)
+
+    expect(financial.AMORLINC(true, '2010-10-30', '2012-04-14', 100, 0, 0.06, 0)).to.equal(error.value)
+    expect(financial.AMORLINC(1643, '2010-10-30', '2012-04-14', true, 0, 0.06, 0)).to.equal(error.value)
+    expect(financial.AMORLINC(1643, '2010-10-30', '2012-04-14', 100, true, 0.06, 0)).to.equal(error.value)
+    expect(financial.AMORLINC(1643, '2010-10-30', '2012-04-14', 100, 0, true, 0)).to.equal(error.value)
+    expect(financial.AMORLINC(1643, '2010-10-30', '2012-04-14', 100, 0, 0.06, true)).to.equal(error.value)
+
+    expect(financial.AMORLINC(false, '2010-10-30', '2012-04-14', 100, 0, 0.06, 0)).to.equal(error.value)
+    expect(financial.AMORLINC(1643, '2010-10-30', '2012-04-14', false, 0, 0.06, 0)).to.equal(error.value)
+    expect(financial.AMORLINC(1643, '2010-10-30', '2012-04-14', 100, false, 0.06, 0)).to.equal(error.value)
+    expect(financial.AMORLINC(1643, '2010-10-30', '2012-04-14', 100, 0, false, 0)).to.equal(error.value)
+    expect(financial.AMORLINC(1643, '2010-10-30', '2012-04-14', 100, 0, 0.06, false)).to.equal(error.value)
+
+    expect(financial.AMORLINC(100, '2005-06-12', '2005-06-11', 1, 0, 0.14)).to.equal(error.num)
+
+    expect(financial.AMORLINC(100, '2005-06-12', '2006-06-13', 1, 0, 0.14, undefined)).to.approximately(
+      14.038888888889,
+      1e-9
+    )
+    expect(financial.AMORLINC(100, '2005-06-12', '2006-06-13', 1, 0, undefined)).to.equal(error.na)
+    expect(financial.AMORLINC(100, '2005-06-12', '2006-06-13', 1, undefined, 0.14)).to.equal(error.na)
+    expect(financial.AMORLINC(100, '2005-06-12', '2006-06-13', undefined, 0, 0.14)).to.equal(error.na)
+    expect(financial.AMORLINC(100, '2005-06-12', undefined, 1, 0, 0.14)).to.equal(error.na)
+    expect(financial.AMORLINC(100, undefined, '2006-06-13', 1, 0, 0.14)).to.equal(error.na)
+    expect(financial.AMORLINC(undefined, '2005-06-12', '2006-06-13', 1, 0, 0.14)).to.equal(error.na)
+
+    expect(financial.AMORLINC(100, '2005-06-12', '2006-06-12', 1, 0, 0.14, null)).to.approximately(14, 1e-9)
+    expect(financial.AMORLINC(100, '2005-06-12', '2006-06-12', 1, 0, null, 0)).to.equal(error.num)
+    expect(financial.AMORLINC(100, '2005-06-12', '2005-06-13', 1, null, 0.14, 0)).to.approximately(0.038888888889, 1e-9)
+    expect(financial.AMORLINC(100, '2005-06-12', '2006-06-12', null, 7, 0.14, 0)).to.approximately(2, 1e-9)
+    expect(financial.AMORLINC(null, '2005-06-12', '2006-06-12', 1, 0, 0.14, 0)).to.equal(error.num)
+
+    expect(financial.AMORLINC(100, '2005-06-12', '2006-06-12', 1, 0, 0.14, 0, 1)).to.equal(error.na)
+    expect(financial.AMORLINC(100, '2005-06-12', '2006-06-12', 1, 0)).to.equal(error.na)
+    expect(financial.AMORLINC(100, '2005-06-12', '2006-06-12', 1)).to.equal(error.na)
+    expect(financial.AMORLINC(100, '2005-06-12', '2006-06-12')).to.equal(error.na)
+    expect(financial.AMORLINC(100, '2005-06-12')).to.equal(error.na)
+    expect(financial.AMORLINC(100)).to.equal(error.na)
+    expect(financial.AMORLINC()).to.equal(error.na)
+
+    Object.values(error).forEach((err) => {
+      expect(financial.AMORLINC(100, '2005-06-12', '2006-06-12', 1, 0, 0.14, err)).to.equal(err)
+      expect(financial.AMORLINC(100, '2005-06-12', '2006-06-12', 1, 0, err, 0)).to.equal(err)
+      expect(financial.AMORLINC(100, '2005-06-12', '2006-06-12', 1, err, 0.14, 0)).to.equal(err)
+      expect(financial.AMORLINC(100, '2005-06-12', '2006-06-12', err, 0, 0.14, 0)).to.equal(err)
+      expect(financial.AMORLINC(100, '2005-06-12', err, 1, 0, 0.14, 0)).to.equal(err)
+      expect(financial.AMORLINC(100, err, '2006-06-12', 1, 0, 0.14, 0)).to.equal(err)
+      expect(financial.AMORLINC(err, '2005-06-12', '2006-06-12', 1, 0, 0.14, 0)).to.equal(err)
+    })
   })
 
   it('COUPDAYBS', () => {
