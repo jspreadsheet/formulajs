@@ -3544,4 +3544,15 @@ describe('Lookup Reference', () => {
     expect(lookup.XMATCH(7, undefined, 1, 1)).to.equal(error.value)
     expect(lookup.XMATCH(undefined, undefined, 1, 1)).to.equal(error.value)
   })
+
+  it('XLOOKUP', () => {
+    expect(lookup.XLOOKUP('Brazil', [['China', 'India', 'United States', 'Indonesia', 'Brazil']], [['+86', '+91', '+1', '+62', '+55']])).to.eql([['+55']])
+    expect(lookup.XLOOKUP('Brazil', [['China'], ['India'], ['United States'], ['Indonesia'], ['Brazil']], [['+86'], ['+91'], ['+1'], ['+62'], ['+55']])).to.eql([['+55']])
+    expect(lookup.XLOOKUP([['Brazil', 'China']], [['China'], ['India'], ['United States'], ['Indonesia'], ['Brazil']], [['+86'], ['+91'], ['+1'], ['+62'], ['+55']])).to.eql([['+55', '+86']])
+    expect(lookup.XLOOKUP([['Brazil'], ['China']], [['China'], ['India'], ['United States'], ['Indonesia'], ['Brazil']], [['+86'], ['+91'], ['+1'], ['+62'], ['+55']])).to.eql([['+55'], ['+86']])
+
+
+    expect(lookup.XLOOKUP(8389, [[4390], [8604], [8389], [4937]], [['Ned Lanning', 'Marketing'], ['Margo Hendrix', 'Sales'], ['Dianne Pugh', 'Finance'], ['Earlene McCarty', 'Accounting']])).to.eql([['Dianne Pugh', 'Finance']])
+    expect(lookup.XLOOKUP(8389, [[4390], [8604], [8389], [4937]], [['Ned Lanning', 'Marketing'], ['Margo Hendrix', 'Sales'], ['Dianne Pugh', 'Finance'], ['Earlene McCarty', 'Accounting']])).to.eql([['Dianne Pugh', 'Finance']])
+  })
 })

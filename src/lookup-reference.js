@@ -645,6 +645,68 @@ export function VLOOKUP(lookup_value, table_array, col_index_num, range_lookup =
   return error.na
 }
 
+function lookupIndex(value, lookup_array, return_array) {
+  let type = utils.getVariableType(lookup_array)
+
+  if (type === 'line') {
+    for (let i = 0; i < lookup_array[0].length; i++) {
+      if (lookup_array[0][i] === value) {
+        return [0, i]
+      }
+    }
+  } else if (type === 'column') {
+    for (let i = 0; i < lookup_array.length; i++) {
+      if (lookup_array[i][0] === value) {
+        return [i, 0]
+      }
+    }
+  }
+
+  return error.na
+}
+
+/**
+ * Looks in the first column of an array and moves across the row to return the value of a value.
+ *
+ * Category: Lookup and reference
+ *
+ * @param {*} lookup_value Required*. The value to search for *If omitted, XLOOKUP returns blank cells it finds in lookup_array.   
+ * @param {*} lookup_array Required. The array or range to search
+ * @param {*} return_array Required. The array or range to return
+ * @param {*} if_not_found Optional. Where a valid match is not found, return the [if_not_found] text you supply. If a valid match is not found, and [if_not_found] is missing, #N/A is returned
+ * @param {*} match_mode Optional. Specify the match type: 0 - Exact match. If none found, return #N/A. This is the default. -1 - Exact match. If none found, return the next smaller item. 1 - Exact match. If none found, return the next larger item. 2 - A wildcard match where *, ?, and ~ have special meaning.
+ * @param {*} search_mode Optional. Specify the search mode to use: 1 - Perform a search starting at the first item. This is the default. -1 - Perform a reverse search starting at the last item. 2 - Perform a binary search that relies on lookup_array being sorted in ascending order. If not sorted, invalid results will be returned. -2 - Perform a binary search that relies on lookup_array being sorted in descending order. If not sorted, invalid results will be returned.
+ * @returns
+ */
+export function XLOOKUP(lookup_value, lookup_array, return_array, if_not_found, match_mode, search_mode) {
+  const type = utils.getVariableType(lookup_value)
+
+  if (type === 'single') {
+    let positions = lookupIndex(lookup_value, lookup_array, return_array)
+
+    if (utils.getVariableType(lookup_array) === 'line') {
+      return utils.getColumnAsMatrix(return_array, positions[1])
+    }
+
+    return [return_array[positions[0]]]
+  }
+
+  let value_rows = lookup_value.length
+  let value_columns = lookup_value[0].length
+  let result = []
+
+  for (let i = 0; i < value_rows; i++) {
+    result[i] = []
+    for (let j = 0; j < value_columns; j++) {
+      let p = lookupIndex(lookup_value[i][j], lookup_array, return_array)
+
+      result[i][j] = return_array[p[0]][p[1]]
+    }
+  }
+
+  return result
+}
+
 /**
  * Extract a subset of data from a range based on specified criteria
  *
