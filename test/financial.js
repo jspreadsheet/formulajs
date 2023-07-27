@@ -3152,9 +3152,81 @@ describe('Financial', () => {
     })
   })
 
-  // TODO: implement
   it('YIELDDISC', () => {
-    expect(financial.YIELDDISC).to.throw('YIELDDISC is not implemented')
+    expect(financial.YIELDDISC('2008-02-16', '2008-03-01', 99.795, 100, 0)).to.approximately(0.049301067, 1e-6)
+    expect(financial.YIELDDISC('2008-02-16', '2008-03-01', 99.795, 100, 1)).to.approximately(0.053702948, 1e-6)
+    expect(financial.YIELDDISC('2008-02-16', '2008-03-01', 99.795, 100, 2)).to.approximately(0.052822572, 1e-6)
+    expect(financial.YIELDDISC('2008-02-16', '2008-03-01', 99.795, 100, 3)).to.approximately(0.053556219, 1e-6)
+    expect(financial.YIELDDISC('2008-02-16', '2008-03-01', 99.795, 100, 4)).to.approximately(0.049301067, 1e-6)
+
+    expect(financial.YIELDDISC('2019-02-01', '2021-01-15', 94, 100, 0)).to.approximately(0.032640232, 1e-6)
+    expect(financial.YIELDDISC('2019-02-01', '2021-01-15', 94, 100, 1)).to.approximately(0.032659872, 1e-6)
+    expect(financial.YIELDDISC('2019-02-01', '2021-01-15', 94, 100, 2)).to.approximately(0.032183086, 1e-6)
+    expect(financial.YIELDDISC('2019-02-01', '2021-01-15', 94, 100, 3)).to.approximately(0.032630073, 1e-6)
+    expect(financial.YIELDDISC('2019-02-01', '2021-01-15', 94, 100, 4)).to.approximately(0.032640232, 1e-6)
+
+    expect(financial.YIELDDISC('2008-02-16', '2008-03-01', 99.795, 100, -1)).to.equal(error.num)
+    expect(financial.YIELDDISC('2008-02-16', '2008-03-01', 99.795, 100, 5)).to.equal(error.num)
+
+    expect(financial.YIELDDISC('2008-02-16', '2008-03-01', 0, 100, 0)).to.equal(error.num)
+    expect(financial.YIELDDISC('2008-02-16', '2008-03-01', -1, 100, 0)).to.equal(error.num)
+
+    expect(financial.YIELDDISC('2008-02-16', '2008-03-01', 99.795, 0, 0)).to.equal(error.num)
+    expect(financial.YIELDDISC('2008-02-16', '2008-03-01', 99.795, -1, 0)).to.equal(error.num)
+
+    expect(financial.YIELDDISC('test', '2008-03-01', 99.795, 100, 0)).to.equal(error.value)
+    expect(financial.YIELDDISC('2008-02-16', 'test', 99.795, 100, 0)).to.equal(error.value)
+    expect(financial.YIELDDISC('2008-02-16', '2008-03-01', 'test', 100, 0)).to.equal(error.value)
+    expect(financial.YIELDDISC('2008-02-16', '2008-03-01', 99.795, 'test', 0)).to.equal(error.value)
+    expect(financial.YIELDDISC('2008-02-16', '2008-03-01', 99.795, 100, 'test')).to.equal(error.value)
+
+    expect(financial.YIELDDISC('2008-02-16', '2008-03-01', '99.795', 100, 0)).to.approximately(0.049301067, 1e-6)
+    expect(financial.YIELDDISC('2008-02-16', '2008-03-01', 99.795, '100', 0)).to.approximately(0.049301067, 1e-6)
+    expect(financial.YIELDDISC('2008-02-16', '2008-03-01', 99.795, 100, '0')).to.approximately(0.049301067, 1e-6)
+
+    expect(financial.YIELDDISC(true, '2008-03-01', 99.795, 100, 0)).to.equal(error.value)
+    expect(financial.YIELDDISC('2008-02-16', true, 99.795, 100, 0)).to.equal(error.value)
+    expect(financial.YIELDDISC('2008-02-16', '2008-03-01', true, 100, 0)).to.equal(error.value)
+    expect(financial.YIELDDISC('2008-02-16', '2008-03-01', 99.795, true, 0)).to.equal(error.value)
+    expect(financial.YIELDDISC('2008-02-16', '2008-03-01', 99.795, 100, true)).to.equal(error.value)
+
+    expect(financial.YIELDDISC(false, '2008-03-01', 99.795, 100, 0)).to.equal(error.value)
+    expect(financial.YIELDDISC('2008-02-16', false, 99.795, 100, 0)).to.equal(error.value)
+    expect(financial.YIELDDISC('2008-02-16', '2008-03-01', false, 100, 0)).to.equal(error.value)
+    expect(financial.YIELDDISC('2008-02-16', '2008-03-01', 99.795, false, 0)).to.equal(error.value)
+    expect(financial.YIELDDISC('2008-02-16', '2008-03-01', 99.795, 100, false)).to.equal(error.value)
+
+    expect(financial.YIELDDISC(null, '2008-03-01', 99.795, 100, 0)).to.equal(error.num)
+    expect(financial.YIELDDISC('2008-02-16', null, 99.795, 100, 0)).to.equal(error.num)
+    expect(financial.YIELDDISC('2008-02-16', '2008-03-01', null, 100, 0)).to.equal(error.num)
+    expect(financial.YIELDDISC('2008-02-16', '2008-03-01', 99.795, null, 0)).to.equal(error.num)
+    expect(financial.YIELDDISC('2019-02-01', '2021-01-15', 94, 100, null)).to.approximately(0.032640232, 1e-6)
+
+    expect(financial.YIELDDISC(undefined, '2008-03-01', 99.795, 100, 0)).to.equal(error.na)
+    expect(financial.YIELDDISC('2008-02-16', undefined, 99.795, 100, 0)).to.equal(error.na)
+    expect(financial.YIELDDISC('2008-02-16', '2008-03-01', undefined, 100, 0)).to.equal(error.na)
+    expect(financial.YIELDDISC('2008-02-16', '2008-03-01', 99.795, undefined, 0)).to.equal(error.na)
+    expect(financial.YIELDDISC('2019-02-01', '2021-01-15', 94, 100, undefined)).to.approximately(0.032640232, 1e-6)
+
+    expect(financial.YIELDDISC([['2008-02-16', '2008-02-14']], '2008-03-01', 99.795, 100, 0)).to.equal(error.value)
+    expect(financial.YIELDDISC('2008-02-16', [['2008-03-01', '2008-03-02']], 99.795, 100, 0)).to.equal(error.value)
+    expect(financial.YIELDDISC('2008-02-16', '2008-03-01', [[99.795, 99.795]], 100, 0)).to.equal(error.value)
+    expect(financial.YIELDDISC('2008-02-16', '2008-03-01', 99.795, [[100, 100]], 0)).to.equal(error.value)
+    expect(financial.YIELDDISC('2008-02-16', '2008-03-01', 99.795, 100, [[0, 0]])).to.equal(error.value)
+
+    expect(financial.YIELDDISC('2019-02-01', '2021-01-15', 94, 100, 0, 1)).to.equal(error.na)
+    expect(financial.YIELDDISC('2019-02-01', '2021-01-15', 94)).to.equal(error.na)
+    expect(financial.YIELDDISC('2019-02-01', '2021-01-15')).to.equal(error.na)
+    expect(financial.YIELDDISC('2019-02-01')).to.equal(error.na)
+    expect(financial.YIELDDISC()).to.equal(error.na)
+
+    Object.values(error).forEach((err) => {
+      expect(financial.YIELDDISC(err, '2021-01-15', 94, 100, 0)).to.equal(err)
+      expect(financial.YIELDDISC('2019-02-01', err, 94, 100, 0)).to.equal(err)
+      expect(financial.YIELDDISC('2019-02-01', '2021-01-15', err, 100, 0)).to.equal(err)
+      expect(financial.YIELDDISC('2019-02-01', '2021-01-15', 94, err, 0)).to.equal(err)
+      expect(financial.YIELDDISC('2019-02-01', '2021-01-15', 94, 100, err)).to.equal(err)
+    })
   })
 
   it('YIELDMAT', () => {
