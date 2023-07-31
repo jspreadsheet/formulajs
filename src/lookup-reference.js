@@ -745,6 +745,16 @@ function lookupIndex(value, lookup_array, match_mode, reverse) {
   }
 }
 
+function getVal(p, return_array, if_not_found, lookup_type) {
+  if (typeof p !== 'number') {
+    return if_not_found
+  } else if (lookup_type === 'line') {
+    return return_array[0][p]
+  } else if (lookup_type === 'column') {
+    return return_array[p][0]
+  }
+}
+
 /**
  * Looks in the first column of an array and moves across the row to return the value of a value.
  *
@@ -810,19 +820,9 @@ export function XLOOKUP(lookup_value, lookup_array, return_array, if_not_found =
     for (let i = 0; i < value_rows; i++) {
       result[i] = []
       for (let j = 0; j < value_columns; j++) {
-
         let p = xLookupBinarySearch(flattened, lookup_value[i][j], match_mode)
+        result[i][j] = getVal(p, return_array, if_not_found, lookup_type)
 
-        let val;
-        if (typeof p !== 'number') {
-          val = if_not_found
-        } else if (lookup_type === 'line') {
-          val = return_array[0][p]
-        } else if (lookup_type === 'column') {
-          val = return_array[p][0]
-        }
-
-        result[i][j] = val
       }
     }
   } else if (search_mode === -2) {
@@ -832,38 +832,16 @@ export function XLOOKUP(lookup_value, lookup_array, return_array, if_not_found =
     for (let i = 0; i < value_rows; i++) {
       result[i] = []
       for (let j = 0; j < value_columns; j++) {
-
         let p = flattenedLength - xLookupBinarySearch(flattenedReverse, lookup_value[i][j], match_mode) - 1
-
-        let val;
-        if (typeof p !== 'number') {
-          val = if_not_found
-        } else if (lookup_type === 'line') {
-          val = return_array[0][p]
-        } else if (lookup_type === 'column') {
-          val = return_array[p][0]
-        }
-
-        result[i][j] = val
+        result[i][j] = getVal(p, return_array, if_not_found, lookup_type)
       }
     }
   } else {
     for (let i = 0; i < value_rows; i++) {
       result[i] = []
       for (let j = 0; j < value_columns; j++) {
-
         let p = lookupIndex(lookup_value[i][j], flattened, match_mode, search_mode === -1)
-
-        let val;
-        if (typeof p !== 'number') {
-          val = if_not_found
-        } else if (lookup_type === 'line') {
-          val = return_array[0][p]
-        } else if (lookup_type === 'column') {
-          val = return_array[p][0]
-        }
-
-        result[i][j] = val
+        result[i][j] = getVal(p, return_array, if_not_found, lookup_type)
       }
     }
   }
