@@ -646,11 +646,11 @@ export function VLOOKUP(lookup_value, table_array, col_index_num, range_lookup =
 }
 
 function xLookupBinarySearch(arr, target, match_mode) {
-  let left = 0;
-  let right = arr.length - 1;
+  let left = 0
+  let right = arr.length - 1
 
   while (left <= right) {
-    const mid = Math.floor((left + right) / 2);
+    const mid = Math.floor((left + right) / 2)
 
     if (match_mode === 2) {
       const tokenizedCriteria = evalExpression.parse(target + '')
@@ -658,37 +658,37 @@ function xLookupBinarySearch(arr, target, match_mode) {
 
       if (evalExpression.countIfComputeExpression(tokens)) {
         // Element found
-        return mid;
+        return mid
       } else if (arr[mid] < target) {
         // Continue search to the right half of the array
-        left = mid + 1;
+        left = mid + 1
       } else {
         // Continue search to the left half of the array
-        right = mid - 1;
+        right = mid - 1
       }
     } else {
       if (arr[mid] === target) {
         // Element found
-        return mid;
+        return mid
       } else if (arr[mid] < target) {
         // Continue search to the right half of the array
-        left = mid + 1;
+        left = mid + 1
       } else {
         // Continue search to the left half of the array
-        right = mid - 1;
+        right = mid - 1
       }
     }
   }
 
   // Element not found
-  return -1;
+  return -1
 }
 
 // Searches the index of a given value. Works with XLOOKUP arguments: match_mode and search_mode
 function lookupIndex(value, lookup_array, match_mode, reverse) {
   const arrLength = lookup_array.length
 
-  const startIndex = reverse ? arrLength - 1 : 0;
+  const startIndex = reverse ? arrLength - 1 : 0
   const endIndex = reverse ? -1 : arrLength
   const step = reverse ? -1 : 1
 
@@ -736,7 +736,9 @@ function lookupIndex(value, lookup_array, match_mode, reverse) {
     const tokenizedCriteria = evalExpression.parse(value + '')
 
     for (let i = startIndex; i !== endIndex; i += step) {
-      let tokens = [evalExpression.createToken(lookup_array[i], evalExpression.TOKEN_TYPE_LITERAL)].concat(tokenizedCriteria)
+      let tokens = [evalExpression.createToken(lookup_array[i], evalExpression.TOKEN_TYPE_LITERAL)].concat(
+        tokenizedCriteria
+      )
 
       if (evalExpression.countIfComputeExpression(tokens)) {
         return i
@@ -760,7 +762,7 @@ function getVal(p, return_array, if_not_found, lookup_type) {
  *
  * Category: Lookup and reference
  *
- * @param {*} lookup_value Required*. The value to search for *If omitted, XLOOKUP returns blank cells it finds in lookup_array.   
+ * @param {*} lookup_value Required*. The value to search for *If omitted, XLOOKUP returns blank cells it finds in lookup_array.
  * @param {*} lookup_array Required. The array or range to search
  * @param {*} return_array Required. The array or range to return
  * @param {*} if_not_found Optional. Where a valid match is not found, return the [if_not_found] text you supply. If a valid match is not found, and [if_not_found] is missing, #N/A is returned
@@ -768,7 +770,14 @@ function getVal(p, return_array, if_not_found, lookup_type) {
  * @param {*} search_mode Optional. Specify the search mode to use: 1 - Perform a search starting at the first item. This is the default. -1 - Perform a reverse search starting at the last item. 2 - Perform a binary search that relies on lookup_array being sorted in ascending order. If not sorted, invalid results will be returned. -2 - Perform a binary search that relies on lookup_array being sorted in descending order. If not sorted, invalid results will be returned.
  * @returns
  */
-export function XLOOKUP(lookup_value, lookup_array, return_array, if_not_found = error.na, match_mode = 0, search_mode = 1) {
+export function XLOOKUP(
+  lookup_value,
+  lookup_array,
+  return_array,
+  if_not_found = error.na,
+  match_mode = 0,
+  search_mode = 1
+) {
   if (arguments.length > 6 || arguments.length < 3 || utils.anyIsUndefined(lookup_value, lookup_array, return_array)) {
     return error.na
   }
@@ -778,11 +787,18 @@ export function XLOOKUP(lookup_value, lookup_array, return_array, if_not_found =
   if (anyError) {
     return anyError
   }
-  
+
   match_mode = utils.parseNumber(match_mode)
   search_mode = utils.parseNumber(search_mode)
 
-  if (utils.anyIsError(match_mode, search_mode) || utils.getVariableType(lookup_array) === 'single' || utils.getVariableType(return_array) === 'single' || ![-1, 0, 1, 2].includes(match_mode) || ![-2, -1, 1, 2].includes(search_mode) || lookup_value === null) {
+  if (
+    utils.anyIsError(match_mode, search_mode) ||
+    utils.getVariableType(lookup_array) === 'single' ||
+    utils.getVariableType(return_array) === 'single' ||
+    ![-1, 0, 1, 2].includes(match_mode) ||
+    ![-2, -1, 1, 2].includes(search_mode) ||
+    lookup_value === null
+  ) {
     return error.value
   }
 
@@ -790,7 +806,7 @@ export function XLOOKUP(lookup_value, lookup_array, return_array, if_not_found =
   const flattened = utils.flatten(lookup_array)
 
   if (type === 'single') {
-    let p;
+    let p
     if (search_mode === 2) {
       p = xLookupBinarySearch(flattened, lookup_value, match_mode)
     } else if (search_mode === -2) {
@@ -822,7 +838,6 @@ export function XLOOKUP(lookup_value, lookup_array, return_array, if_not_found =
       for (let j = 0; j < value_columns; j++) {
         let p = xLookupBinarySearch(flattened, lookup_value[i][j], match_mode)
         result[i][j] = getVal(p, return_array, if_not_found, lookup_type)
-
       }
     }
   } else if (search_mode === -2) {

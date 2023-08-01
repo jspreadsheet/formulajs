@@ -3546,65 +3546,165 @@ describe('Lookup Reference', () => {
   })
 
   it('XLOOKUP', () => {
-    expect(lookup.XLOOKUP('Brazil', [['China', 'India', 'United States', 'Indonesia', 'Brazil']], [['+86', '+91', '+1', '+62', '+55']])).to.eql([['+55']])
-    expect(lookup.XLOOKUP('Brazil', [['China'], ['India'], ['United States'], ['Indonesia'], ['Brazil']], [['+86'], ['+91'], ['+1'], ['+62'], ['+55']])).to.eql([['+55']])
-    expect(lookup.XLOOKUP([['Brazil', 'China']], [['China'], ['India'], ['United States'], ['Indonesia'], ['Brazil']], [['+86'], ['+91'], ['+1'], ['+62'], ['+55']])).to.eql([['+55', '+86']])
-    expect(lookup.XLOOKUP([['Brazil'], ['China']], [['China'], ['India'], ['United States'], ['Indonesia'], ['Brazil']], [['+86'], ['+91'], ['+1'], ['+62'], ['+55']])).to.eql([['+55'], ['+86']])
+    expect(
+      lookup.XLOOKUP(
+        'Brazil',
+        [['China', 'India', 'United States', 'Indonesia', 'Brazil']],
+        [['+86', '+91', '+1', '+62', '+55']]
+      )
+    ).to.eql([['+55']])
+    expect(
+      lookup.XLOOKUP(
+        'Brazil',
+        [['China'], ['India'], ['United States'], ['Indonesia'], ['Brazil']],
+        [['+86'], ['+91'], ['+1'], ['+62'], ['+55']]
+      )
+    ).to.eql([['+55']])
+    expect(
+      lookup.XLOOKUP(
+        [['Brazil', 'China']],
+        [['China'], ['India'], ['United States'], ['Indonesia'], ['Brazil']],
+        [['+86'], ['+91'], ['+1'], ['+62'], ['+55']]
+      )
+    ).to.eql([['+55', '+86']])
+    expect(
+      lookup.XLOOKUP(
+        [['Brazil'], ['China']],
+        [['China'], ['India'], ['United States'], ['Indonesia'], ['Brazil']],
+        [['+86'], ['+91'], ['+1'], ['+62'], ['+55']]
+      )
+    ).to.eql([['+55'], ['+86']])
 
-
-    expect(lookup.XLOOKUP(8389, [[4390], [8604], [8389], [4937]], [['Ned Lanning', 'Marketing'], ['Margo Hendrix', 'Sales'], ['Dianne Pugh', 'Finance'], ['Earlene McCarty', 'Accounting']])).to.eql([['Dianne Pugh', 'Finance']])
-    expect(lookup.XLOOKUP('a', [['a'], ['b'], ['c'], ['d']], [[1, 'john'], [2, 'joseph'], [3, 'maria'], [4, 'ana']])).to.eql([[1, 'john']])
-    expect(lookup.XLOOKUP([['a'], ['b']], [['a'], ['b'], ['c'], ['d']], [[1, 'john'], [2, 'joseph'], [3, 'maria'], [4, 'ana']])).to.eql([[1], [2]])
-    expect(lookup.XLOOKUP('a', [['a', 'b', 'c', 'd']], [[1, 2, 3, 4], ['john', 'joseph', 'maria', 'ana']])).to.eql([[1], ['john']])
-    expect(lookup.XLOOKUP([['a', 'b']], [['a', 'b', 'c', 'd']], [[1, 2, 3, 4], ['john', 'joseph', 'maria', 'ana']])).to.eql([[1, 2]])
+    expect(
+      lookup.XLOOKUP(
+        8389,
+        [[4390], [8604], [8389], [4937]],
+        [
+          ['Ned Lanning', 'Marketing'],
+          ['Margo Hendrix', 'Sales'],
+          ['Dianne Pugh', 'Finance'],
+          ['Earlene McCarty', 'Accounting']
+        ]
+      )
+    ).to.eql([['Dianne Pugh', 'Finance']])
+    expect(
+      lookup.XLOOKUP(
+        'a',
+        [['a'], ['b'], ['c'], ['d']],
+        [
+          [1, 'john'],
+          [2, 'joseph'],
+          [3, 'maria'],
+          [4, 'ana']
+        ]
+      )
+    ).to.eql([[1, 'john']])
+    expect(
+      lookup.XLOOKUP(
+        [['a'], ['b']],
+        [['a'], ['b'], ['c'], ['d']],
+        [
+          [1, 'john'],
+          [2, 'joseph'],
+          [3, 'maria'],
+          [4, 'ana']
+        ]
+      )
+    ).to.eql([[1], [2]])
+    expect(
+      lookup.XLOOKUP(
+        'a',
+        [['a', 'b', 'c', 'd']],
+        [
+          [1, 2, 3, 4],
+          ['john', 'joseph', 'maria', 'ana']
+        ]
+      )
+    ).to.eql([[1], ['john']])
+    expect(
+      lookup.XLOOKUP(
+        [['a', 'b']],
+        [['a', 'b', 'c', 'd']],
+        [
+          [1, 2, 3, 4],
+          ['john', 'joseph', 'maria', 'ana']
+        ]
+      )
+    ).to.eql([[1, 2]])
 
     // if_not_found
     expect(lookup.XLOOKUP('a', [['a', 'b', 'c', 'd']], [[1, 2, 3, 4]])).to.eql([[1]])
     expect(lookup.XLOOKUP('l', [['a', 'b', 'c', 'd']], [[1, 2, 3, 4]])).to.eql([[error.na]])
-    expect(lookup.XLOOKUP('l', [['a', 'b', 'c', 'd']], [[1, 2, 3, 4]], "Not Found")).to.eql([["Not Found"]])
-    expect(lookup.XLOOKUP([['c', 'l']], [['a', 'b', 'c', 'd']], [[1, 2, 3, 4]], "Not Found")).to.eql([[3, "Not Found"]])
+    expect(lookup.XLOOKUP('l', [['a', 'b', 'c', 'd']], [[1, 2, 3, 4]], 'Not Found')).to.eql([['Not Found']])
+    expect(lookup.XLOOKUP([['c', 'l']], [['a', 'b', 'c', 'd']], [[1, 2, 3, 4]], 'Not Found')).to.eql([[3, 'Not Found']])
 
     // match_mode: -1
     expect(lookup.XLOOKUP(46500, [[9700, 39500, 84000, 160000]], [[0.1, 0.2, 0.3, 0.35]], 0, -1)).to.eql([[0.2]])
-    expect(lookup.XLOOKUP(46500, [[9700], [39500], [84000], [160000]], [[0.1], [0.2], [0.3], [0.35]], 0, -1)).to.eql([[0.2]])
-    expect(lookup.XLOOKUP(9700, [[9700], [39500], [84000], [160000]], [[0.1], [0.2], [0.3], [0.35]], 0, -1)).to.eql([[0.1]])
-    expect(lookup.XLOOKUP(9699, [[9700], [39500], [84000], [160000]], [[0.1], [0.2], [0.3], [0.35]], 0, -1)).to.eql([[0]])
+    expect(lookup.XLOOKUP(46500, [[9700], [39500], [84000], [160000]], [[0.1], [0.2], [0.3], [0.35]], 0, -1)).to.eql([
+      [0.2]
+    ])
+    expect(lookup.XLOOKUP(9700, [[9700], [39500], [84000], [160000]], [[0.1], [0.2], [0.3], [0.35]], 0, -1)).to.eql([
+      [0.1]
+    ])
+    expect(lookup.XLOOKUP(9699, [[9700], [39500], [84000], [160000]], [[0.1], [0.2], [0.3], [0.35]], 0, -1)).to.eql([
+      [0]
+    ])
 
     // match_mode: 1
     expect(lookup.XLOOKUP(46500, [[9700, 39500, 84000, 160000]], [[0.1, 0.2, 0.3, 0.35]], 0, 1)).to.eql([[0.3]])
-    expect(lookup.XLOOKUP(46500, [[9700], [39500], [84000], [160000]], [[0.1], [0.2], [0.3], [0.35]], 0, 1)).to.eql([[0.3]])
-    expect(lookup.XLOOKUP(160000, [[9700], [39500], [84000], [160000]], [[0.1], [0.2], [0.3], [0.35]], 0, 1)).to.eql([[0.35]])
-    expect(lookup.XLOOKUP(160001, [[9700], [39500], [84000], [160000]], [[0.1], [0.2], [0.3], [0.35]], 0, 1)).to.eql([[0]])
+    expect(lookup.XLOOKUP(46500, [[9700], [39500], [84000], [160000]], [[0.1], [0.2], [0.3], [0.35]], 0, 1)).to.eql([
+      [0.3]
+    ])
+    expect(lookup.XLOOKUP(160000, [[9700], [39500], [84000], [160000]], [[0.1], [0.2], [0.3], [0.35]], 0, 1)).to.eql([
+      [0.35]
+    ])
+    expect(lookup.XLOOKUP(160001, [[9700], [39500], [84000], [160000]], [[0.1], [0.2], [0.3], [0.35]], 0, 1)).to.eql([
+      [0]
+    ])
 
     // match_mode: 2
     expect(lookup.XLOOKUP('Ex*', [['Axcel', 'Excel', 'Hello', 'Test']], [[1, 2, 3, 4]], 0, 2)).to.eql([[2]])
     expect(lookup.XLOOKUP('Ya*', [['Axcel', 'Excel', 'Hello', 'Test']], [[1, 2, 3, 4]], 0, 2)).to.eql([[0]])
     expect(lookup.XLOOKUP('?xcel', [['Axcel', 'Excel', 'Hello', 'Test']], [[1, 2, 3, 4]], 0, 2)).to.eql([[1]])
-    expect(lookup.XLOOKUP([['Ex*', 'Ex*']], [['Axcel', 'Excel', 'Hello', 'Test']], [[1, 2, 3, 4]], 0, 2)).to.eql([[2, 2]])
-    expect(lookup.XLOOKUP([['Ex*'], ['Ex*']], [['Axcel', 'Excel', 'Hello', 'Test']], [[1, 2, 3, 4]], 0, 2)).to.eql([[2], [2]])
+    expect(lookup.XLOOKUP([['Ex*', 'Ex*']], [['Axcel', 'Excel', 'Hello', 'Test']], [[1, 2, 3, 4]], 0, 2)).to.eql([
+      [2, 2]
+    ])
+    expect(lookup.XLOOKUP([['Ex*'], ['Ex*']], [['Axcel', 'Excel', 'Hello', 'Test']], [[1, 2, 3, 4]], 0, 2)).to.eql([
+      [2],
+      [2]
+    ])
 
     // search_mode: 1
     expect(lookup.XLOOKUP('?xcel', [['Axcel', 'Excel', 'Hello', 'Test']], [[1, 2, 3, 4]], 0, 2, 1)).to.eql([[1]])
-    expect(lookup.XLOOKUP('?xcel', [['Axcel'], ['Excel'], ['Hello'], ['Test']], [[1], [2], [3], [4]], 0, 2, 1)).to.eql([[1]])
+    expect(lookup.XLOOKUP('?xcel', [['Axcel'], ['Excel'], ['Hello'], ['Test']], [[1], [2], [3], [4]], 0, 2, 1)).to.eql([
+      [1]
+    ])
 
     // search_mode: -1
     expect(lookup.XLOOKUP('?xcel', [['Axcel', 'Excel', 'Hello', 'Test']], [[1, 2, 3, 4]], 0, 2, -1)).to.eql([[2]])
-    expect(lookup.XLOOKUP('?xcel', [['Axcel'], ['Excel'], ['Hello'], ['Test']], [[1], [2], [3], [4]], 0, 2, -1)).to.eql([[2]])
+    expect(lookup.XLOOKUP('?xcel', [['Axcel'], ['Excel'], ['Hello'], ['Test']], [[1], [2], [3], [4]], 0, 2, -1)).to.eql(
+      [[2]]
+    )
     expect(lookup.XLOOKUP(46500, [[9700, 39500, 84000, 160000]], [[0.1, 0.2, 0.3, 0.35]], 0, -1, -1)).to.eql([[0.2]])
-    expect(lookup.XLOOKUP(46500, [[9700], [39500], [84000], [160000]], [[0.1], [0.2], [0.3], [0.35]], 0, 1, -1)).to.eql([[0.3]])
+    expect(lookup.XLOOKUP(46500, [[9700], [39500], [84000], [160000]], [[0.1], [0.2], [0.3], [0.35]], 0, 1, -1)).to.eql(
+      [[0.3]]
+    )
 
     // search_mode: 2
     expect(lookup.XLOOKUP('bob', [['ana', 'bob', 'carlos', 'john']], [[1, 2, 3, 4]], 0, 0, 2)).to.eql([[2]])
     expect(lookup.XLOOKUP('john', [['ana', 'bob', 'carlos', 'john']], [[1, 2, 3, 4]], 0, 0, 2)).to.eql([[4]])
     expect(lookup.XLOOKUP(3, [[1, 2, 3, 4]], [['ana', 'bob', 'carlos', 'john']], 0, 0, 2)).to.eql([['carlos']])
-    expect(lookup.XLOOKUP([['bob', 'ana']], [['ana', 'bob', 'carlos', 'john']], [[1, 2, 3, 4]], 0, 0, 2)).to.eql([[2, 1]])
+    expect(lookup.XLOOKUP([['bob', 'ana']], [['ana', 'bob', 'carlos', 'john']], [[1, 2, 3, 4]], 0, 0, 2)).to.eql([
+      [2, 1]
+    ])
     expect(lookup.XLOOKUP('b?b', [['ana', 'bob', 'carlos', 'john']], [[1, 2, 3, 4]], 0, 2, 2)).to.eql([[2]])
-
 
     // search_mode: -2
     expect(lookup.XLOOKUP('bob', [['john', 'carlos', 'bob', 'ana']], [[1, 2, 3, 4]], 0, 0, -2)).to.eql([[3]])
     expect(lookup.XLOOKUP(3, [[4, 3, 2, 1]], [['ana', 'bob', 'carlos', 'john']], 0, 0, -2)).to.eql([['bob']])
-    expect(lookup.XLOOKUP([[3, 4]], [[4, 3, 2, 1]], [['ana', 'bob', 'carlos', 'john']], 0, 0, -2)).to.eql([['bob', 'ana']])
+    expect(lookup.XLOOKUP([[3, 4]], [[4, 3, 2, 1]], [['ana', 'bob', 'carlos', 'john']], 0, 0, -2)).to.eql([
+      ['bob', 'ana']
+    ])
     expect(lookup.XLOOKUP('b?b', [['john', 'carlos', 'bob', 'ana']], [[1, 2, 3, 4]], 0, 2, -2)).to.eql([[3]])
 
     // invalid number of arguments
@@ -3614,40 +3714,172 @@ describe('Lookup Reference', () => {
     expect(lookup.XLOOKUP()).to.eql(error.na)
 
     // undefined values
-    expect(lookup.XLOOKUP(undefined, [['China', 'India', 'United States', 'Indonesia', 'Brazil']], [['+86', '+91', '+1', '+62', '+55']])).to.eql(error.na)
+    expect(
+      lookup.XLOOKUP(
+        undefined,
+        [['China', 'India', 'United States', 'Indonesia', 'Brazil']],
+        [['+86', '+91', '+1', '+62', '+55']]
+      )
+    ).to.eql(error.na)
     expect(lookup.XLOOKUP('Brazil', undefined, [['+86', '+91', '+1', '+62', '+55']])).to.eql(error.na)
-    expect(lookup.XLOOKUP('Brazil', [['China', 'India', 'United States', 'Indonesia', 'Brazil']], undefined)).to.eql(error.na)
-    expect(lookup.XLOOKUP('Brazil', [['China', 'India', 'United States', 'Indonesia', 'Brazil']], [['+86', '+91', '+1', '+62', '+55']], undefined)).to.eql([['+55']])
-    expect(lookup.XLOOKUP('Brazil', [['China', 'India', 'United States', 'Indonesia', 'Brazil']], [['+86', '+91', '+1', '+62', '+55']], 0, undefined)).to.eql([['+55']])
-    expect(lookup.XLOOKUP('Brazil', [['China', 'India', 'United States', 'Indonesia', 'Brazil']], [['+86', '+91', '+1', '+62', '+55']], 0, 1, undefined)).to.eql([['+55']])
+    expect(lookup.XLOOKUP('Brazil', [['China', 'India', 'United States', 'Indonesia', 'Brazil']], undefined)).to.eql(
+      error.na
+    )
+    expect(
+      lookup.XLOOKUP(
+        'Brazil',
+        [['China', 'India', 'United States', 'Indonesia', 'Brazil']],
+        [['+86', '+91', '+1', '+62', '+55']],
+        undefined
+      )
+    ).to.eql([['+55']])
+    expect(
+      lookup.XLOOKUP(
+        'Brazil',
+        [['China', 'India', 'United States', 'Indonesia', 'Brazil']],
+        [['+86', '+91', '+1', '+62', '+55']],
+        0,
+        undefined
+      )
+    ).to.eql([['+55']])
+    expect(
+      lookup.XLOOKUP(
+        'Brazil',
+        [['China', 'India', 'United States', 'Indonesia', 'Brazil']],
+        [['+86', '+91', '+1', '+62', '+55']],
+        0,
+        1,
+        undefined
+      )
+    ).to.eql([['+55']])
 
     // null values
-    expect(lookup.XLOOKUP(null, [['China', 'India', 'United States', 'Indonesia', 'Brazil']], [['+86', '+91', '+1', '+62', '+55']])).to.eql(error.value)
+    expect(
+      lookup.XLOOKUP(
+        null,
+        [['China', 'India', 'United States', 'Indonesia', 'Brazil']],
+        [['+86', '+91', '+1', '+62', '+55']]
+      )
+    ).to.eql(error.value)
     expect(lookup.XLOOKUP('Brazil', null, [['+86', '+91', '+1', '+62', '+55']])).to.eql(error.value)
-    expect(lookup.XLOOKUP('Brazil', [['China', 'India', 'United States', 'Indonesia', 'Brazil']], null)).to.eql(error.value)
-    expect(lookup.XLOOKUP('Brazil', [['China', 'India', 'United States', 'Indonesia', 'Brazil']], [['+86', '+91', '+1', '+62', '+55']], null)).to.eql([['+55']])
-    expect(lookup.XLOOKUP('Brazil', [['China', 'India', 'United States', 'Indonesia', 'Brazil']], [['+86', '+91', '+1', '+62', '+55']], 0, null)).to.eql([['+55']])
-    expect(lookup.XLOOKUP('Brazil', [['China', 'India', 'United States', 'Indonesia', 'Brazil']], [['+86', '+91', '+1', '+62', '+55']], 0, 1, null)).to.eql(error.value)
+    expect(lookup.XLOOKUP('Brazil', [['China', 'India', 'United States', 'Indonesia', 'Brazil']], null)).to.eql(
+      error.value
+    )
+    expect(
+      lookup.XLOOKUP(
+        'Brazil',
+        [['China', 'India', 'United States', 'Indonesia', 'Brazil']],
+        [['+86', '+91', '+1', '+62', '+55']],
+        null
+      )
+    ).to.eql([['+55']])
+    expect(
+      lookup.XLOOKUP(
+        'Brazil',
+        [['China', 'India', 'United States', 'Indonesia', 'Brazil']],
+        [['+86', '+91', '+1', '+62', '+55']],
+        0,
+        null
+      )
+    ).to.eql([['+55']])
+    expect(
+      lookup.XLOOKUP(
+        'Brazil',
+        [['China', 'India', 'United States', 'Indonesia', 'Brazil']],
+        [['+86', '+91', '+1', '+62', '+55']],
+        0,
+        1,
+        null
+      )
+    ).to.eql(error.value)
 
     // boolean values
-    expect(lookup.XLOOKUP(true, [['China', 'India', 'United States', 'Indonesia', 'Brazil']], [['+86', '+91', '+1', '+62', '+55']])).to.eql([[error.na]])
+    expect(
+      lookup.XLOOKUP(
+        true,
+        [['China', 'India', 'United States', 'Indonesia', 'Brazil']],
+        [['+86', '+91', '+1', '+62', '+55']]
+      )
+    ).to.eql([[error.na]])
     expect(lookup.XLOOKUP(true, [[true, false]], [['one value', 'another value']])).to.eql([['one value']])
     expect(lookup.XLOOKUP('Brazil', true, [['+86', '+91', '+1', '+62', '+55']])).to.eql(error.value)
-    expect(lookup.XLOOKUP('Brazil', [['China', 'India', 'United States', 'Indonesia', 'Brazil']], true)).to.eql(error.value)
-    expect(lookup.XLOOKUP('Brazil', [['China', 'India', 'United States', 'Indonesia', 'Brazil']], [['+86', '+91', '+1', '+62', '+55']], true)).to.eql([['+55']])
-    expect(lookup.XLOOKUP('Brazil', [['China', 'India', 'United States', 'Indonesia', 'Brazil']], [['+86', '+91', '+1', '+62', '+55']], 0, true)).to.eql([['+55']])
-    expect(lookup.XLOOKUP('Brazil', [['China', 'India', 'United States', 'Indonesia', 'Brazil']], [['+86', '+91', '+1', '+62', '+55']], 0, 1, true)).to.eql([['+55']])
-    expect(lookup.XLOOKUP(false, [['China', 'India', 'United States', 'Indonesia', 'Brazil']], [['+86', '+91', '+1', '+62', '+55']])).to.eql([[error.na]])
+    expect(lookup.XLOOKUP('Brazil', [['China', 'India', 'United States', 'Indonesia', 'Brazil']], true)).to.eql(
+      error.value
+    )
+    expect(
+      lookup.XLOOKUP(
+        'Brazil',
+        [['China', 'India', 'United States', 'Indonesia', 'Brazil']],
+        [['+86', '+91', '+1', '+62', '+55']],
+        true
+      )
+    ).to.eql([['+55']])
+    expect(
+      lookup.XLOOKUP(
+        'Brazil',
+        [['China', 'India', 'United States', 'Indonesia', 'Brazil']],
+        [['+86', '+91', '+1', '+62', '+55']],
+        0,
+        true
+      )
+    ).to.eql([['+55']])
+    expect(
+      lookup.XLOOKUP(
+        'Brazil',
+        [['China', 'India', 'United States', 'Indonesia', 'Brazil']],
+        [['+86', '+91', '+1', '+62', '+55']],
+        0,
+        1,
+        true
+      )
+    ).to.eql([['+55']])
+    expect(
+      lookup.XLOOKUP(
+        false,
+        [['China', 'India', 'United States', 'Indonesia', 'Brazil']],
+        [['+86', '+91', '+1', '+62', '+55']]
+      )
+    ).to.eql([[error.na]])
     expect(lookup.XLOOKUP(false, [[true, false]], [['one value', 'another value']])).to.eql([['another value']])
     expect(lookup.XLOOKUP('Brazil', false, [['+86', '+91', '+1', '+62', '+55']])).to.eql(error.value)
-    expect(lookup.XLOOKUP('Brazil', [['China', 'India', 'United States', 'Indonesia', 'Brazil']], false)).to.eql(error.value)
-    expect(lookup.XLOOKUP('Brazil', [['China', 'India', 'United States', 'Indonesia', 'Brazil']], [['+86', '+91', '+1', '+62', '+55']], false)).to.eql([['+55']])
-    expect(lookup.XLOOKUP('Brazil', [['China', 'India', 'United States', 'Indonesia', 'Brazil']], [['+86', '+91', '+1', '+62', '+55']], 0, false)).to.eql([['+55']])
-    expect(lookup.XLOOKUP('Brazil', [['China', 'India', 'United States', 'Indonesia', 'Brazil']], [['+86', '+91', '+1', '+62', '+55']], 0, 1, false)).to.eql(error.value)
+    expect(lookup.XLOOKUP('Brazil', [['China', 'India', 'United States', 'Indonesia', 'Brazil']], false)).to.eql(
+      error.value
+    )
+    expect(
+      lookup.XLOOKUP(
+        'Brazil',
+        [['China', 'India', 'United States', 'Indonesia', 'Brazil']],
+        [['+86', '+91', '+1', '+62', '+55']],
+        false
+      )
+    ).to.eql([['+55']])
+    expect(
+      lookup.XLOOKUP(
+        'Brazil',
+        [['China', 'India', 'United States', 'Indonesia', 'Brazil']],
+        [['+86', '+91', '+1', '+62', '+55']],
+        0,
+        false
+      )
+    ).to.eql([['+55']])
+    expect(
+      lookup.XLOOKUP(
+        'Brazil',
+        [['China', 'India', 'United States', 'Indonesia', 'Brazil']],
+        [['+86', '+91', '+1', '+62', '+55']],
+        0,
+        1,
+        false
+      )
+    ).to.eql(error.value)
 
     // invalid modes
-    expect(lookup.XLOOKUP('b?b', [['john', 'carlos', 'bob', 'ana']], [[1, 2, 3, 4]], 0, 2, [['2', '2']])).to.eql(error.value)
-    expect(lookup.XLOOKUP('b?b', [['john', 'carlos', 'bob', 'ana']], [[1, 2, 3, 4]], 0, [[1, 1]], 2)).to.eql(error.value)
+    expect(lookup.XLOOKUP('b?b', [['john', 'carlos', 'bob', 'ana']], [[1, 2, 3, 4]], 0, 2, [['2', '2']])).to.eql(
+      error.value
+    )
+    expect(lookup.XLOOKUP('b?b', [['john', 'carlos', 'bob', 'ana']], [[1, 2, 3, 4]], 0, [[1, 1]], 2)).to.eql(
+      error.value
+    )
     expect(lookup.XLOOKUP('b?b', [['john', 'carlos', 'bob', 'ana']], [[1, 2, 3, 4]], 0, 2, -3)).to.eql(error.value)
     expect(lookup.XLOOKUP('b?b', [['john', 'carlos', 'bob', 'ana']], [[1, 2, 3, 4]], 0, 2, 0)).to.eql(error.value)
     expect(lookup.XLOOKUP('b?b', [['john', 'carlos', 'bob', 'ana']], [[1, 2, 3, 4]], 0, 2, 3)).to.eql(error.value)
@@ -3655,7 +3887,7 @@ describe('Lookup Reference', () => {
     expect(lookup.XLOOKUP('b?b', [['john', 'carlos', 'bob', 'ana']], [[1, 2, 3, 4]], 0, -3, 2)).to.eql(error.value)
     expect(lookup.XLOOKUP('b?b', [['john', 'carlos', 'bob', 'ana']], [[1, 2, 3, 4]], 0, -4, 2)).to.eql(error.value)
     expect(lookup.XLOOKUP('b?b', [['john', 'carlos', 'bob', 'ana']], [[1, 2, 3, 4]], 0, 3, 2)).to.eql(error.value)
-    expect(lookup.XLOOKUP('b?b', [['john', 'carlos', 'bob', 'ana']], [[1, 2, 3, 4]], 0, 4, 2)).to.eql(error.value)    
+    expect(lookup.XLOOKUP('b?b', [['john', 'carlos', 'bob', 'ana']], [[1, 2, 3, 4]], 0, 4, 2)).to.eql(error.value)
 
     Object.values(error).forEach((err) => {
       expect(lookup.XLOOKUP(err, [['john', 'carlos', 'bob', 'ana']], [[1, 2, 3, 4]], 0, 0, -2)).to.eql(err)
