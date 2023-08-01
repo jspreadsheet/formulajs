@@ -29,7 +29,7 @@ export function EUROCONVERT(number, source, target, full_precision = false, tria
   }
 
   number = utils.parseNumber(number)
-  triangulation_precision = utils.getNumber(triangulation_precision)
+  triangulation_precision = utils.parseNumber(triangulation_precision)
   full_precision = utils.parseBool(full_precision)
 
   if (!rates[source] || !rates[target] || utils.anyIsError(number, triangulation_precision, full_precision)) {
