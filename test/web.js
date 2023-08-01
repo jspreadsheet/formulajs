@@ -3,7 +3,7 @@ import { expect } from 'chai'
 import * as error from '../src/utils/error.js'
 import * as web from '../src/web.js'
 
-describe('Text', () => {
+describe('Web', () => {
   it('ENCODEURL', () => {
     expect(web.ENCODEURL()).to.equal(error.na)
     expect(web.ENCODEURL('string')).to.equal('string')
