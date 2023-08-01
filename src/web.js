@@ -30,16 +30,22 @@ export function FILTERXML(xml, xp) {
 
   const DOMParser = xmldom.DOMParser
   const result = []
-  
+
   try {
     const doc = new DOMParser({
       locator: {},
       errorHandler: {
-        warning: function (w) { throw error.value },
-        error: function (e) { throw error.value },
-        fatalError: function (e) { throw error.value }
+        warning: function () {
+          throw error.value
+        },
+        error: function () {
+          throw error.value
+        },
+        fatalError: function () {
+          throw error.value
+        }
       }
-    }).parseFromString(xml, "text/xml")
+    }).parseFromString(xml, 'text/xml')
     const nodes = xpath.select(xp, doc)
 
     for (let i = 0; i < nodes.length; i++) {

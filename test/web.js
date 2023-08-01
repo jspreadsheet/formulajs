@@ -46,8 +46,8 @@ describe('Text', () => {
     expect(web.FILTERXML(xml3, "/world/country[@name='UK']/city")).to.eql([['London'], ['Manchester']])
     expect(web.FILTERXML(xml4, "/company/employee[name='John Doe']/manager/@id")).to.eql([['2']])
     expect(web.FILTERXML(xml4, "/company/employee[name='Michael Jackson']/manager/@id")).to.eql(error.value)
-    expect(web.FILTERXML(`<book><title>Learning XML</author></book>`, "//book/title")).to.eql(error.value)
-    expect(web.FILTERXML(`<book id=123><title>Learning XML</title></book>`, "//book/title")).to.eql(error.value)
+    expect(web.FILTERXML(`<book><title>Learning XML</author></book>`, '//book/title')).to.eql(error.value)
+    expect(web.FILTERXML(`<book id=123><title>Learning XML</title></book>`, '//book/title')).to.eql(error.value)
 
     expect(web.FILTERXML(xml1, '')).to.eql(error.value)
     expect(web.FILTERXML(xml1, null)).to.eql(error.value)
@@ -58,7 +58,7 @@ describe('Text', () => {
     expect(web.FILTERXML(xml1, '4')).to.eql(error.value)
     expect(web.FILTERXML(xml1, [['//cd/title', '//cd/title']])).to.eql(error.value)
     expect(web.FILTERXML(xml1)).to.eql(error.value)
-    
+
     expect(web.FILTERXML('', '//cd/title')).to.eql(error.value)
     expect(web.FILTERXML(null, '//cd/title')).to.eql(error.value)
     expect(web.FILTERXML(undefined, '//cd/title')).to.eql(error.value)
