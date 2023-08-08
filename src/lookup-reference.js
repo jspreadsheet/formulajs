@@ -645,6 +645,225 @@ export function VLOOKUP(lookup_value, table_array, col_index_num, range_lookup =
   return error.na
 }
 
+function xLookupBinarySearch(arr, target, match_mode) {
+  let left = 0
+  let right = arr.length - 1
+
+  while (left <= right) {
+    const mid = Math.floor((left + right) / 2)
+
+    if (match_mode === 2) {
+      const tokenizedCriteria = evalExpression.parse(target + '')
+      let tokens = [evalExpression.createToken(arr[mid], evalExpression.TOKEN_TYPE_LITERAL)].concat(tokenizedCriteria)
+
+      if (evalExpression.countIfComputeExpression(tokens)) {
+        // Element found
+        return mid
+      } else if (arr[mid] < target) {
+        // Continue search to the right half of the array
+        left = mid + 1
+      } else {
+        // Continue search to the left half of the array
+        right = mid - 1
+      }
+    } else {
+      if (arr[mid] === target) {
+        // Element found
+        return mid
+      } else if (arr[mid] < target) {
+        // Continue search to the right half of the array
+        left = mid + 1
+      } else {
+        // Continue search to the left half of the array
+        right = mid - 1
+      }
+    }
+  }
+
+  // Element not found
+  return -1
+}
+
+// Searches the index of a given value. Works with XLOOKUP arguments: match_mode and search_mode
+function lookupIndex(value, lookup_array, match_mode, reverse) {
+  const arrLength = lookup_array.length
+
+  const startIndex = reverse ? arrLength - 1 : 0
+  const endIndex = reverse ? -1 : arrLength
+  const step = reverse ? -1 : 1
+
+  if (match_mode === 0) {
+    for (let i = startIndex; i !== endIndex; i += step) {
+      if (lookup_array[i] === value) {
+        return i
+      }
+    }
+  } else if (match_mode === -1) {
+    let closest_smaller = -Infinity
+    let closest_smaller_pos = false
+
+    for (let i = startIndex; i !== endIndex; i += step) {
+      let current = lookup_array[i]
+
+      if (current === value) {
+        return i
+      }
+      if (current < value && current > closest_smaller) {
+        closest_smaller = current
+        closest_smaller_pos = i
+      }
+    }
+
+    return closest_smaller_pos
+  } else if (match_mode === 1) {
+    let closest_larger = +Infinity
+    let closest_larger_pos = false
+
+    for (let i = startIndex; i !== endIndex; i += step) {
+      let current = lookup_array[i]
+
+      if (current === value) {
+        return i
+      }
+      if (current > value && current < closest_larger) {
+        closest_larger = current
+        closest_larger_pos = i
+      }
+    }
+
+    return closest_larger_pos
+  } else if (match_mode === 2) {
+    const tokenizedCriteria = evalExpression.parse(value + '')
+
+    for (let i = startIndex; i !== endIndex; i += step) {
+      let tokens = [evalExpression.createToken(lookup_array[i], evalExpression.TOKEN_TYPE_LITERAL)].concat(
+        tokenizedCriteria
+      )
+
+      if (evalExpression.countIfComputeExpression(tokens)) {
+        return i
+      }
+    }
+  }
+}
+
+function getVal(p, return_array, if_not_found, lookup_type) {
+  if (typeof p !== 'number') {
+    return if_not_found
+  } else if (lookup_type === 'line') {
+    return return_array[0][p]
+  } else if (lookup_type === 'column') {
+    return return_array[p][0]
+  }
+}
+
+/**
+ * Looks in the first column of an array and moves across the row to return the value of a value.
+ *
+ * Category: Lookup and reference
+ *
+ * @param {*} lookup_value Required*. The value to search for *If omitted, XLOOKUP returns blank cells it finds in lookup_array.
+ * @param {*} lookup_array Required. The array or range to search
+ * @param {*} return_array Required. The array or range to return
+ * @param {*} if_not_found Optional. Where a valid match is not found, return the [if_not_found] text you supply. If a valid match is not found, and [if_not_found] is missing, #N/A is returned
+ * @param {*} match_mode Optional. Specify the match type: 0 - Exact match. If none found, return #N/A. This is the default. -1 - Exact match. If none found, return the next smaller item. 1 - Exact match. If none found, return the next larger item. 2 - A wildcard match where *, ?, and ~ have special meaning.
+ * @param {*} search_mode Optional. Specify the search mode to use: 1 - Perform a search starting at the first item. This is the default. -1 - Perform a reverse search starting at the last item. 2 - Perform a binary search that relies on lookup_array being sorted in ascending order. If not sorted, invalid results will be returned. -2 - Perform a binary search that relies on lookup_array being sorted in descending order. If not sorted, invalid results will be returned.
+ * @returns
+ */
+export function XLOOKUP(
+  lookup_value,
+  lookup_array,
+  return_array,
+  if_not_found = error.na,
+  match_mode = 0,
+  search_mode = 1
+) {
+  if (arguments.length > 6 || arguments.length < 3 || utils.anyIsUndefined(lookup_value, lookup_array, return_array)) {
+    return error.na
+  }
+
+  const anyError = utils.anyError(lookup_value, lookup_array, return_array, match_mode, search_mode)
+
+  if (anyError) {
+    return anyError
+  }
+
+  match_mode = utils.parseNumber(match_mode)
+  search_mode = utils.parseNumber(search_mode)
+
+  if (
+    utils.anyIsError(match_mode, search_mode) ||
+    utils.getVariableType(lookup_array) === 'single' ||
+    utils.getVariableType(return_array) === 'single' ||
+    ![-1, 0, 1, 2].includes(match_mode) ||
+    ![-2, -1, 1, 2].includes(search_mode) ||
+    lookup_value === null
+  ) {
+    return error.value
+  }
+
+  const type = utils.getVariableType(lookup_value)
+  const flattened = utils.flatten(lookup_array)
+
+  if (type === 'single') {
+    let p
+    if (search_mode === 2) {
+      p = xLookupBinarySearch(flattened, lookup_value, match_mode)
+    } else if (search_mode === -2) {
+      p = flattened.length - xLookupBinarySearch(flattened.reverse(), lookup_value, match_mode) - 1
+    } else {
+      p = lookupIndex(lookup_value, flattened, match_mode, search_mode === -1)
+    }
+
+    if (typeof p !== 'number') {
+      return [[if_not_found]]
+    }
+
+    if (utils.getVariableType(lookup_array) === 'line') {
+      return utils.getColumnAsMatrix(return_array, p)
+    }
+
+    return [return_array[p]]
+  }
+
+  let value_rows = lookup_value.length
+  let value_columns = lookup_value[0].length
+  let result = []
+  const lookup_type = utils.getVariableType(lookup_array)
+
+  // Iterate through each value when lookup_value is a range
+  if (search_mode === 2) {
+    for (let i = 0; i < value_rows; i++) {
+      result[i] = []
+      for (let j = 0; j < value_columns; j++) {
+        let p = xLookupBinarySearch(flattened, lookup_value[i][j], match_mode)
+        result[i][j] = getVal(p, return_array, if_not_found, lookup_type)
+      }
+    }
+  } else if (search_mode === -2) {
+    let flattenedLength = flattened.length
+    let flattenedReverse = flattened.reverse()
+
+    for (let i = 0; i < value_rows; i++) {
+      result[i] = []
+      for (let j = 0; j < value_columns; j++) {
+        let p = flattenedLength - xLookupBinarySearch(flattenedReverse, lookup_value[i][j], match_mode) - 1
+        result[i][j] = getVal(p, return_array, if_not_found, lookup_type)
+      }
+    }
+  } else {
+    for (let i = 0; i < value_rows; i++) {
+      result[i] = []
+      for (let j = 0; j < value_columns; j++) {
+        let p = lookupIndex(lookup_value[i][j], flattened, match_mode, search_mode === -1)
+        result[i][j] = getVal(p, return_array, if_not_found, lookup_type)
+      }
+    }
+  }
+
+  return result
+}
+
 /**
  * Extract a subset of data from a range based on specified criteria
  *

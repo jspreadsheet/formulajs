@@ -584,6 +584,16 @@ export const getVariableType = function (variable) {
   return 'column'
 }
 
+export function getColumnAsMatrix(matrix, columnIndex) {
+  const columnMatrix = []
+  for (let i = 0; i < matrix.length; i++) {
+    if (matrix[i][columnIndex] !== undefined) {
+      columnMatrix.push([matrix[i][columnIndex]])
+    }
+  }
+  return columnMatrix
+}
+
 export function anyIsBoolean() {
   let n = arguments.length
 
