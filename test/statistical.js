@@ -32,7 +32,11 @@ describe('Statistical', () => {
     expect(statistical.AVERAGE('7', 8, 8)).to.equal(8)
 
     expect(statistical.AVERAGE(null)).to.equal(error.div0)
-    expect(statistical.AVERAGE(2, null, null)).to.equal(2)
+    expect(statistical.AVERAGE(null, 2)).to.equal(2)
+
+    expect(statistical.AVERAGE(undefined, undefined)).to.equal(0)
+    expect(statistical.AVERAGE(undefined, 2)).to.equal(1)
+
     expect(statistical.AVERAGE(error.na)).to.equal(error.na)
     expect(statistical.AVERAGE(error.div0)).to.equal(error.div0)
 
@@ -43,7 +47,7 @@ describe('Statistical', () => {
 
     expect(statistical.AVERAGE([[5]])).to.equal(5)
     expect(statistical.AVERAGE([[1]])).to.equal(1)
-    expect(statistical.AVERAGE([2, 4, 8, 16])).to.approximately(7.5, 1e-9)
+    expect(statistical.AVERAGE([[2, 4, 8, 16]])).to.approximately(7.5, 1e-9)
     expect(statistical.AVERAGE([[2, 4]], [[8, 16]])).to.approximately(7.5, 1e-9)
 
     expect(

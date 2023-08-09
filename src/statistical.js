@@ -47,40 +47,36 @@ export function AVERAGE() {
   }
 
   const flatArguments = utils.flatten(arguments)
-  const flatArgumentsDefined = flatArguments.filter(utils.isDefined)
 
-  if (flatArgumentsDefined.length === 0) {
-    return error.div0
-  }
-
-  const someError = utils.anyError.apply(undefined, flatArgumentsDefined)
-
-  if (someError) {
-    return someError
-  }
-
-  const range = utils.numbers(flatArgumentsDefined)
-  const n = range.length
   let sum = 0
   let count = 0
-  let result
 
-  for (let i = 0; i < n; i++) {
-    sum += range[i]
-    count += 1
+  const flatArgumentsLength = flatArguments.length
+
+  for (let i = 0; i < flatArgumentsLength; i++) {
+    const element = flatArguments[i]
+
+    if (element instanceof Error) {
+      return element
+    }
+
+    let number
+
+    const typeOfElement = typeof element
+
+    if (typeOfElement === 'undefined') {
+      number = 0
+    } else if (typeOfElement === 'number') {
+      number = element
+    } else {
+      continue
+    }
+
+    sum += number
+    count++
   }
 
-  if (count === 0) {
-    return error.div0
-  }
-
-  result = sum / count
-
-  if (isNaN(result)) {
-    result = error.num
-  }
-
-  return result
+  return count === 0 ? error.div0 : sum / count
 }
 
 /**
