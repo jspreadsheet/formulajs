@@ -13,6 +13,7 @@ export * from './operator.js'
 export * from './statistical.js'
 export * from './text.js'
 export * from './web.js'
+export * from './add-in.js'
 
 // Re-export function T due to conflict in statistical.js
 export { T } from './text.js'
