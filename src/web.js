@@ -1,7 +1,6 @@
 import * as error from './utils/error.js'
 import * as utils from './utils/common.js'
-import xmldom from 'xmldom'
-import xpath from 'xpath'
+import libxmljs from 'libxmljs'
 
 export function ENCODEURL(url) {
   if (arguments.length !== 1 || arguments[0] === undefined) {
@@ -28,28 +27,19 @@ export function FILTERXML(xml, xp) {
     return anyError
   }
 
-  const DOMParser = xmldom.DOMParser
   const result = []
 
   try {
-    const doc = new DOMParser({
-      locator: {},
-      errorHandler: {
-        warning: function () {
-          throw error.value
-        },
-        error: function () {
-          throw error.value
-        },
-        fatalError: function () {
-          throw error.value
-        }
-      }
-    }).parseFromString(xml, 'text/xml')
-    const nodes = xpath.select(xp, doc)
+    const doc = libxmljs.parseXml(xml)
+
+    const nodes = doc.find(xp)
 
     for (let i = 0; i < nodes.length; i++) {
-      result.push([nodes[i].value || nodes[i].firstChild.data])
+      if (typeof nodes[i].text === 'function') {
+        result.push([nodes[i].text()])
+      } else {
+        result.push([nodes[i].value()])
+      }
     }
 
     if (result.length === 0) {
