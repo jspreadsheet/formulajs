@@ -6,6 +6,12 @@ export function EUROCONVERT(number, source, target, full_precision = false, tria
     return error.na
   }
 
+  const anyError = utils.anyError(...arguments)
+
+  if (anyError) {
+    return anyError
+  }
+
   const rates = {
     ATS: 13.7603,
     BEF: 40.3399,
