@@ -3320,11 +3320,19 @@ export const T = {}
  * @returns
  */
 T.DIST = (x, deg_freedom, cumulative) => {
-  if (cumulative !== 1 && cumulative !== 2) {
-    return error.num
+  if (deg_freedom < 1) {
+    return error.div0
   }
 
-  return cumulative === 1 ? T.DIST.RT(x, deg_freedom) : T.DIST['2T'](x, deg_freedom)
+  if (typeof x !== 'number' || typeof deg_freedom !== 'number') {
+    return error.value
+  }
+
+  if (cumulative) {
+    return jStat.studentt.cdf(x, deg_freedom)
+  } else {
+    return jStat.studentt.pdf(x, deg_freedom)
+  }
 }
 
 /**

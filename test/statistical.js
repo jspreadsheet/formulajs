@@ -2006,12 +2006,9 @@ describe('Statistical', () => {
   })
 
   it('T.DIST', () => {
-    expect(statistical.T.DIST(1.959999998, 60, 0)).to.equal(error.num)
     expect(statistical.T.DIST(8, 'invalid', 1)).to.equal(error.value)
-    expect(statistical.T.DIST(1.959999998, 60, 1)).to.approximately(0.027322465, 1e-9)
-    expect(statistical.T.DIST(1.959999998, 60, 2)).to.approximately(0.05464493, 1e-9)
-    expect(statistical.T.DIST(3.31, 4, 1)).to.approximately(0.014827220522043, 1e-9)
-    expect(statistical.T.DIST(3.31, 4, 2)).to.approximately(0.029654441044086, 1e-9)
+    expect(statistical.T.DIST(1.959999998, 60, false)).to.approximately(0.059847906, 1e-9)
+    expect(statistical.T.DIST(1.959999998, 60, true)).to.approximately(0.972677535, 1e-9)
   })
 
   it('T.DIST.2T', () => {
