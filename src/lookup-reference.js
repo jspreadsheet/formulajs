@@ -1,5 +1,3 @@
-import jStat from 'jstat'
-
 import * as error from './utils/error.js'
 import * as utils from './utils/common.js'
 import * as advance from './advance.js'
@@ -552,7 +550,26 @@ export function TRANSPOSE(array) {
     return array
   }
 
-  return jStat.transpose(array)
+  const result = []
+
+  const arrayLength = array.length
+  const rowLength = array[0].length
+
+  for (let x = 0; x < rowLength; x++) {
+    result.push([])
+  }
+
+  for (let y = 0; y < arrayLength; y++) {
+    const row = array[y]
+
+    for (let x = 0; x < rowLength; x++) {
+      const item = row[x]
+
+      result[x].push(item)
+    }
+  }
+
+  return result
 }
 
 /**

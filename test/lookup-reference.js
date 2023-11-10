@@ -1547,6 +1547,8 @@ describe('Lookup Reference', () => {
     expect(lookup.TRANSPOSE('1')).to.equal('1')
     expect(lookup.TRANSPOSE('true')).to.equal('true')
 
+    expect(lookup.TRANSPOSE([['test 1'], ['test 2'], ['test 3']])).to.eql([['test 1', 'test 2', 'test 3']])
+
     expect(lookup.TRANSPOSE([[1, 2, 3]])).to.eql([[1], [2], [3]])
     expect(
       lookup.TRANSPOSE([
