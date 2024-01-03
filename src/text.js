@@ -297,6 +297,18 @@ export function FINDB() {
   throw new Error('FINDB is not implemented')
 }
 
+const getDecimals = function(number) {
+  const text = number.toString()
+
+  const dotIndex = text.indexOf('.')
+
+  if (dotIndex < 0) {
+    return ''
+  }
+
+  return text.slice(dotIndex + 1)
+}
+
 /**
  * Formats a number as text with a fixed number of decimals.
  *
@@ -308,32 +320,66 @@ export function FINDB() {
  * @returns
  */
 export function FIXED(number, decimals = 2, no_commas = false) {
-  number = utils.parseNumber(number)
-  if (isNaN(number)) {
+  if (arguments.length === 0 || arguments.length > 3) {
+    return error.na
+  }
+
+  number = utils.getNumber(number)
+  if (number instanceof Error) {
+    return number
+  }
+
+  if (typeof number !== 'number') {
     return error.value
   }
 
-  decimals = utils.parseNumber(decimals)
-  if (isNaN(decimals)) {
+  decimals = utils.getNumber(decimals)
+  if (decimals instanceof Error) {
+    return decimals
+  }
+
+  if (typeof decimals !== 'number') {
     return error.value
   }
+
+  no_commas = utils.parseBool(no_commas)
+  if (no_commas instanceof Error) {
+    return no_commas
+  }
+
+  decimals = Math.trunc(decimals)
+
+  let result
 
   if (decimals < 0) {
     const factor = Math.pow(10, -decimals)
-    number = Math.round(number / factor) * factor
+    result = Math.round(number / factor) * factor
+
+    result = result.toString()
   } else {
-    number = number.toFixed(decimals)
+    const factor = Math.pow(10, decimals)
+    result = Math.round(number * factor) / factor
+
+    let decimalPart = getDecimals(result)
+
+    while (decimalPart.length < decimals) {
+      decimalPart += '0'
+    }
+
+    result = Math.trunc(result).toString()
+
+    if (decimals > 0) {
+      result += '.' + decimalPart
+    }
   }
 
   if (no_commas) {
-    number = number.toString().replace(/,/g, '')
-  } else {
-    const parts = number.toString().split('.')
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+$)/g, ',')
-    number = parts.join('.')
+    return result
   }
 
-  return number
+  const parts = result.split('.')
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+$)/g, ',')
+  return parts.join('.')
 }
 
 /**
