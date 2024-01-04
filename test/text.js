@@ -307,6 +307,8 @@ describe('Text', () => {
   it('FIXED', () => {
     expect(text.FIXED(1234.567, 1)).to.equal('1,234.6')
     expect(text.FIXED(21.45, 1)).to.equal('21.5')
+    expect(text.FIXED(21.45)).to.equal('21.45')
+    expect(text.FIXED(21.45, 3)).to.equal('21.450')
     expect(text.FIXED(1234.567, -1)).to.equal('1,230')
     expect(text.FIXED(-1234.567, -1, true)).to.equal('-1230')
     expect(text.FIXED(44.332)).to.equal('44.33')
@@ -333,6 +335,14 @@ describe('Text', () => {
     expect(text.FIXED('test', 1, true)).to.equal(error.value)
     expect(text.FIXED(1234.567, 'test', true)).to.equal(error.value)
     expect(text.FIXED(1234.567, 1, 'test')).to.equal(error.value)
+
+    expect(text.FIXED(null, 1, true)).to.equal('0.0')
+    expect(text.FIXED(1234.567, null)).to.equal('1,235')
+    expect(text.FIXED(1234.567, 1, null)).to.equal('1,234.6')
+
+    expect(text.FIXED(undefined, 1, true)).to.equal('0.0')
+    expect(text.FIXED(1234.567, undefined, true)).to.equal('1234.57')
+    expect(text.FIXED(1234.567, 1, undefined)).to.equal('1,234.6')
 
     Object.values(error).forEach((err) => {
       expect(text.FIXED(err, 0)).to.equal(err)

@@ -297,18 +297,6 @@ export function FINDB() {
   throw new Error('FINDB is not implemented')
 }
 
-const getDecimals = function(number) {
-  const text = number.toString()
-
-  const dotIndex = text.indexOf('.')
-
-  if (dotIndex < 0) {
-    return ''
-  }
-
-  return text.slice(dotIndex + 1)
-}
-
 /**
  * Formats a number as text with a fixed number of decimals.
  *
@@ -324,13 +312,18 @@ export function FIXED(number, decimals = 2, no_commas = false) {
     return error.na
   }
 
-  number = utils.getNumber(number)
-  if (number instanceof Error) {
-    return number
-  }
+  if (number === undefined) {
+    number = 0
+  } else {
+    number = utils.getNumber(number)
 
-  if (typeof number !== 'number') {
-    return error.value
+    if (number instanceof Error) {
+      return number
+    }
+  
+    if (typeof number !== 'number') {
+      return error.value
+    }
   }
 
   decimals = utils.getNumber(decimals)
@@ -357,20 +350,14 @@ export function FIXED(number, decimals = 2, no_commas = false) {
 
     result = result.toString()
   } else {
-    const factor = Math.pow(10, decimals)
-    result = Math.round(number * factor) / factor
+    let parts = number.toString().split('.');
+    let fraction = parts[1];
 
-    let decimalPart = getDecimals(result)
-
-    while (decimalPart.length < decimals) {
-      decimalPart += '0'
+    if (fraction && fraction.length > decimals && fraction[fraction.length - 1] === '5') {
+        number = parseFloat(parts[0] + '.' + fraction + '1');
     }
 
-    result = Math.trunc(result).toString()
-
-    if (decimals > 0) {
-      result += '.' + decimalPart
-    }
+    result = number.toFixed(decimals);
   }
 
   if (no_commas) {
