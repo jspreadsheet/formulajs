@@ -3204,7 +3204,12 @@ export function STANDARDIZE(x, mean, standard_dev) {
   return (x - mean) / standard_dev
 }
 
-export const STDEV = {}
+export const STDEV = function () {
+  const v = VAR.S.apply(this, arguments)
+  const result = Math.sqrt(v)
+
+  return result
+}
 
 /**
  * Calculates standard deviation based on the entire population.
@@ -3233,12 +3238,7 @@ STDEV.P = function () {
  * @param {*} args number1, number2, ... Number arguments 2 to 254 corresponding to a sample of a population. You can also use a single array or a reference to an array instead of arguments separated by commas.
  * @returns
  */
-STDEV.S = function () {
-  const v = VAR.S.apply(this, arguments)
-  const result = Math.sqrt(v)
-
-  return result
-}
+STDEV.S = STDEV;
 
 /**
  * Estimates standard deviation based on a sample, including numbers, text, and logical values.

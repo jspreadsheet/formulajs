@@ -1971,6 +1971,11 @@ describe('Statistical', () => {
     expect(statistical.STANDARDIZE(10, 10, 'invalid')).to.equal(error.value)
   })
 
+  it('STDEV', () => {
+    const data = [1345, 1301, 1368, 1322, 1310, 1370, 1318, 1350, 1303, 1299, true, false, 'nope']
+    expect(statistical.STDEV(data)).to.approximately(27.46391571984349, 1e-9)
+  })
+
   it('STDEV.P', () => {
     const data = [1345, 1301, 1368, 1322, 1310, 1370, 1318, 1350, 1303, 1299]
     expect(statistical.STDEV.P(data)).to.approximately(26.054558142482477, 1e-9)
