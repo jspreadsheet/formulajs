@@ -2,27 +2,41 @@ import * as dateTime from './date-time.js'
 import * as engineering from './engineering.js'
 import * as mathTrig from './math-trig.js'
 import * as statistical from './statistical.js'
+import * as information from './information.js'
 
 export const BETADIST = statistical.BETA.DIST
 export const BETAINV = statistical.BETA.INV
 export const BINOMDIST = statistical.BINOM.DIST
 export const CEILINGMATH = mathTrig.CEILING.MATH
 export const CEILINGPRECISE = mathTrig.CEILING.PRECISE
+export const ISOCEILING = mathTrig.ISO.CEILING
+export const CHISQDIST = statistical.CHISQ.DIST
+export const CHISQDISTRT = statistical.CHISQ.DIST.RT
+export const CHISQINV = statistical.CHISQ.INV
+export const CHISQINVRT = statistical.CHISQ.INV.RT
+export const CHISQTEST = statistical.CHISQ.TEST
 export const CHIDIST = statistical.CHISQ.DIST
-export const CHIDISTRT = statistical.CHISQ.DIST.RT
 export const CHIINV = statistical.CHISQ.INV
 export const CHIINVRT = statistical.CHISQ.INV.RT
 export const CHITEST = statistical.CHISQ.TEST
 export const COVAR = statistical.COVARIANCE.P
 export const COVARIANCEP = statistical.COVARIANCE.P
 export const COVARIANCES = statistical.COVARIANCE.S
+export const CONFIDENCET = statistical.CONFIDENCE.T
+export const CONFIDENCENORM = statistical.CONFIDENCE.NORM
 export const CRITBINOM = statistical.BINOM.INV
+export const BINOMINV = statistical.BINOM.INV
+export const BINOMDISTRANGE = statistical.BINOM.DIST.RANGE
 export const ERFCPRECISE = engineering.ERFC.PRECISE
 export const ERFPRECISE = engineering.ERF.PRECISE
+export const ERRORTYPE = information.ERROR.TYPE
 export const EXPONDIST = statistical.EXPON.DIST
 export const FLOORMATH = mathTrig.FLOOR.MATH
 export const FLOORPRECISE = mathTrig.FLOOR.PRECISE
 export const FTEST = statistical.F.TEST
+export const FINVRT = statistical.F.INV.RT
+export const FDISTRT = statistical.F.DIST.RT
+export const FORECASTLINEAR = statistical.FORECAST.LINEAR
 export const GAMMADIST = statistical.GAMMA.DIST
 export const GAMMAINV = statistical.GAMMA.INV
 export const GAMMALNPRECISE = statistical.GAMMALN.PRECISE
@@ -38,6 +52,7 @@ export const NORMDIST = statistical.NORM.DIST
 export const NORMINV = statistical.NORM.INV
 export const NORMSDIST = statistical.NORM.S.DIST
 export const NORMSINV = statistical.NORM.S.INV
+export const NORMS = statistical.NORM.S
 export const PERCENTILEEXC = statistical.PERCENTILE.EXC
 export const PERCENTILEINC = statistical.PERCENTILE.INC
 export const PERCENTRANKEXC = statistical.PERCENTRANK.EXC
@@ -52,7 +67,9 @@ export const STDEVP = statistical.STDEV.P
 export const STDEVS = statistical.STDEV.S
 export const TDIST = statistical.T.DIST
 export const TDISTRT = statistical.T.DIST.RT
+export const TDIST2T = statistical.T.DIST['2T']
 export const TINV = statistical.T.INV
+export const TINV2T = statistical.T.INV['2T']
 export const TTEST = statistical.T.TEST
 export const VARP = statistical.VAR.P
 export const VARS = statistical.VAR.S

@@ -320,7 +320,7 @@ export function FIXED(number, decimals = 2, no_commas = false) {
     if (number instanceof Error) {
       return number
     }
-  
+
     if (typeof number !== 'number') {
       return error.value
     }
@@ -350,14 +350,14 @@ export function FIXED(number, decimals = 2, no_commas = false) {
 
     result = result.toString()
   } else {
-    let parts = number.toString().split('.');
-    let fraction = parts[1];
+    let parts = number.toString().split('.')
+    let fraction = parts[1]
 
     if (fraction && fraction.length > decimals && fraction[fraction.length - 1] === '5') {
-        number = parseFloat(parts[0] + '.' + fraction + '1');
+      number = parseFloat(parts[0] + '.' + fraction + '1')
     }
 
-    result = number.toFixed(decimals);
+    result = number.toFixed(decimals)
   }
 
   if (no_commas) {
