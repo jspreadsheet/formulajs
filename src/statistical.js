@@ -34,52 +34,6 @@ export function AVEDEV() {
 }
 
 /**
- * Returns the average of its arguments.
- *
- * Category: Statistical
- *
- * @param {*} args number1, number2, ...Numbers, value references or ranges for which you want the average.
- * @returns
- */
-export function AVERAGE() {
-  if (arguments.length === 0) {
-    return error.na
-  }
-
-  const flatArguments = utils.flatten(arguments)
-
-  let sum = 0
-  let count = 0
-
-  const flatArgumentsLength = flatArguments.length
-
-  for (let i = 0; i < flatArgumentsLength; i++) {
-    const element = flatArguments[i]
-
-    if (element instanceof Error) {
-      return element
-    }
-
-    let number
-
-    const typeOfElement = typeof element
-
-    if (typeOfElement === 'undefined') {
-      number = 0
-    } else if (typeOfElement === 'number') {
-      number = element
-    } else {
-      continue
-    }
-
-    sum += number
-    count++
-  }
-
-  return count === 0 ? error.div0 : sum / count
-}
-
-/**
  * Returns the average of its arguments, including numbers, text, and logical values.
  *
  * Category: Statistical
@@ -3204,42 +3158,6 @@ export function STANDARDIZE(x, mean, standard_dev) {
   return (x - mean) / standard_dev
 }
 
-export const STDEV = function () {
-  const v = VAR.S.apply(this, arguments)
-  const result = Math.sqrt(v)
-
-  return result
-}
-
-/**
- * Calculates standard deviation based on the entire population.
- *
- * Category: Statistical
- *
- * @param {*} args number1, number2, ... Number arguments 2 to 254 corresponding to a population. You can also use a single array or a reference to an array instead of arguments separated by commas.
- * @returns
- */
-STDEV.P = function () {
-  const v = VAR.P.apply(this, arguments)
-  let result = Math.sqrt(v)
-
-  if (isNaN(result)) {
-    result = error.num
-  }
-
-  return result
-}
-
-/**
- * Estimates standard deviation based on a sample.
- *
- * Category: Statistical
- *
- * @param {*} args number1, number2, ... Number arguments 2 to 254 corresponding to a sample of a population. You can also use a single array or a reference to an array instead of arguments separated by commas.
- * @returns
- */
-STDEV.S = STDEV
-
 /**
  * Estimates standard deviation based on a sample, including numbers, text, and logical values.
  *
@@ -3531,57 +3449,6 @@ export function TRIMMEAN(range, percent) {
   )
 }
 
-export const VAR = {}
-
-/**
- * Calculates variance based on the entire population.
- *
- * Category: Statistical
- *
- * @param {*} args number1, number2, ... Number arguments 2 to 254 corresponding to a population.
- * @returns
- */
-VAR.P = function () {
-  const range = utils.numbers(utils.flatten(arguments))
-  const n = range.length
-  let sigma = 0
-  const mean = AVERAGE(range)
-  let result
-
-  for (let i = 0; i < n; i++) {
-    sigma += Math.pow(range[i] - mean, 2)
-  }
-
-  result = sigma / n
-
-  if (isNaN(result)) {
-    result = error.num
-  }
-
-  return result
-}
-
-/**
- * Estimates variance based on a sample.
- *
- * Category: Statistical
- *
- * @param {*} args number1, number2, ... Number arguments 2 to 254 corresponding to a sample of a population.
- * @returns
- */
-VAR.S = function () {
-  const range = utils.numbers(utils.flatten(arguments))
-  const n = range.length
-  let sigma = 0
-  const mean = AVERAGE(range)
-
-  for (let i = 0; i < n; i++) {
-    sigma += Math.pow(range[i] - mean, 2)
-  }
-
-  return sigma / (n - 1)
-}
-
 /**
  * Estimates variance based on a sample, including numbers, text, and logical values.
  *
@@ -3682,30 +3549,4 @@ WEIBULL.DIST = (x, alpha, beta, cumulative) => {
   return cumulative
     ? 1 - Math.exp(-Math.pow(x / beta, alpha))
     : (Math.pow(x, alpha - 1) * Math.exp(-Math.pow(x / beta, alpha)) * alpha) / Math.pow(beta, alpha)
-}
-
-export const Z = {}
-
-/**
- * Returns the one-tailed probability-value of a z-test.
- *
- * Category: Statistical
- *
- * @param {*} array The array or range of data against which to test x.
- * @param {*} x The value to test.
- * @param {*} sigma Optional. The population (known) standard deviation. If omitted, the sample standard deviation is used.
- * @returns
- */
-Z.TEST = (array, x, sigma) => {
-  array = utils.parseNumberArray(utils.flatten(array))
-  x = utils.parseNumber(x)
-
-  if (utils.anyIsError(array, x)) {
-    return error.value
-  }
-
-  sigma = sigma || STDEV.S(array)
-  const n = array.length
-
-  return 1 - NORM.S.DIST((AVERAGE(array) - x) / (sigma / Math.sqrt(n)), true)
 }

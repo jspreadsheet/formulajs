@@ -21,69 +21,6 @@ describe('Statistical', () => {
     expect(statistical.AVEDEV([2, 'invalid'], [8, 16])).to.equal(error.value)
   })
 
-  it('AVERAGE', () => {
-    expect(statistical.AVERAGE()).to.equal(error.na)
-    expect(statistical.AVERAGE('')).to.equal(error.div0)
-    expect(statistical.AVERAGE('text')).to.equal(error.div0)
-    expect(statistical.AVERAGE(true)).to.equal(error.div0)
-    expect(statistical.AVERAGE(false)).to.equal(error.div0)
-    expect(statistical.AVERAGE(2)).to.equal(2)
-    expect(statistical.AVERAGE('2')).to.equal(error.div0)
-    expect(statistical.AVERAGE('7', 8, 8)).to.equal(8)
-
-    expect(statistical.AVERAGE(null)).to.equal(error.div0)
-    expect(statistical.AVERAGE(null, 2)).to.equal(2)
-
-    expect(statistical.AVERAGE(undefined, undefined)).to.equal(0)
-    expect(statistical.AVERAGE(undefined, 2)).to.equal(1)
-
-    expect(statistical.AVERAGE(error.na)).to.equal(error.na)
-    expect(statistical.AVERAGE(error.div0)).to.equal(error.div0)
-
-    expect(statistical.AVERAGE(9, 7, 9)).to.approximately(8.333333333, 1e-9)
-    expect(statistical.AVERAGE(2, 4, 8, 16)).to.approximately(7.5, 1e-9)
-    expect(statistical.AVERAGE(2, 4, 8, 16, true, error.na)).to.equal(error.na)
-    expect(statistical.AVERAGE(2, 4, 8, 16, '', '')).to.approximately(7.5, 1e-9)
-
-    expect(statistical.AVERAGE([[5]])).to.equal(5)
-    expect(statistical.AVERAGE([[1]])).to.equal(1)
-    expect(statistical.AVERAGE([[2, 4, 8, 16]])).to.approximately(7.5, 1e-9)
-    expect(statistical.AVERAGE([[2, 4]], [[8, 16]])).to.approximately(7.5, 1e-9)
-
-    expect(
-      statistical.AVERAGE(
-        [[2, 4]],
-        [
-          [2, 4],
-          [8, 16]
-        ]
-      )
-    ).to.approximately(6, 1e-9)
-
-    expect(
-      statistical.AVERAGE([
-        [2, 4],
-        [8, 16]
-      ])
-    ).to.approximately(7.5, 1e-9)
-    expect(
-      statistical.AVERAGE(
-        [
-          [2, 4],
-          [8, 16]
-        ],
-        8
-      )
-    ).to.approximately(7.6, 1e-9)
-    expect(
-      statistical.AVERAGE([
-        [2, 4],
-        [8, 16],
-        [true, false]
-      ])
-    ).to.approximately(7.5, 1e-9)
-  })
-
   it('AVERAGEA', () => {
     expect(statistical.AVERAGEA(undefined)).to.equal(error.div0)
     expect(statistical.AVERAGEA(2, undefined, undefined)).to.equal(2)
@@ -1971,22 +1908,6 @@ describe('Statistical', () => {
     expect(statistical.STANDARDIZE(10, 10, 'invalid')).to.equal(error.value)
   })
 
-  it('STDEV', () => {
-    const data = [1345, 1301, 1368, 1322, 1310, 1370, 1318, 1350, 1303, 1299, true, false, 'nope']
-    expect(statistical.STDEV(data)).to.approximately(27.46391571984349, 1e-9)
-  })
-
-  it('STDEV.P', () => {
-    const data = [1345, 1301, 1368, 1322, 1310, 1370, 1318, 1350, 1303, 1299]
-    expect(statistical.STDEV.P(data)).to.approximately(26.054558142482477, 1e-9)
-    expect(statistical.STDEV.P()).to.equal(error.num)
-  })
-
-  it('STDEV.S', () => {
-    const data = [1345, 1301, 1368, 1322, 1310, 1370, 1318, 1350, 1303, 1299, true, false, 'nope']
-    expect(statistical.STDEV.S(data)).to.approximately(27.46391571984349, 1e-9)
-  })
-
   it('STDEVA', () => {
     const data = [1345, 1301, 1368, 1322, 1310, 1370, 1318, 1350, 1303, 1299]
     expect(statistical.STDEVA(data)).to.approximately(27.46391571984349, 1e-9)
@@ -2079,19 +2000,6 @@ describe('Statistical', () => {
     expect(statistical.TRIMMEAN([4, 5, 6, 'invalid', 1, 2, 3], 0.2)).to.equal(error.value)
   })
 
-  it('VAR.P', () => {
-    expect(statistical.VAR.P(1, 2, 3, 4, 10, 10)).to.approximately(13.333333333333334, 1e-9)
-    expect(statistical.VAR.P(1, 2, 3, 4, false, true)).to.approximately(1.25, 1e-9)
-    expect(statistical.VAR.P(1, 2, 3, 4, 'count as zero', false, true)).to.approximately(1.25, 1e-9)
-    expect(statistical.VAR.P()).to.equal(error.num)
-  })
-
-  it('VAR.S', () => {
-    expect(statistical.VAR.S(1, 2, 3, 4, 10, 10)).to.equal(16)
-    expect(statistical.VAR.S(1, 2, 3, 4, false, true)).to.approximately(1.6666666666666667, 1e-9)
-    expect(statistical.VAR.S(1, 2, 3, 4, 'count as zero', false, true)).to.approximately(1.6666666666666667, 1e-9)
-  })
-
   it('VARA', () => {
     expect(statistical.VARA(1, 2, 3, 4, 10, 10)).to.equal(16)
     expect(statistical.VARA(1, 2, 3, 4, false, true)).to.approximately(2.166666666666667, 1e-9)
@@ -2109,12 +2017,5 @@ describe('Statistical', () => {
     expect(statistical.WEIBULL.DIST(105, 20, 100, true)).to.approximately(0.9295813900692769, 1e-9)
     expect(statistical.WEIBULL.DIST(105, 20, 100, false)).to.approximately(0.03558886402450435, 1e-9)
     expect(statistical.WEIBULL.DIST(105, 20, 'invalid', false)).to.equal(error.value)
-  })
-
-  it('Z.TEST', () => {
-    const data = [3, 6, 7, 8, 6, 5, 4, 2, 1, 9]
-    expect(statistical.Z.TEST(data, 4)).to.approximately(0.09057419685136381, 1e-9)
-    expect(statistical.Z.TEST(data, 6)).to.approximately(0.86304338912953, 1e-9)
-    expect(statistical.Z.TEST(data, 'invalid')).to.equal(error.value)
   })
 })
