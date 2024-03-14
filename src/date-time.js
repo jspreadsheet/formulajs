@@ -262,7 +262,14 @@ export function DATEVALUE(date_text) {
     const date = new Date(date_text)
 
     if (!Number.isNaN(date.getTime())) {
-      return utils.dateToSerialNumber(date)
+      let correctedDateString = date_text
+      if (correctedDateString.indexOf('GMT') < 0) {
+        correctedDateString += ' GMT-0000'
+      }
+
+      const correctedDate = new Date(correctedDateString)
+
+      return Math.trunc(utils.dateToSerialNumber(correctedDate))
     }
   }
 

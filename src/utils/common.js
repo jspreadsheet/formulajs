@@ -489,9 +489,16 @@ export function getNumber(something) {
       return parseFloat(trimmed)
     }
 
-    const date = new Date(something)
+    const date = new Date(trimmed)
     if (!Number.isNaN(date.getTime())) {
-      return dateToSerialNumber(date)
+      let correctedDateString = trimmed
+      if (correctedDateString.indexOf('GMT') < 0) {
+        correctedDateString += ' GMT-0000'
+      }
+
+      const correctedDate = new Date(correctedDateString)
+
+      return dateToSerialNumber(correctedDate)
     }
 
     const hour = hourToNumber(something)

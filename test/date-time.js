@@ -140,6 +140,7 @@ describe('Date & Time', () => {
     expect(dateTime.DATEVALUE('1900-02-28')).to.equal(59)
     expect(dateTime.DATEVALUE('1900-03-01')).to.equal(61)
     // expect(dateTime.DATEVALUE('5-JUL')).to.equal(39634)
+    expect(dateTime.DATEVALUE('01/01/1991 11:24 PM')).to.equal(33239)
 
     expect(dateTime.DATEVALUE('2022-01-01L')).to.equal(error.value)
     expect(dateTime.DATEVALUE('test')).to.equal(error.value)
@@ -658,6 +659,9 @@ describe('Date & Time', () => {
 
     expect(dateTime.TIMEVALUE('2022-12-12 18:00:00 GMT')).to.equal(0.75)
     expect(dateTime.TIMEVALUE('1900-01-01 12:00:00 GMT')).to.approximately(0.5, 1e-9)
+
+    expect(dateTime.TIMEVALUE('02:29')).to.approximately(0.103472222224809, 1e-9)
+    expect(dateTime.TIMEVALUE('2024-03-13 02:29')).to.approximately(0.103472222224809, 1e-9)
 
     Object.values(error).forEach((err) => {
       expect(dateTime.TIMEVALUE(err)).to.equal(err)
