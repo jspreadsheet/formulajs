@@ -109,7 +109,7 @@ export function AVERAGEIF(range, criteria, average_range) {
     range[0] = [range[0]]
   }
 
-  if (average_range !== undefined) {
+  if (typeof average_range !== 'undefined') {
     if (!Array.isArray(average_range)) {
       average_range = [average_range]
     }
@@ -123,10 +123,7 @@ export function AVERAGEIF(range, criteria, average_range) {
     }
   }
 
-  average_range = average_range || range
-  const flatAverageRange = utils.flatten(average_range)
-  const flatAverageRangeDefined = flatAverageRange.filter(utils.isDefined)
-  average_range = flatAverageRangeDefined
+  average_range = utils.flatten(average_range || range)
 
   range = utils.flatten(range)
 
@@ -134,7 +131,8 @@ export function AVERAGEIF(range, criteria, average_range) {
   let result = 0
   const tokenizedCriteria = evalExpression.parse(criteria + '')
 
-  for (let i = 0; i < range.length; i++) {
+  const length = range.length
+  for (let i = 0; i < length; i++) {
     if (typeof average_range[i] !== 'number') {
       continue
     }
@@ -149,7 +147,7 @@ export function AVERAGEIF(range, criteria, average_range) {
     }
   }
 
-  if (!average_count) {
+  if (average_count === 0) {
     return error.div0
   }
 
