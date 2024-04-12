@@ -643,8 +643,16 @@ export function VLOOKUP(lookup_value, table_array, col_index_num, range_lookup =
     return error.value
   }
 
+  const numOfRows = table_array.length
+
   if (range_lookup) {
-    const rowIndex = approximateBinarySearch(lookup_value, utils.flatten(table_array.map((row) => row[0])))
+    const firstColumn = [];
+
+    for (let y = 0; y < numOfRows; y++) {
+      firstColumn.push(table_array[y][0])
+    }
+
+    const rowIndex = approximateBinarySearch(lookup_value, firstColumn)
 
     if (rowIndex === null) {
       return error.na
@@ -653,9 +661,9 @@ export function VLOOKUP(lookup_value, table_array, col_index_num, range_lookup =
     return table_array[rowIndex][col_index_num - 1]
   }
 
-  for (let i = 0; i < table_array.length; i++) {
-    if (table_array[i][0] === lookup_value) {
-      return table_array[i][col_index_num - 1]
+  for (let y = 0; y < numOfRows; y++) {
+    if (table_array[y][0] === lookup_value) {
+      return table_array[y][col_index_num - 1]
     }
   }
 
