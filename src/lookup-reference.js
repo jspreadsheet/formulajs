@@ -621,7 +621,52 @@ export function VLOOKUP(lookup_value, table_array, col_index_num, range_lookup =
     return error.na
   }
 
-  if (!table_array) {
+  if (lookup_value instanceof Error) {
+    return lookup_value
+  }
+
+  if (col_index_num instanceof Error) {
+    return col_index_num
+  }
+
+  if (range_lookup instanceof Error) {
+    return range_lookup
+  }
+
+  if (!Array.isArray(table_array)) {
+    table_array = [[table_array]]
+  }
+
+  range_lookup = utils.parseBool(range_lookup)
+  if (typeof range_lookup !== 'boolean') {
+    return error.value
+  }
+
+  const numOfRows = table_array.length
+
+  let resultRow
+
+  if (range_lookup) {
+    const firstColumn = []
+
+    for (let y = 0; y < numOfRows; y++) {
+      firstColumn.push(table_array[y][0])
+    }
+
+    const rowIndex = approximateBinarySearch(lookup_value, firstColumn)
+
+    if (rowIndex !== null) {
+      resultRow = table_array[rowIndex]
+    }
+  } else {
+    for (let y = 0; y < numOfRows; y++) {
+      if (table_array[y][0] === lookup_value) {
+        resultRow = table_array[y]
+      }
+    }
+  }
+
+  if (typeof resultRow === 'undefined') {
     return error.na
   }
 
@@ -634,40 +679,7 @@ export function VLOOKUP(lookup_value, table_array, col_index_num, range_lookup =
     return error.ref
   }
 
-  if (range_lookup instanceof Error) {
-    return range_lookup
-  }
-
-  range_lookup = utils.parseBool(range_lookup)
-  if (typeof range_lookup !== 'boolean') {
-    return error.value
-  }
-
-  const numOfRows = table_array.length
-
-  if (range_lookup) {
-    const firstColumn = [];
-
-    for (let y = 0; y < numOfRows; y++) {
-      firstColumn.push(table_array[y][0])
-    }
-
-    const rowIndex = approximateBinarySearch(lookup_value, firstColumn)
-
-    if (rowIndex === null) {
-      return error.na
-    }
-
-    return table_array[rowIndex][col_index_num - 1]
-  }
-
-  for (let y = 0; y < numOfRows; y++) {
-    if (table_array[y][0] === lookup_value) {
-      return table_array[y][col_index_num - 1]
-    }
-  }
-
-  return error.na
+  return resultRow[col_index_num - 1]
 }
 
 function xLookupBinarySearch(arr, target, match_mode) {

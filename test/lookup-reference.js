@@ -1855,7 +1855,7 @@ describe('Lookup Reference', () => {
         3,
         true
       )
-    ).to.equal(error.ref)
+    ).to.equal(error.na)
     expect(
       lookup.VLOOKUP(
         0,
@@ -2023,16 +2023,6 @@ describe('Lookup Reference', () => {
         'text'
       )
     ).to.equal(error.value)
-    expect(
-      lookup.VLOOKUP(
-        1,
-        [
-          [0, 'A'],
-          [1, 'B']
-        ],
-        error.div0
-      )
-    ).to.equal(error.value)
 
     expect(
       lookup.VLOOKUP(
@@ -2129,6 +2119,67 @@ describe('Lookup Reference', () => {
         '1'
       )
     ).to.equal(error.value)
+
+    expect(lookup.VLOOKUP('Joseph', 5, 2, false)).to.equal(error.na)
+
+    expect(lookup.VLOOKUP('Joseph', 'Joseph', 2, false)).to.equal(error.ref)
+
+    expect(lookup.VLOOKUP('Joseph', 'Joseph', 1, false)).to.equal('Joseph')
+
+    Object.values(error).forEach((err) => {
+      expect(
+        lookup.VLOOKUP(
+          err,
+          [
+            ['ID', 'Last Name', 'First Name'],
+            ['1', 'Samuel', 'Jessie'],
+            ['2', 'Joseph', 'Gael'],
+            ['3', 'Tyrone', 'Mitchell'],
+            ['4', 'Stacey', 'Brady'],
+            ['5', 'Laz', 'Archie'],
+            ['6', 'Coy', 'Jools']
+          ],
+          2,
+          false
+        )
+      ).to.equal(err)
+
+      expect(lookup.VLOOKUP('Joseph', err, 2, false)).to.equal(error.na)
+
+      expect(
+        lookup.VLOOKUP(
+          'Joseph',
+          [
+            ['ID', 'Last Name', 'First Name'],
+            ['1', 'Samuel', 'Jessie'],
+            ['2', 'Joseph', 'Gael'],
+            ['3', 'Tyrone', 'Mitchell'],
+            ['4', 'Stacey', 'Brady'],
+            ['5', 'Laz', 'Archie'],
+            ['6', 'Coy', 'Jools']
+          ],
+          err,
+          false
+        )
+      ).to.equal(err)
+
+      expect(
+        lookup.VLOOKUP(
+          'Joseph',
+          [
+            ['ID', 'Last Name', 'First Name'],
+            ['1', 'Samuel', 'Jessie'],
+            ['2', 'Joseph', 'Gael'],
+            ['3', 'Tyrone', 'Mitchell'],
+            ['4', 'Stacey', 'Brady'],
+            ['5', 'Laz', 'Archie'],
+            ['6', 'Coy', 'Jools']
+          ],
+          2,
+          err
+        )
+      ).to.equal(err)
+    })
   })
 
   describe('FILTER', () => {
@@ -2568,7 +2619,7 @@ describe('Lookup Reference', () => {
         ],
         true
       )
-    ).to.equal(error.value)
+    ).to.equal(error.na)
     expect(
       lookup.HLOOKUP(
         'ji',
@@ -2579,7 +2630,7 @@ describe('Lookup Reference', () => {
         3,
         false
       )
-    ).to.equal(error.ref)
+    ).to.equal(error.na)
     expect(
       lookup.HLOOKUP(
         0,
