@@ -173,4 +173,41 @@ describe('Utils => criteria eval', () => {
       ])
     ).to.equal(false)
   })
+
+  it('stringCompare', () => {
+    expect(criteriaEval.stringCompare('acccccb', 'a*~b')).to.equal(true)
+    expect(criteriaEval.stringCompare('ab', 'a*~b')).to.equal(true)
+    expect(criteriaEval.stringCompare('accccc', 'a*~b')).to.equal(false)
+    expect(criteriaEval.stringCompare('cccccb', 'a*~b')).to.equal(false)
+
+    expect(criteriaEval.stringCompare('affdfbfsfjdlcasfbf', 'a*b*c*')).to.equal(true)
+    expect(criteriaEval.stringCompare('ffdfbfsfjdlcasff', 'a*b*c*')).to.equal(false)
+    expect(criteriaEval.stringCompare('affcdfbfsfjdlasff', 'a*b*c*')).to.equal(false)
+
+    expect(criteriaEval.stringCompare('affdfbfsfjdlc', 'a*b*c')).to.equal(true)
+    expect(criteriaEval.stringCompare('affdfbfsfjdlca', 'a*b*c')).to.equal(false)
+
+    expect(criteriaEval.stringCompare('a*a', 'a~*a')).to.equal(true)
+    expect(criteriaEval.stringCompare('aa', 'a~*a')).to.equal(false)
+
+    expect(criteriaEval.stringCompare('a', 'a*~')).to.equal(true)
+    expect(criteriaEval.stringCompare('adfsdf', 'a*~')).to.equal(true)
+    expect(criteriaEval.stringCompare('*', 'a*~')).to.equal(false)
+
+    expect(criteriaEval.stringCompare('aafabdfvabfdabdfvabcfda', 'a*ab*abc*a')).to.equal(true)
+    expect(criteriaEval.stringCompare('aafabdfvabfdabdfvabfda', 'a*ab*abc*a')).to.equal(false)
+
+    expect(criteriaEval.stringCompare('bbaa', 'bb***aa')).to.equal(true)
+    expect(criteriaEval.stringCompare('bbgffghbaa', 'bb***aa')).to.equal(true)
+    expect(criteriaEval.stringCompare('bba', 'bb***aa')).to.equal(false)
+    expect(criteriaEval.stringCompare('baa', 'bb***aa')).to.equal(false)
+
+    expect(criteriaEval.stringCompare('ba', '*?*a')).to.equal(true)
+    expect(criteriaEval.stringCompare('a', '*?*a')).to.equal(false)
+
+    expect(criteriaEval.stringCompare('*a', '*~*a')).to.equal(true)
+    expect(criteriaEval.stringCompare('fsdf*a', '*~*a')).to.equal(true)
+    expect(criteriaEval.stringCompare('fsdfa', '*~*a')).to.equal(false)
+    expect(criteriaEval.stringCompare('fsdf*', '*~*a')).to.equal(false)
+  })
 })

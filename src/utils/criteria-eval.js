@@ -214,68 +214,102 @@ export function countIfComputeExpression(tokens) {
   return countIfEvaluate(values, operator)
 }
 
-const stringCompare = function (value, criteria) {
-  const splittedCriteria = criteria.split('')
+const customFindIndex = function (value, valueIndex, criteria, criteriaIndex) {
+  const currentCriteriaChar = criteria[criteriaIndex]
 
-  let analyzedPosition = 0
-  for (let i = 0; i < splittedCriteria.length; i++) {
-    if (splittedCriteria[i] === '~') {
-      if (splittedCriteria[i + 1] === '?') {
-        if (value[analyzedPosition] !== '?') {
+  if (currentCriteriaChar === '~') {
+    return value.indexOf(criteria[criteriaIndex + 1], valueIndex)
+  }
+
+  if (currentCriteriaChar === '?') {
+    return valueIndex >= value.length ? -1 : valueIndex
+  }
+
+  return value.indexOf(currentCriteriaChar, valueIndex)
+}
+
+export const stringCompare = function (value, criteria) {
+  let valueIndex = 0
+
+  const criteriaLength = criteria.length
+  for (let criteriaIndex = 0; criteriaIndex < criteriaLength; criteriaIndex++) {
+    const currentCriteriaChar = criteria[criteriaIndex]
+
+    if (currentCriteriaChar === '~') {
+      const nextCriteriaChar = criteria[criteriaIndex + 1]
+
+      if (nextCriteriaChar === '?') {
+        if (value[valueIndex] !== '?') {
           return false
         }
 
-        analyzedPosition++
-        i++
-      } else if (splittedCriteria[i + 1] === '*') {
-        if (value[analyzedPosition] !== '*') {
+        valueIndex++
+        criteriaIndex++
+      } else if (nextCriteriaChar === '*') {
+        if (value[valueIndex] !== '*') {
           return false
         }
 
-        analyzedPosition++
-        i++
-      } else if (splittedCriteria[i + 1] === '~') {
-        if (value[analyzedPosition] !== '~') {
+        valueIndex++
+        criteriaIndex++
+      } else if (nextCriteriaChar === '~') {
+        if (value[valueIndex] !== '~') {
           return false
         }
 
-        analyzedPosition++
-        i++
+        valueIndex++
+        criteriaIndex++
       }
-    } else if (splittedCriteria[i] === '?') {
-      if (analyzedPosition >= value.length) {
+    } else if (currentCriteriaChar === '?') {
+      if (valueIndex >= value.length) {
         return false
       }
 
-      analyzedPosition++
-    } else if (splittedCriteria[i] === '*') {
-      if (i === splittedCriteria.length - 1) {
+      valueIndex++
+    } else if (currentCriteriaChar === '*') {
+      do {
+        criteriaIndex++
+
+        if (criteriaIndex === criteriaLength) {
+          return true
+        }
+      } while (criteria[criteriaIndex] === '*')
+
+      if (criteria[criteriaIndex] === '~') {
+        const nextCriteriaChar = criteria[criteriaIndex + 1]
+
+        if (nextCriteriaChar !== '?' && nextCriteriaChar !== '*' && nextCriteriaChar !== '~') {
+          criteriaIndex++
+        }
+      }
+
+      if (criteriaIndex === criteriaLength) {
         return true
       }
 
-      let result = stringCompare(value.slice(analyzedPosition), criteria.slice(i + 1))
+      let nextIndex = customFindIndex(value, valueIndex, criteria, criteriaIndex)
 
-      while (analyzedPosition < value.length && !result) {
-        analyzedPosition++
+      while (nextIndex >= 0) {
+        const result = stringCompare(value.slice(nextIndex), criteria.slice(criteriaIndex))
 
-        result = stringCompare(value.slice(analyzedPosition), criteria.slice(i + 1))
+        if (result) {
+          return true
+        }
+
+        nextIndex = customFindIndex(value, nextIndex + 1, criteria, criteriaIndex)
       }
 
-      return result
+      return false
     } else {
-      if (value[analyzedPosition] !== splittedCriteria[i]) {
+      if (value[valueIndex] !== currentCriteriaChar) {
         return false
       }
 
-      analyzedPosition++
+      valueIndex++
     }
   }
 
-  if (analyzedPosition !== value.length) {
-    return false
-  }
-
-  return true
+  return valueIndex === value.length
 }
 
 const compare = {
