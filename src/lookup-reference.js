@@ -338,15 +338,28 @@ export function MATCH(lookup_value, lookup_array, match_type = 1) {
     }
     return error.na
   } else if (match_type === 0) {
-    const tokenizedCriteria = evalExpression.parse(lookup_value + '')
+    const length = lookup_array.length
 
-    const result = lookup_array.findIndex((item) => {
-      const tokens = [evalExpression.createToken(item, evalExpression.TOKEN_TYPE_LITERAL)].concat(tokenizedCriteria)
+    if (typeof lookup_value !== 'string') {
+      for (let index = 0; index < length; index++) {
+        if (lookup_array[index] === lookup_value) {
+          return index + 1
+        }
+      }
+    } else {
+      const lowerCaseLookupValue = lookup_value.toLowerCase()
 
-      return evalExpression.countIfComputeExpression(tokens)
-    })
+      for (let index = 0; index < length; index++) {
+        if (
+          typeof lookup_array[index] === 'string' &&
+          evalExpression.stringCompare(lookup_array[index].toLowerCase(), lowerCaseLookupValue)
+        ) {
+          return index + 1
+        }
+      }
+    }
 
-    return result >= 0 ? result + 1 : error.na
+    return error.na
   }
 
   let lowestValidValue = null

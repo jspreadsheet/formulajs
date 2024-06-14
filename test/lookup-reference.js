@@ -98,6 +98,20 @@ describe('Lookup Reference', () => {
 
       expect(lookup.MATCH('j~?mc', [['jima', 'jimb', 'j?mc', 'bernie']], 0)).to.equal(3)
       expect(lookup.MATCH('berni~*', [['jima'], ['jimb'], ['j?mc'], ['berni*']], 0)).to.equal(4)
+      expect(lookup.MATCH('a*B*c*', [['jima'], ['jimb'], ['aa*aaaaaaa'], ['affdfbfsfjdlcasff']], 0)).to.equal(4)
+
+      expect(lookup.MATCH(true, [[false, false, false, true, false]], 0)).to.equal(4)
+      expect(lookup.MATCH(true, [[false, true, false, true, false]], 0)).to.equal(2)
+      expect(lookup.MATCH(1, [[false, false, false, true, false]], 0)).to.equal(error.na)
+      expect(lookup.MATCH(true, [[false, false, false, 1, false]], 0)).to.equal(error.na)
+      expect(lookup.MATCH(true, [[false, false, false, 'true', false]], 0)).to.equal(error.na)
+      expect(lookup.MATCH('true', [[false, false, false, true, false]], 0)).to.equal(error.na)
+
+      expect(lookup.MATCH(false, [[true, true, false, true, true]], 0)).to.equal(3)
+      expect(lookup.MATCH(0, [[true, true, false, true, true]], 0)).to.equal(error.na)
+      expect(lookup.MATCH(false, [[true, true, 0, true, true]], 0)).to.equal(error.na)
+      expect(lookup.MATCH('false', [[true, true, false, true, true]], 0)).to.equal(error.na)
+      expect(lookup.MATCH(false, [[true, true, 'false', true, true]], 0)).to.equal(error.na)
     })
 
     it('using match_type 1', () => {
