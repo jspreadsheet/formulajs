@@ -126,20 +126,10 @@ describe('Statistical', () => {
           ['3 (Apple)'],
           ['1 (Thing)'],
           ['2 (Apple)'],
-          ['3 (Apple)'],
+          ['3 (Apple)']
         ],
         '1 (Thing)',
-        [
-          [5],
-          [3],
-          [null],
-          [77],
-          [null],
-          [null],
-          [null],
-          [null],
-          [null],
-        ]
+        [[5], [3], [null], [77], [null], [null], [null], [null], [null]]
       )
     ).to.equal(41)
     expect(
@@ -153,20 +143,10 @@ describe('Statistical', () => {
           ['3 (Apple)'],
           ['1 (Thing)'],
           ['2 (Apple)'],
-          ['3 (Apple)'],
+          ['3 (Apple)']
         ],
         '2 (Apple)',
-        [
-          [5],
-          [3],
-          [null],
-          [77],
-          [null],
-          [null],
-          [null],
-          [null],
-          [null],
-        ]
+        [[5], [3], [null], [77], [null], [null], [null], [null], [null]]
       )
     ).to.equal(3)
     expect(
@@ -180,20 +160,10 @@ describe('Statistical', () => {
           ['3 (Apple)'],
           ['1 (Thing)'],
           ['2 (Apple)'],
-          ['3 (Apple)'],
+          ['3 (Apple)']
         ],
         '3 (Apple)',
-        [
-          [5],
-          [3],
-          [null],
-          [77],
-          [null],
-          [null],
-          [null],
-          [null],
-          [null],
-        ]
+        [[5], [3], [null], [77], [null], [null], [null], [null], [null]]
       )
     ).to.equal(error.div0)
   })
