@@ -5,6 +5,11 @@ import * as evalExpression from './utils/criteria-eval.js'
 
 const approximateBinarySearch = (lookupValue, lookupArray) => {
   const valueType = typeof lookupValue
+
+  if (valueType === 'string') {
+    lookupValue = lookupValue.toLowerCase()
+  }
+
   let highestValidValue = null
 
   let start = 0
@@ -18,22 +23,23 @@ const approximateBinarySearch = (lookupValue, lookupArray) => {
     }
 
     if (middle > end) {
-      middle--
+      end = start + Math.trunc((end - start) / 2) - 1
 
-      while (middle >= start && valueType !== typeof lookupArray[middle]) {
-        middle--
-      }
+      continue
     }
 
     if (middle < start) {
       break
     }
 
-    if (lookupValue > lookupArray[middle]) {
+    const comparisonValue =
+      typeof lookupArray[middle] === 'string' ? lookupArray[middle].toLowerCase() : lookupArray[middle]
+
+    if (lookupValue > comparisonValue) {
       highestValidValue = middle
 
       start = middle + 1
-    } else if (lookupValue < lookupArray[middle]) {
+    } else if (lookupValue < comparisonValue) {
       end = middle - 1
     } else {
       return middle
@@ -329,15 +335,17 @@ export function MATCH(lookup_value, lookup_array, match_type = 1) {
     return error.value
   }
 
-  const valueType = typeof lookup_value
+  if (lookup_value === null) {
+    lookup_value = 0
+  }
 
   if (match_type > 0) {
     const result = approximateBinarySearch(lookup_value, lookup_array)
-    if (result !== null) {
-      return result + 1
-    }
-    return error.na
-  } else if (match_type === 0) {
+
+    return result !== null ? result + 1 : error.na
+  }
+
+  if (match_type === 0) {
     const length = lookup_array.length
 
     if (typeof lookup_value !== 'string') {
@@ -362,31 +370,34 @@ export function MATCH(lookup_value, lookup_array, match_type = 1) {
     return error.na
   }
 
+  const valueType = typeof lookup_value
+
+  if (valueType === 'string') {
+    lookup_value = lookup_value.toLowerCase()
+  }
+
   let lowestValidValue = null
-  for (let i = 0; i < lookup_array.length; i++) {
+
+  const arrayLength = lookup_array.length
+  for (let i = 0; i < arrayLength; i++) {
     if (valueType !== typeof lookup_array[i]) {
       continue
     }
-    if (lookup_value > lookup_array[i]) {
+
+    const comparisonValue = valueType === 'string' ? lookup_array[i].toLowerCase() : lookup_array[i]
+
+    if (lookup_value > comparisonValue) {
       break
     }
 
-    if (lookup_value < lookup_array[i]) {
+    if (lookup_value < comparisonValue) {
       lowestValidValue = i
     } else {
       return i + 1
     }
   }
 
-  if (lowestValidValue !== null) {
-    while (lowestValidValue >= 0 && lookup_array[lowestValidValue] instanceof Error) {
-      lowestValidValue--
-    }
-
-    return lowestValidValue >= 0 ? lowestValidValue + 1 : error.na
-  }
-
-  return error.na
+  return lowestValidValue !== null ? lowestValidValue + 1 : error.na
 }
 
 /**

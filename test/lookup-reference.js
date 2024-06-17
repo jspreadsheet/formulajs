@@ -80,6 +80,24 @@ describe('Lookup Reference', () => {
       expect(lookup.MATCH(4, [[0, 'text', 2, 3, 4, 100, 7]], null)).to.equal(5)
       expect(lookup.MATCH(4, [[0], [1], ['bernie'], [3], [4], [100], [7]], 0)).to.equal(5)
 
+      expect(lookup.MATCH(-5, [[1, 3, 6, error.div0, -5]], 0)).to.equal(5)
+      expect(lookup.MATCH('j*z', [['jimd', 'jimq', -5, error.div0, 'jimz']], 0)).to.equal(5)
+
+      expect(lookup.MATCH(null, [['text', 0, 1, null, true, false]], 0)).to.equal(2)
+      expect(lookup.MATCH(null, [['text', null, 1, null, true, false]], 0)).to.equal(error.na)
+
+      expect(lookup.MATCH(1, [[0, 1, null, 2, 4]], 0)).to.equal(2)
+      expect(lookup.MATCH(1, [[0, '1', null, 2, 4]], 0)).to.equal(error.na)
+      expect(lookup.MATCH('1', [[0, 1, null, 2, 4]], 0)).to.equal(error.na)
+
+      expect(lookup.MATCH(true, [[5, 0, 1, true, false]], 0)).to.equal(4)
+      expect(lookup.MATCH('true', [[5, 0, 1, true, false]], 0)).to.equal(error.na)
+      expect(lookup.MATCH(true, [[5, 0, 1, 'true', false]], 0)).to.equal(error.na)
+
+      expect(lookup.MATCH(false, [[5, 0, 1, true, false]], 0)).to.equal(5)
+      expect(lookup.MATCH('false', [[5, 0, 1, true, false]], 0)).to.equal(error.na)
+      expect(lookup.MATCH(false, [[5, 0, 1, true, 'false']], 0)).to.equal(error.na)
+
       expect(lookup.MATCH(5, [[0, true, 2, 3, 4, 100, 7]], 0)).to.equal(error.na)
       expect(lookup.MATCH(5, [[0], [1], [2], [3], [4], [false], [7]], false)).to.equal(error.na)
 
@@ -118,27 +136,91 @@ describe('Lookup Reference', () => {
       expect(lookup.MATCH(1, [[0, 1, 2, 3, 4, 5, 7]])).to.equal(2)
       expect(lookup.MATCH(4.5, [[0], [1], [2], [3], [4]], '6')).to.equal(5)
 
+      expect(lookup.MATCH(null, [[-1, 0, 1, 2, 3, 4, 5]])).to.equal(2)
+      expect(lookup.MATCH(null, [[true, false, true, false, true, false, true]])).to.equal(error.na)
+
       expect(lookup.MATCH(7.5, [[1, 2, 3, 9, 'text', 6, 7]], 1)).to.equal(3)
       expect(lookup.MATCH(6, [[1], [7], [3], [4], [true], [6], [7]], 10)).to.equal(6)
 
       expect(lookup.MATCH(6, [[1, 2, 3, 4, 8, 6, 7, 8]], 1)).to.equal(6)
       expect(lookup.MATCH(6, [[1, 2, 3, 4, 8, 6, 7, 8]], 1)).to.equal(6)
 
+      expect(lookup.MATCH(5, [[6, 5, 4, 3, 2, 1, 0]], 1)).to.equal(7)
+      expect(lookup.MATCH(6, [[6, 5, 4, 3, 2, 1, 0]], 1)).to.equal(7)
+      expect(lookup.MATCH(10, [[6, 5, 4, 3, 2, 1, 0]], 1)).to.equal(7)
+      expect(lookup.MATCH(6, [[6, 5, 4, 3, 2, 6, 0]], 1)).to.equal(6)
+
+      expect(lookup.MATCH(true, [[true, 1, 2, 3, 4, 5, false]], 1)).to.equal(7)
+      expect(lookup.MATCH(false, [[false, 1, 2, 3, 4, 5, true]], 1)).to.equal(1)
+
       expect(lookup.MATCH(7.5, [[1, 'text', 'text', 4, 'text', 9, 7]], 1)).to.equal(4)
       expect(lookup.MATCH(2, [[1, 'text', 'text', 4, 'text', 9, 7]], 1)).to.equal(1)
 
       expect(lookup.MATCH('jimc', [['jima', 'jimb', 'jimd', 'bernie']], true)).to.equal(2)
+      expect(lookup.MATCH('jimC', [['jima', 'jimb', 'jimd', 'bernie']], true)).to.equal(2)
       expect(lookup.MATCH(true, [['jima'], ['jimb'], ['jimd'], ['bernie']], 1)).to.equal(error.na)
+
+      expect(lookup.MATCH('test', [['test', 1, 2, 3, 4, 5, 'a']], 1)).to.equal(7)
+
+      expect(lookup.MATCH(1, [[0, 1, 2, 3, 4, 5, 7, 'jima', 'jimb', 'jimd', 'bernie']], 1)).to.equal(2)
+      expect(lookup.MATCH('jimc', [[0, 1, 2, 3, 4, 5, 7, 'jima', 'jimb', 'jimd', 'bernie']], 1)).to.equal(9)
+      expect(
+        lookup.MATCH('jimc', [[null, null, null, null, null, null, null, 'jima', 'jimb', 'jimd', 'bernie']], 1)
+      ).to.equal(9)
+      expect(lookup.MATCH('jimc', [[0, 1, 2, 3, 4, 5, 7, 'jimd', 'jima', 'jimb', 'bernie']], 1)).to.equal(error.na)
+      expect(
+        lookup.MATCH('jimc', [[null, null, null, null, null, null, null, 'jimd', 'jima', 'jimb', 'bernie']], 1)
+      ).to.equal(error.na)
+
+      expect(lookup.MATCH('jimc', [['jima', 'jimb', 'jimd', 'bernie', 0, 1]], 1)).to.equal(2)
+      expect(lookup.MATCH('jimc', [['jima', 'jimb', 'jimd', 'bernie', 0, 1, 2, 3, 4, 5, 7]], 1)).to.equal(2)
+      expect(lookup.MATCH('jimc', [['jima', 'jimb', 'bernie', 'jimd', 0, 1, 2, 3, 4, 5, 7]], 1)).to.equal(3)
+      expect(lookup.MATCH(1, [['jima', 'jimb', 'jimd', 'bernie', 0, 1, 2, 3, 4, 5, 7]], 1)).to.equal(6)
+      expect(lookup.MATCH(1, [['jima', 'jimb', 'jimd', 'bernie', 0, 1]], 1)).to.equal(6)
+
+      expect(
+        lookup.MATCH(1, [['jima', error.na, 'jimd', error.na, 0, error.na, error.na, error.na, 4, 5, 7]], 1)
+      ).to.equal(5)
+
+      expect(lookup.MATCH(-4, [[-10, -5, 0, 6, 15, 'A', 'g', 'R', 'z', false, true]], 1)).to.equal(2)
+      expect(lookup.MATCH(0, [[-10, -5, 0, 6, 15, 'A', 'g', 'R', 'z', false, true]], 1)).to.equal(3)
+      expect(lookup.MATCH('E', [[-10, -5, 0, 6, 15, 'A', 'g', 'R', 'z', false, true]], 1)).to.equal(6)
+      expect(lookup.MATCH(false, [[-10, -5, 0, 6, 15, 'A', 'g', 'R', 'z', false, true]], 1)).to.equal(10)
     })
 
     it('using match_type -1', () => {
       expect(lookup.MATCH(6, [[7], [6], [5], [4], [3], [2], [1]], -1)).to.equal(2)
       expect(lookup.MATCH(6.5, [[7, 6, 5, 4, 3, 2, 1]], '-5')).to.equal(1)
+
+      expect(lookup.MATCH(2, [[7, 6, 5, 4, 3, 2, 1]], -60)).to.equal(6)
       expect(lookup.MATCH(2, [[7, 6, 1, 4, 3, 2, 1]], -60)).to.equal(2)
 
       expect(lookup.MATCH(4, [[7, 6, 'teste', null, 3, 2, 1]], -1)).to.equal(2)
 
       expect(lookup.MATCH('jimc', [['jime', 'jimb', 'jimd', 'bernie']], -1)).to.equal(1)
+      expect(lookup.MATCH('jimC', [['jime', 'jimb', 'jimd', 'bernie']], -1)).to.equal(1)
+
+      expect(lookup.MATCH(true, [[true, 5, 4, 3, 2, 1, false]], -1)).to.equal(1)
+      expect(lookup.MATCH(false, [[true, 5, 4, 3, 2, 1, false]], -1)).to.equal(7)
+      expect(lookup.MATCH(false, [[false, 5, 4, 3, 2, 1, true]], -1)).to.equal(1)
+      expect(lookup.MATCH(true, [[false, 5, 4, 3, 2, 1, true]], -1)).to.equal(error.na)
+
+      expect(
+        lookup.MATCH(2, [[5, error.div0, 3, error.div0, error.div0, error.div0, 'jime', 'jimd', 'jimb', 'jima']], -1)
+      ).to.equal(3)
+
+      expect(lookup.MATCH(null, [[5, 4, 3, 2, 1, 0, -1]], -1)).to.equal(6)
+      expect(lookup.MATCH(null, [[true, false, true, false, true, false, true]], -1)).to.equal(error.na)
+
+      expect(lookup.MATCH(1, [[6, 5, 4, 3, 2, 1, 'jime', 'jimd', 'jimb', 'jima']], -1)).to.equal(6)
+      expect(lookup.MATCH('jimc', [[6, 5, 4, 3, 2, 1, 'jime', 'jimd', 'jimb', 'jima']], -1)).to.equal(8)
+      expect(lookup.MATCH('jimc', [[null, null, null, null, null, null, 'jime', 'jimd', 'jimb', 'jima']], -1)).to.equal(
+        8
+      )
+      expect(lookup.MATCH('jimc', [[6, 5, 4, 3, 2, 1, 'jima', 'jime', 'jimd', 'jimb']], -1)).to.equal(error.na)
+      expect(lookup.MATCH('jimc', [[null, null, null, null, null, null, 'jima', 'jime', 'jimd', 'jimb']], -1)).to.equal(
+        error.na
+      )
     })
 
     it('using an invalid match_type', () => {
