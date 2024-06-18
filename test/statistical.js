@@ -788,6 +788,127 @@ describe('Statistical', () => {
     expect(statistical.COUNTIFS('text')).to.equal(error.na)
     expect(statistical.COUNTIFS(1)).to.equal(error.na)
 
+    const testArray1 = [
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true]
+    ]
+
+    const testArray2 = [
+      ['teste 1'],
+      ['teste 3'],
+      [''],
+      [false],
+      [true],
+      [null],
+      [-3],
+      ['-3'],
+      [-1.5],
+      ['-1.5'],
+      [0],
+      ['0'],
+      [3],
+      ['3'],
+      ['false'],
+      ['true']
+    ]
+
+    expect(statistical.COUNTIFS(testArray1, true, testArray2, '<>')).to.equal(15)
+    expect(statistical.COUNTIFS(testArray1, true, testArray2, '<>*')).to.equal(7)
+    expect(statistical.COUNTIFS(testArray1, true, testArray2, '*')).to.equal(9)
+    expect(statistical.COUNTIFS(testArray1, true, testArray2, '=*')).to.equal(9)
+    expect(statistical.COUNTIFS(testArray1, true, testArray2, '<>*')).to.equal(7)
+    expect(statistical.COUNTIFS(testArray1, true, testArray2, false)).to.equal(1)
+    expect(statistical.COUNTIFS(testArray1, true, testArray2, 'false')).to.equal(1)
+    expect(statistical.COUNTIFS(testArray1, true, testArray2, true)).to.equal(1)
+    expect(statistical.COUNTIFS(testArray1, true, testArray2, 'true')).to.equal(1)
+    expect(statistical.COUNTIFS(testArray1, true, testArray2, -1.5)).to.equal(2)
+    expect(statistical.COUNTIFS(testArray1, true, testArray2, '-1.5')).to.equal(2)
+    expect(statistical.COUNTIFS(testArray1, true, testArray2, 0)).to.equal(2)
+    expect(statistical.COUNTIFS(testArray1, true, testArray2, '0')).to.equal(2)
+    expect(statistical.COUNTIFS(testArray1, true, testArray2, 3)).to.equal(2)
+    expect(statistical.COUNTIFS(testArray1, true, testArray2, '+3')).to.equal(2)
+
+    expect(statistical.COUNTIFS(testArray1, true, testArray2, '')).to.equal(2)
+    expect(statistical.COUNTIFS([[true, true]], true, [[null, '']], '')).to.equal(2)
+
+    expect(statistical.COUNTIFS(testArray1, true, testArray2, null)).to.equal(2)
+    expect(statistical.COUNTIFS([[true, true]], true, [[0, '0']], null)).to.equal(2)
+
+    expect(statistical.COUNTIFS(testArray1, true, testArray2, '=false')).to.equal(1)
+    expect(statistical.COUNTIFS(testArray1, true, testArray2, '=3')).to.equal(2)
+    expect(statistical.COUNTIFS(testArray1, true, testArray2, '>0')).to.equal(1)
+
+    expect(
+      statistical.COUNTIFS(
+        [
+          [1, 2],
+          [true, false]
+        ],
+        true,
+        [
+          [1, 2],
+          [false, true]
+        ],
+        false
+      )
+    ).to.equal(1)
+    expect(
+      statistical.COUNTIFS(
+        [
+          [1, 2],
+          [true, false]
+        ],
+        true,
+        [
+          [1, 2],
+          [false, true]
+        ],
+        '=false'
+      )
+    ).to.equal(1)
+    expect(
+      statistical.COUNTIFS(
+        [
+          [1, 2],
+          [true, false]
+        ],
+        true,
+        [
+          [1, 2],
+          [false, true]
+        ],
+        true
+      )
+    ).to.equal(0)
+    expect(
+      statistical.COUNTIFS(
+        [
+          [1, 2],
+          [true, false]
+        ],
+        true,
+        [
+          [1, 2],
+          [false, true]
+        ],
+        '=true'
+      )
+    ).to.equal(0)
+
     expect(statistical.COUNTIFS(null, '>1')).to.equal(0)
     expect(statistical.COUNTIFS(error.na, '>1')).to.equal(0)
     expect(statistical.COUNTIFS([[1, null, 3, 'a', '']], '>1')).to.equal(1)

@@ -850,59 +850,89 @@ export function COUNTIF(range, criteria) {
  * @returns
  */
 export function COUNTIFS() {
-  if (arguments.length < 2 || arguments.length % 2 !== 0) {
+  const numOfArguments = arguments.length
+  if (numOfArguments < 2 || numOfArguments % 2 !== 0) {
     return error.na
   }
 
   if (!Array.isArray(arguments[0])) {
-    arguments[0] = [arguments[0]]
+    arguments[0] = [[arguments[0]]]
   }
 
-  if (!Array.isArray(arguments[0][0])) {
-    arguments[0][0] = [arguments[0][0]]
-  }
+  const numOfRows = arguments[0].length
+  const numOfColumns = arguments[0][0].length
 
-  const height = arguments[0].length
-  const width = arguments[0][0].length
-
-  for (let i = 2; i < arguments.length; i += 2) {
+  for (let i = 2; i < numOfArguments; i += 2) {
     if (!Array.isArray(arguments[i])) {
-      arguments[i] = [arguments[i]]
+      arguments[i] = [[arguments[i]]]
     }
 
-    if (!Array.isArray(arguments[i][0])) {
-      arguments[i][0] = [arguments[i][0]]
-    }
-
-    if (height !== arguments[i].length || width !== arguments[i][0].length) {
+    if (numOfRows !== arguments[i].length || numOfColumns !== arguments[i][0].length) {
       return error.value
     }
   }
 
-  const args = utils.argsToArray(arguments)
-  const results = new Array(utils.flatten(args[0]).length)
+  const resultsLength = numOfRows * numOfColumns
+  const results = new Array(resultsLength)
 
-  for (let i = 0; i < results.length; i++) {
+  for (let i = 0; i < resultsLength; i++) {
     results[i] = true
   }
 
-  for (let i = 0; i < args.length; i += 2) {
-    const range = utils.flatten(args[i])
-    const criteria = args[i + 1]
+  for (let rangeIndex = 0; rangeIndex < numOfArguments; rangeIndex += 2) {
+    const range = arguments[rangeIndex]
 
-    const tokenizedCriteria = evalExpression.parse(criteria + '')
+    let criteria = arguments[rangeIndex + 1]
+    if (criteria === null) {
+      criteria = 0
+    }
 
-    for (let j = 0; j < range.length; j++) {
-      const value = range[j]
-      const tokens = [evalExpression.createToken(value, evalExpression.TOKEN_TYPE_LITERAL)].concat(tokenizedCriteria)
+    const criteriaType = typeof criteria
 
-      results[j] = results[j] && evalExpression.countIfComputeExpression(tokens)
+    if (criteriaType !== 'string' || !evalExpression.isValidExpression(criteria)) {
+      if (criteriaType === 'string' && utils.isValidNumber(criteria, true)) {
+        criteria = parseFloat(criteria)
+      }
+
+      for (let y = 0; y < numOfRows; y++) {
+        const row = range[y]
+
+        for (let x = 0; x < numOfColumns; x++) {
+          const resultIndex = y * numOfColumns + x
+
+          if (results[resultIndex]) {
+            if (!evalExpression.countIfCompare(row[x], criteria)) {
+              results[resultIndex] = false
+            }
+          }
+        }
+      }
+    } else {
+      const tokenizedCriteria = evalExpression.parse(criteria)
+
+      for (let y = 0; y < numOfRows; y++) {
+        const row = range[y]
+
+        for (let x = 0; x < numOfColumns; x++) {
+          const resultIndex = y * numOfColumns + x
+
+          if (results[resultIndex]) {
+            const tokens = [evalExpression.createToken(row[x], evalExpression.TOKEN_TYPE_LITERAL)].concat(
+              tokenizedCriteria
+            )
+
+            if (!evalExpression.countIfComputeExpression(tokens)) {
+              results[resultIndex] = false
+            }
+          }
+        }
+      }
     }
   }
 
   let result = 0
 
-  for (let i = 0; i < results.length; i++) {
+  for (let i = 0; i < resultsLength; i++) {
     if (results[i]) {
       result++
     }
