@@ -2,12 +2,23 @@ import { isValidNumber } from './common.js'
 
 const defaultOperator = '='
 const validSymbols = ['>', '>=', '<', '<=', '=', '<>']
+const validSymbolsLength = validSymbols.length
 const _TOKEN_TYPE_OPERATOR = 'operator'
 const _TOKEN_TYPE_LITERAL = 'literal'
 const SUPPORTED_TOKENS = [_TOKEN_TYPE_OPERATOR, _TOKEN_TYPE_LITERAL]
 
 export const TOKEN_TYPE_OPERATOR = _TOKEN_TYPE_OPERATOR
 export const TOKEN_TYPE_LITERAL = _TOKEN_TYPE_LITERAL
+
+export const isValidExpression = function (expression) {
+  for (let index = 0; index < validSymbolsLength; index++) {
+    if (expression.startsWith(validSymbols[index])) {
+      return true
+    }
+  }
+
+  return false
+}
 
 /**
  * Create token which describe passed symbol/value.
@@ -39,7 +50,15 @@ function castValueToCorrectType(value) {
   }
 
   if (isValidNumber(value)) {
-    value = value.indexOf('.') === -1 ? parseInt(value, 10) : parseFloat(value)
+    return value.indexOf('.') === -1 ? parseInt(value, 10) : parseFloat(value)
+  }
+
+  if (value === 'false') {
+    return false
+  }
+
+  if (value === 'true') {
+    return true
   }
 
   return value
@@ -214,6 +233,34 @@ export function countIfComputeExpression(tokens) {
   return countIfEvaluate(values, operator)
 }
 
+export function countIfCompare(value, criteria) {
+  const criteriaType = typeof criteria
+  if (criteriaType === 'number') {
+    const cellValue = value
+    const cellValueType = typeof cellValue
+
+    if (cellValueType === 'number') {
+      return cellValue === criteria
+    }
+
+    if (cellValueType === 'string' && isValidNumber(cellValue, true)) {
+      return parseFloat(cellValue) === criteria
+    }
+
+    return false
+  }
+
+  if (criteria === '') {
+    return value === '' || value === null
+  }
+
+  if (criteriaType === 'string' && typeof value === 'string') {
+    return stringCompare(value, criteria)
+  }
+
+  return value === criteria
+}
+
 const customFindIndex = function (value, valueIndex, criteria, criteriaIndex) {
   const currentCriteriaChar = criteria[criteriaIndex]
 
@@ -314,23 +361,35 @@ export const stringCompare = function (value, criteria) {
 
 const compare = {
   '>': function (values) {
-    return values[0] > values[1]
+    return typeof values[0] === typeof values[1] && values[0] > values[1]
   },
   '>=': function (values) {
-    return values[0] >= values[1]
+    return typeof values[0] === typeof values[1] && values[0] >= values[1]
   },
   '<': function (values) {
-    return values[0] < values[1]
+    return typeof values[0] === typeof values[1] && values[0] < values[1]
   },
   '<=': function (values) {
-    return values[0] <= values[1]
+    return typeof values[0] === typeof values[1] && values[0] <= values[1]
   },
   '=': function (values) {
-    if (typeof values[0] !== 'string') {
-      return values[0] === values[1]
+    if (typeof values[1] === 'number') {
+      if (typeof values[0] === 'number') {
+        return values[0] === values[1]
+      }
+
+      if (typeof values[0] === 'string') {
+        return parseFloat(values[0]) === values[1]
+      }
+
+      return false
     }
 
-    return stringCompare(values[0], values[1])
+    if (typeof values[0] === 'string' && typeof values[1] === 'string') {
+      return stringCompare(values[0], values[1])
+    }
+
+    return values[0] === values[1]
   },
   '<>': function (values) {
     if (values.length === 1) {
@@ -346,9 +405,5 @@ const compare = {
 }
 
 function countIfEvaluate(values, operator) {
-  if (operator !== '<>' && typeof values[0] !== typeof values[1]) {
-    return false
-  }
-
   return compare[operator](values)
 }
