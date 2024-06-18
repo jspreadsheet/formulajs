@@ -2004,57 +2004,88 @@ export function SUM() {
  * @returns
  */
 export function SUMIF(range, criteria, sum_range) {
-  if (arguments.length < 2 || arguments.length > 3) {
+  if (
+    arguments.length < 2 ||
+    arguments.length > 3 ||
+    typeof range === 'undefined' ||
+    (arguments.length === 3 && typeof sum_range === 'undefined')
+  ) {
     return error.na
   }
 
-  if (sum_range) {
-    const isArray = Array.isArray(range)
-    if (isArray !== Array.isArray(sum_range)) {
+  if (!Array.isArray(range)) {
+    range = [[range]]
+  }
+
+  const numOfRows = range.length
+  const numOfColumns = range[0].length
+
+  if (typeof sum_range !== 'undefined') {
+    if (!Array.isArray(sum_range)) {
+      sum_range = [[sum_range]]
+    }
+
+    if (numOfRows !== sum_range.length || numOfColumns !== sum_range[0].length) {
       return error.value
     }
-
-    if (isArray) {
-      if (range.length !== sum_range.length || range[0].length !== sum_range[0].length) {
-        return error.value
-      }
-    }
-  }
-
-  if (!Array.isArray(range)) {
-    range = [range]
-  }
-
-  range = utils.flatten(range)
-
-  if (sum_range) {
-    if (!Array.isArray(sum_range)) {
-      sum_range = [sum_range]
-    }
-
-    sum_range = utils.flatten(sum_range)
   } else {
     sum_range = range
   }
 
-  if (range instanceof Error) {
-    return range
-  }
-
-  if (criteria === undefined || criteria === null || criteria instanceof Error) {
-    return 0
+  if (typeof criteria === 'undefined' || criteria === null) {
+    criteria = 0
   }
 
   let result = 0
-  const tokenizedCriteria = evalExpression.parse(criteria + '')
 
-  for (let i = 0; i < range.length; i++) {
-    const value = range[i]
-    const sumValue = sum_range[i]
+  const criteriaType = typeof criteria
 
-    const tokens = [evalExpression.createToken(value, evalExpression.TOKEN_TYPE_LITERAL)].concat(tokenizedCriteria)
+  if (criteriaType !== 'string' || !evalExpression.isValidExpression(criteria)) {
+    if (criteriaType === 'string' && utils.isValidNumber(criteria, true)) {
+      criteria = parseFloat(criteria)
+    }
 
-    result += evalExpression.countIfComputeExpression(tokens) ? sumValue : 0
+    for (let y = 0; y < numOfRows; y++) {
+      const rangeRow = range[y]
+      const sumRangeRow = sum_range[y]
+
+      for (let x = 0; x < numOfColumns; x++) {
+        if (evalExpression.countIfCompare(rangeRow[x], criteria)) {
+          const sumRangeCell = sumRangeRow[x]
+
+          if (typeof sumRangeCell === 'number') {
+            result += sumRangeCell
+          } else if (sumRangeCell instanceof Error) {
+            return sumRangeCell
+          }
+        }
+      }
+    }
+
+    return result
+  }
+
+  const tokenizedCriteria = evalExpression.parse(criteria)
+
+  for (let y = 0; y < numOfRows; y++) {
+    const rangeRow = range[y]
+    const sumRangeRow = sum_range[y]
+
+    for (let x = 0; x < numOfColumns; x++) {
+      const tokens = [evalExpression.createToken(rangeRow[x], evalExpression.TOKEN_TYPE_LITERAL)].concat(
+        tokenizedCriteria
+      )
+
+      if (evalExpression.countIfComputeExpression(tokens)) {
+        const sumRangeCell = sumRangeRow[x]
+
+        if (typeof sumRangeCell === 'number') {
+          result += sumRangeCell
+        } else if (sumRangeCell instanceof Error) {
+          return sumRangeCell
+        }
+      }
+    }
   }
 
   return result
