@@ -624,14 +624,22 @@ describe('Statistical', () => {
       [3],
       ['3'],
       ['false'],
-      ['true']
+      ['true'],
+      [error.nil],
+      [error.div0],
+      [error.value],
+      [error.ref],
+      [error.name],
+      [error.num],
+      [error.na],
+      [error.calc],
+      [error.spill]
     ]
 
-    expect(statistical.COUNTIF(testArray, '<>')).to.equal(15)
-    expect(statistical.COUNTIF(testArray, '<>*')).to.equal(7)
+    expect(statistical.COUNTIF(testArray, '<>')).to.equal(24)
+    expect(statistical.COUNTIF(testArray, '<>*')).to.equal(16)
     expect(statistical.COUNTIF(testArray, '*')).to.equal(9)
     expect(statistical.COUNTIF(testArray, '=*')).to.equal(9)
-    expect(statistical.COUNTIF(testArray, '<>*')).to.equal(7)
     expect(statistical.COUNTIF(testArray, false)).to.equal(1)
     expect(statistical.COUNTIF(testArray, 'false')).to.equal(1)
     expect(statistical.COUNTIF(testArray, true)).to.equal(1)
@@ -652,6 +660,28 @@ describe('Statistical', () => {
     expect(statistical.COUNTIF(testArray, '=false')).to.equal(1)
     expect(statistical.COUNTIF(testArray, '=3')).to.equal(2)
     expect(statistical.COUNTIF(testArray, '>0')).to.equal(1)
+
+    expect(statistical.COUNTIF(undefined, null)).to.equal(error.na)
+    expect(statistical.COUNTIF(testArray, undefined)).to.equal(2)
+    expect(statistical.COUNTIF([[0, '0']], undefined)).to.equal(2)
+
+    const testedErrors = [
+      error.nil,
+      error.div0,
+      error.value,
+      error.ref,
+      error.name,
+      error.num,
+      error.na,
+      error.calc,
+      error.spill
+    ]
+
+    Object.values(error).forEach((err) => {
+      expect(statistical.COUNTIF(testArray, err)).to.equal(testedErrors.includes(err) ? 1 : 0)
+      expect(statistical.COUNTIF(err, err)).to.equal(1)
+      expect(statistical.COUNTIF(err, 1)).to.equal(0)
+    })
 
     expect(
       statistical.COUNTIF(
@@ -804,6 +834,15 @@ describe('Statistical', () => {
       [true],
       [true],
       [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
       [true]
     ]
 
@@ -823,14 +862,22 @@ describe('Statistical', () => {
       [3],
       ['3'],
       ['false'],
-      ['true']
+      ['true'],
+      [error.nil],
+      [error.div0],
+      [error.value],
+      [error.ref],
+      [error.name],
+      [error.num],
+      [error.na],
+      [error.calc],
+      [error.spill]
     ]
 
-    expect(statistical.COUNTIFS(testArray1, true, testArray2, '<>')).to.equal(15)
-    expect(statistical.COUNTIFS(testArray1, true, testArray2, '<>*')).to.equal(7)
+    expect(statistical.COUNTIFS(testArray1, true, testArray2, '<>')).to.equal(24)
+    expect(statistical.COUNTIFS(testArray1, true, testArray2, '<>*')).to.equal(16)
     expect(statistical.COUNTIFS(testArray1, true, testArray2, '*')).to.equal(9)
     expect(statistical.COUNTIFS(testArray1, true, testArray2, '=*')).to.equal(9)
-    expect(statistical.COUNTIFS(testArray1, true, testArray2, '<>*')).to.equal(7)
     expect(statistical.COUNTIFS(testArray1, true, testArray2, false)).to.equal(1)
     expect(statistical.COUNTIFS(testArray1, true, testArray2, 'false')).to.equal(1)
     expect(statistical.COUNTIFS(testArray1, true, testArray2, true)).to.equal(1)
@@ -848,9 +895,33 @@ describe('Statistical', () => {
     expect(statistical.COUNTIFS(testArray1, true, testArray2, null)).to.equal(2)
     expect(statistical.COUNTIFS([[true, true]], true, [[0, '0']], null)).to.equal(2)
 
+    expect(statistical.COUNTIFS(undefined, true, testArray2, null)).to.equal(error.na)
+    expect(statistical.COUNTIFS(testArray1, undefined, testArray2, null)).to.equal(0)
+    expect(statistical.COUNTIFS(testArray1, true, undefined, null)).to.equal(error.na)
+    expect(statistical.COUNTIFS(testArray1, true, testArray2, undefined)).to.equal(2)
+    expect(statistical.COUNTIFS([[true, true]], true, [[0, '0']], undefined)).to.equal(2)
+
     expect(statistical.COUNTIFS(testArray1, true, testArray2, '=false')).to.equal(1)
     expect(statistical.COUNTIFS(testArray1, true, testArray2, '=3')).to.equal(2)
     expect(statistical.COUNTIFS(testArray1, true, testArray2, '>0')).to.equal(1)
+
+    const testedErrors = [
+      error.nil,
+      error.div0,
+      error.value,
+      error.ref,
+      error.name,
+      error.num,
+      error.na,
+      error.calc,
+      error.spill
+    ]
+
+    Object.values(error).forEach((err) => {
+      expect(statistical.COUNTIFS(testArray1, true, testArray2, err)).to.equal(testedErrors.includes(err) ? 1 : 0)
+      expect(statistical.COUNTIFS(true, true, err, err)).to.equal(1)
+      expect(statistical.COUNTIFS(true, true, err, 1)).to.equal(0)
+    })
 
     expect(
       statistical.COUNTIFS(

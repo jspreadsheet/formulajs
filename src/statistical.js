@@ -787,7 +787,7 @@ export function COUNTBLANK() {
  * @returns
  */
 export function COUNTIF(range, criteria) {
-  if (arguments.length !== 2) {
+  if (arguments.length !== 2 || typeof range === 'undefined') {
     return error.na
   }
 
@@ -795,7 +795,7 @@ export function COUNTIF(range, criteria) {
     range = [[range]]
   }
 
-  if (criteria === null) {
+  if (typeof criteria === 'undefined' || criteria === null) {
     criteria = 0
   }
 
@@ -851,7 +851,7 @@ export function COUNTIF(range, criteria) {
  */
 export function COUNTIFS() {
   const numOfArguments = arguments.length
-  if (numOfArguments < 2 || numOfArguments % 2 !== 0) {
+  if (numOfArguments < 2 || numOfArguments % 2 !== 0 || typeof arguments[0] === 'undefined') {
     return error.na
   }
 
@@ -863,6 +863,10 @@ export function COUNTIFS() {
   const numOfColumns = arguments[0][0].length
 
   for (let i = 2; i < numOfArguments; i += 2) {
+    if (typeof arguments[i] === 'undefined') {
+      return error.na
+    }
+
     if (!Array.isArray(arguments[i])) {
       arguments[i] = [[arguments[i]]]
     }
@@ -883,7 +887,7 @@ export function COUNTIFS() {
     const range = arguments[rangeIndex]
 
     let criteria = arguments[rangeIndex + 1]
-    if (criteria === null) {
+    if (typeof criteria === 'undefined' || criteria === null) {
       criteria = 0
     }
 
