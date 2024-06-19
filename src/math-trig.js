@@ -2099,75 +2099,104 @@ export function SUMIF(range, criteria, sum_range) {
  * @returns
  */
 export function SUMIFS() {
-  if (arguments.length < 3 || (arguments.length > 3 && arguments.length % 2 === 0)) {
+  if (arguments.length < 3 || arguments.length % 2 === 0 || typeof arguments[0] === 'undefined') {
     return error.na
   }
 
   if (!Array.isArray(arguments[0])) {
-    arguments[0] = [arguments[0]]
+    arguments[0] = [[arguments[0]]]
   }
 
-  if (!Array.isArray(arguments[0][0])) {
-    arguments[0][0] = [arguments[0][0]]
-  }
+  const sumRange = arguments[0]
 
-  const height = arguments[0].length
-  const width = arguments[0][0].length
+  const numOfRows = sumRange.length
+  const numOfColumns = sumRange[0].length
 
-  const args = utils.argsToArray(arguments)
-  const range = utils.parseNumberArray(utils.flatten(args.shift()))
+  const argumentsLength = arguments.length
 
-  if (range instanceof Error) {
-    return range
-  }
-
-  const criterias = args
-  const criteriaLength = criterias.length / 2
-
-  for (let i = 0; i < criteriaLength; i++) {
-    if (!Array.isArray(criterias[i * 2])) {
-      criterias[i * 2] = [criterias[i * 2]]
+  for (let i = 1; i < argumentsLength; i += 2) {
+    if (typeof arguments[i] === 'undefined') {
+      return error.na
     }
 
-    if (!Array.isArray(criterias[i * 2][0])) {
-      criterias[i * 2][0] = [criterias[i * 2][0]]
+    if (!Array.isArray(arguments[i])) {
+      arguments[i] = [[arguments[i]]]
     }
 
-    if (height !== criterias[i * 2].length || width !== criterias[i * 2][0].length) {
+    if (numOfRows !== arguments[i].length || numOfColumns !== arguments[i][0].length) {
       return error.value
     }
+  }
 
-    criterias[i * 2] = utils.flatten(criterias[i * 2])
+  const resultsLength = numOfRows * numOfColumns
+  const results = new Array(resultsLength)
+
+  for (let i = 0; i < resultsLength; i++) {
+    results[i] = true
+  }
+
+  for (let rangeIndex = 1; rangeIndex < argumentsLength; rangeIndex += 2) {
+    const range = arguments[rangeIndex]
+
+    let criteria = arguments[rangeIndex + 1]
+    if (typeof criteria === 'undefined' || criteria === null) {
+      criteria = 0
+    }
+
+    const criteriaType = typeof criteria
+
+    if (criteriaType !== 'string' || !evalExpression.isValidExpression(criteria)) {
+      if (criteriaType === 'string' && utils.isValidNumber(criteria, true)) {
+        criteria = parseFloat(criteria)
+      }
+
+      for (let y = 0; y < numOfRows; y++) {
+        const row = range[y]
+
+        for (let x = 0; x < numOfColumns; x++) {
+          const resultIndex = y * numOfColumns + x
+
+          if (results[resultIndex]) {
+            if (!evalExpression.countIfCompare(row[x], criteria)) {
+              results[resultIndex] = false
+            }
+          }
+        }
+      }
+    } else {
+      const tokenizedCriteria = evalExpression.parse(criteria)
+
+      for (let y = 0; y < numOfRows; y++) {
+        const row = range[y]
+
+        for (let x = 0; x < numOfColumns; x++) {
+          const resultIndex = y * numOfColumns + x
+
+          if (results[resultIndex]) {
+            const tokens = [evalExpression.createToken(row[x], evalExpression.TOKEN_TYPE_LITERAL)].concat(
+              tokenizedCriteria
+            )
+
+            if (!evalExpression.countIfComputeExpression(tokens)) {
+              results[resultIndex] = false
+            }
+          }
+        }
+      }
+    }
   }
 
   let result = 0
 
-  for (let i = 0; i < range.length; i++) {
-    let isMeetCondition = false
+  for (let i = 0; i < resultsLength; i++) {
+    if (results[i]) {
+      const value = sumRange[Math.trunc(i / numOfColumns)][i % numOfColumns]
 
-    for (let j = 0; j < criteriaLength; j++) {
-      const valueToTest = criterias[j * 2][i]
-      const criteria = criterias[j * 2 + 1]
-      let computedResult = false
-
-      const tokenizedCriteria = evalExpression.parse(criteria + '')
-      const tokens = [evalExpression.createToken(valueToTest, evalExpression.TOKEN_TYPE_LITERAL)].concat(
-        tokenizedCriteria
-      )
-
-      computedResult = evalExpression.countIfComputeExpression(tokens)
-
-      // Criterias are calculated as AND so any `false` breakes the loop as unmeet condition
-      if (!computedResult) {
-        isMeetCondition = false
-        break
+      if (typeof value === 'number') {
+        result += value
+      } else if (value instanceof Error) {
+        return value
       }
-
-      isMeetCondition = true
-    }
-
-    if (isMeetCondition) {
-      result += range[i]
     }
   }
 

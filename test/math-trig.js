@@ -1618,7 +1618,9 @@ describe('Math & Trig', () => {
 
       expect(mathTrig.SUMIF(true, true, err)).to.equal(err)
       expect(mathTrig.SUMIF([[true, true]], true, [[1, err]])).to.equal(err)
+      expect(mathTrig.SUMIF([[true, true]], '=true', [[1, err]])).to.equal(err)
       expect(mathTrig.SUMIF([[true, false]], true, [[1, err]])).to.equal(1)
+      expect(mathTrig.SUMIF([[true, false]], '=true', [[1, err]])).to.equal(1)
     })
 
     expect(mathTrig.SUMIF(true, true, null)).to.equal(0)
@@ -1727,6 +1729,176 @@ describe('Math & Trig', () => {
     expect(mathTrig.SUMIFS([[1, 2, 3]], '>4')).to.equal(error.na)
     expect(mathTrig.SUMIFS([[1, 2, 3]], [[1, 2, 3]], '>4', [[1, 2, 3]])).to.equal(error.na)
 
+    const testArray1 = [
+      ['teste 1'],
+      ['teste 3'],
+      [''],
+      [false],
+      [true],
+      [null],
+      [-3],
+      ['-3'],
+      [-1.5],
+      ['-1.5'],
+      [0],
+      ['0'],
+      [3],
+      ['3'],
+      ['false'],
+      ['true'],
+      [error.nil],
+      [error.div0],
+      [error.value],
+      [error.ref],
+      [error.name],
+      [error.num],
+      [error.na],
+      [error.calc],
+      [error.spill]
+    ]
+
+    const testArray2 = [
+      [1],
+      [1],
+      [1],
+      [1],
+      [1],
+      [1],
+      [1],
+      [1],
+      [1],
+      [1],
+      [1],
+      [1],
+      [1],
+      [1],
+      [1],
+      [1],
+      [1],
+      [1],
+      [1],
+      [1],
+      [1],
+      [1],
+      [1],
+      [1],
+      [1]
+    ]
+
+    const testArray3 = [
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true]
+    ]
+
+    expect(mathTrig.SUMIFS(testArray2, testArray3, true, testArray1, '<>')).to.equal(24)
+    expect(mathTrig.SUMIFS(testArray2, testArray3, true, testArray1, '<>*')).to.equal(16)
+    expect(mathTrig.SUMIFS(testArray2, testArray3, true, testArray1, '*')).to.equal(9)
+    expect(mathTrig.SUMIFS(testArray2, testArray3, true, testArray1, '=*')).to.equal(9)
+    expect(mathTrig.SUMIFS(testArray2, testArray3, true, testArray1, false)).to.equal(1)
+    expect(mathTrig.SUMIFS(testArray2, testArray3, true, testArray1, 'false')).to.equal(1)
+    expect(mathTrig.SUMIFS(testArray2, testArray3, true, testArray1, true)).to.equal(1)
+    expect(mathTrig.SUMIFS(testArray2, testArray3, true, testArray1, 'true')).to.equal(1)
+    expect(mathTrig.SUMIFS(testArray2, testArray3, true, testArray1, -1.5)).to.equal(2)
+    expect(mathTrig.SUMIFS(testArray2, testArray3, true, testArray1, '-1.5')).to.equal(2)
+    expect(mathTrig.SUMIFS(testArray2, testArray3, true, testArray1, 0)).to.equal(2)
+    expect(mathTrig.SUMIFS(testArray2, testArray3, true, testArray1, '0')).to.equal(2)
+    expect(mathTrig.SUMIFS(testArray2, testArray3, true, testArray1, 3)).to.equal(2)
+    expect(mathTrig.SUMIFS(testArray2, testArray3, true, testArray1, '+3')).to.equal(2)
+
+    expect(mathTrig.SUMIFS(testArray2, testArray3, true, testArray1, '')).to.equal(2)
+    expect(mathTrig.SUMIFS([[1, 1]], [[null, '']], '')).to.equal(2)
+
+    expect(mathTrig.SUMIFS(testArray2, testArray3, true, testArray1, null)).to.equal(2)
+    expect(mathTrig.SUMIFS([[1, 1]], [[0, '0']], null)).to.equal(2)
+
+    expect(mathTrig.SUMIFS(undefined, testArray3, true, testArray1, null)).to.equal(error.na)
+    expect(mathTrig.SUMIFS(undefined, testArray3, true)).to.equal(error.na)
+    expect(mathTrig.SUMIFS(testArray2, undefined, true, testArray1, null)).to.equal(error.na)
+    expect(mathTrig.SUMIFS(testArray2, undefined, true)).to.equal(error.na)
+    expect(mathTrig.SUMIFS(testArray2, testArray3, undefined)).to.equal(0)
+    expect(mathTrig.SUMIFS(testArray2, testArray3, true, undefined, null)).to.equal(error.na)
+    expect(mathTrig.SUMIFS(testArray2, testArray3, true, testArray1, undefined)).to.equal(2)
+
+    expect(mathTrig.SUMIFS(testArray2, testArray3, true, testArray1, '=false')).to.equal(1)
+    expect(mathTrig.SUMIFS(testArray2, testArray3, true, testArray1, '=3')).to.equal(2)
+    expect(mathTrig.SUMIFS(testArray2, testArray3, true, testArray1, '>0')).to.equal(1)
+
+    const testedErrors = [
+      error.nil,
+      error.div0,
+      error.value,
+      error.ref,
+      error.name,
+      error.num,
+      error.na,
+      error.calc,
+      error.spill
+    ]
+
+    Object.values(error).forEach((err) => {
+      expect(mathTrig.SUMIFS(testArray2, testArray3, true, testArray1, err)).to.equal(
+        testedErrors.includes(err) ? 1 : 0
+      )
+      expect(mathTrig.SUMIFS(1, true, true, err, err)).to.equal(1)
+      expect(mathTrig.SUMIFS(1, true, true, err, 1)).to.equal(0)
+
+      expect(mathTrig.SUMIFS([[1, err]], [[true, true]], true)).to.equal(err)
+      expect(mathTrig.SUMIFS([[1, err]], [[true, false]], true)).to.equal(1)
+    })
+
+    expect(mathTrig.SUMIFS(null, true, true)).to.equal(0)
+    expect(mathTrig.SUMIFS(-5, true, true)).to.equal(-5)
+    expect(mathTrig.SUMIFS('-5', true, true)).to.equal(0)
+    expect(mathTrig.SUMIFS(0, true, true)).to.equal(0)
+    expect(mathTrig.SUMIFS('0', true, true)).to.equal(0)
+    expect(mathTrig.SUMIFS(5, true, true)).to.equal(5)
+    expect(mathTrig.SUMIFS('5', true, true)).to.equal(0)
+    expect(mathTrig.SUMIFS(true, true, true)).to.equal(0)
+    expect(mathTrig.SUMIFS(false, true, true)).to.equal(0)
+    expect(mathTrig.SUMIFS('true', true, true)).to.equal(0)
+    expect(mathTrig.SUMIFS('false', true, true)).to.equal(0)
+    expect(mathTrig.SUMIFS('', true, true)).to.equal(0)
+    expect(mathTrig.SUMIFS('test', true, true)).to.equal(0)
+    expect(mathTrig.SUMIFS('test 1', true, true)).to.equal(0)
+
+    expect(mathTrig.SUMIFS(null, true, '=true')).to.equal(0)
+    expect(mathTrig.SUMIFS(-5, true, '=true')).to.equal(-5)
+    expect(mathTrig.SUMIFS('-5', true, '=true')).to.equal(0)
+    expect(mathTrig.SUMIFS(0, true, '=true')).to.equal(0)
+    expect(mathTrig.SUMIFS('0', true, '=true')).to.equal(0)
+    expect(mathTrig.SUMIFS(5, true, '=true')).to.equal(5)
+    expect(mathTrig.SUMIFS('5', true, '=true')).to.equal(0)
+    expect(mathTrig.SUMIFS(true, true, '=true')).to.equal(0)
+    expect(mathTrig.SUMIFS(false, true, '=true')).to.equal(0)
+    expect(mathTrig.SUMIFS('true', true, '=true')).to.equal(0)
+    expect(mathTrig.SUMIFS('false', true, '=true')).to.equal(0)
+    expect(mathTrig.SUMIFS('', true, '=true')).to.equal(0)
+    expect(mathTrig.SUMIFS('test', true, '=true')).to.equal(0)
+    expect(mathTrig.SUMIFS('test 1', true, '=true')).to.equal(0)
+
     expect(mathTrig.SUMIFS([[1, 2, 3]], [[4, 5, 6]], '>4')).to.equal(5)
     expect(mathTrig.SUMIFS([[5, 10]], [[4, '5']], '*')).to.equal(10)
     expect(mathTrig.SUMIFS([[1, 2, 3]], [[4, 5, 6]], '>4', [[7, 8, 9]], '<9')).to.equal(2)
@@ -1742,7 +1914,7 @@ describe('Math & Trig', () => {
       )
     ).to.equal(error.value)
 
-    expect(mathTrig.SUMIFS([1, 'invalid', 3], [4, 5, 6], '>4')).to.equal(error.value)
+    expect(mathTrig.SUMIFS([[1, 'invalid', 3]], [[4, 5, 6]], '>4')).to.equal(3)
   })
 
   it('SUMSQ', () => {
