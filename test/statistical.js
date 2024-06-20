@@ -609,8 +609,8 @@ describe('Statistical', () => {
     expect(statistical.COUNTIF([[1, 2, 3, 3, 3]], '=3')).to.equal(3)
 
     const testArray = [
-      ['teste 1'],
-      ['teste 3'],
+      ['tesTe 1'],
+      ['tesTe 3'],
       [''],
       [false],
       [true],
@@ -639,6 +639,7 @@ describe('Statistical', () => {
     expect(statistical.COUNTIF(testArray, '<>')).to.equal(24)
     expect(statistical.COUNTIF(testArray, '<>*')).to.equal(16)
     expect(statistical.COUNTIF(testArray, '*')).to.equal(9)
+    expect(statistical.COUNTIF(testArray, '=')).to.equal(1)
     expect(statistical.COUNTIF(testArray, '=*')).to.equal(9)
     expect(statistical.COUNTIF(testArray, false)).to.equal(1)
     expect(statistical.COUNTIF(testArray, 'false')).to.equal(1)
@@ -650,6 +651,19 @@ describe('Statistical', () => {
     expect(statistical.COUNTIF(testArray, '0')).to.equal(2)
     expect(statistical.COUNTIF(testArray, 3)).to.equal(2)
     expect(statistical.COUNTIF(testArray, '+3')).to.equal(2)
+    expect(statistical.COUNTIF(testArray, 'TESTE 1')).to.equal(1)
+
+    expect(statistical.COUNTIF(error.name, error.name)).to.equal(1)
+    expect(statistical.COUNTIF(error.name, '#name?')).to.equal(1)
+    expect(statistical.COUNTIF(error.name, '#name*')).to.equal(0)
+    expect(statistical.COUNTIF(error.name.message, error.name)).to.equal(0)
+    expect(statistical.COUNTIF(error.name.message, '#name?')).to.equal(0)
+    expect(statistical.COUNTIF(error.name.message, '#name*')).to.equal(1)
+
+    expect(statistical.COUNTIF(error.name, '<>#name?')).to.equal(0)
+    expect(statistical.COUNTIF(error.name, '<>#name*')).to.equal(1)
+    expect(statistical.COUNTIF(error.name.message, '<>#name?')).to.equal(1)
+    expect(statistical.COUNTIF(error.name.message, '<>#name*')).to.equal(0)
 
     expect(statistical.COUNTIF(testArray, '')).to.equal(2)
     expect(statistical.COUNTIF([[null, '']], '')).to.equal(2)
@@ -682,6 +696,16 @@ describe('Statistical', () => {
       expect(statistical.COUNTIF(err, err)).to.equal(1)
       expect(statistical.COUNTIF(err, 1)).to.equal(0)
     })
+
+    expect(
+      statistical.COUNTIF(testArray, [
+        ['*', 3],
+        [true, '<>*']
+      ])
+    ).to.eql([
+      [9, 2],
+      [1, 16]
+    ])
 
     expect(
       statistical.COUNTIF(
@@ -877,6 +901,7 @@ describe('Statistical', () => {
     expect(statistical.COUNTIFS(testArray1, true, testArray2, '<>')).to.equal(24)
     expect(statistical.COUNTIFS(testArray1, true, testArray2, '<>*')).to.equal(16)
     expect(statistical.COUNTIFS(testArray1, true, testArray2, '*')).to.equal(9)
+    expect(statistical.COUNTIFS(testArray1, true, testArray2, '=')).to.equal(1)
     expect(statistical.COUNTIFS(testArray1, true, testArray2, '=*')).to.equal(9)
     expect(statistical.COUNTIFS(testArray1, true, testArray2, false)).to.equal(1)
     expect(statistical.COUNTIFS(testArray1, true, testArray2, 'false')).to.equal(1)
@@ -888,6 +913,7 @@ describe('Statistical', () => {
     expect(statistical.COUNTIFS(testArray1, true, testArray2, '0')).to.equal(2)
     expect(statistical.COUNTIFS(testArray1, true, testArray2, 3)).to.equal(2)
     expect(statistical.COUNTIFS(testArray1, true, testArray2, '+3')).to.equal(2)
+    expect(statistical.COUNTIFS(testArray1, true, testArray2, 'TESTE 1')).to.equal(1)
 
     expect(statistical.COUNTIFS(testArray1, true, testArray2, '')).to.equal(2)
     expect(statistical.COUNTIFS([[true, true]], true, [[null, '']], '')).to.equal(2)

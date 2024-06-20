@@ -795,50 +795,47 @@ export function COUNTIF(range, criteria) {
     range = [[range]]
   }
 
-  if (typeof criteria === 'undefined' || criteria === null) {
-    criteria = 0
+  let isSingleCriteria = false
+
+  if (!Array.isArray(criteria)) {
+    criteria = [[criteria]]
+    isSingleCriteria = true
   }
 
-  let matches = 0
+  const result = []
 
-  const numOfRows = range.length
-  const numOfColumns = range[0].length
+  const numOfCriteriaRows = criteria.length
+  const numOfCriteriaColumns = criteria[0].length
 
-  const criteriaType = typeof criteria
+  const numOfRangeRows = range.length
+  const numOfRangeColumns = range[0].length
 
-  if (criteriaType !== 'string' || !evalExpression.isValidExpression(criteria)) {
-    if (criteriaType === 'string' && utils.isValidNumber(criteria, true)) {
-      criteria = parseFloat(criteria)
-    }
+  const executionResultLength = numOfRangeRows * numOfRangeColumns
 
-    for (let y = 0; y < numOfRows; y++) {
-      const row = range[y]
+  for (let y = 0; y < numOfCriteriaRows; y++) {
+    const row = criteria[y]
 
-      for (let x = 0; x < numOfColumns; x++) {
-        if (evalExpression.countIfCompare(row[x], criteria)) {
+    const resultRow = []
+    result.push(resultRow)
+
+    for (let x = 0; x < numOfCriteriaColumns; x++) {
+      const singleCriteria = row[x]
+
+      const executionResult = evalExpression.runCriterias(range, singleCriteria)
+
+      let matches = 0
+
+      for (let i = 0; i < executionResultLength; i++) {
+        if (executionResult[i]) {
           matches++
         }
       }
-    }
 
-    return matches
-  }
-
-  const tokenizedCriteria = evalExpression.parse(criteria)
-
-  for (let y = 0; y < numOfRows; y++) {
-    const row = range[y]
-
-    for (let x = 0; x < numOfColumns; x++) {
-      const tokens = [evalExpression.createToken(row[x], evalExpression.TOKEN_TYPE_LITERAL)].concat(tokenizedCriteria)
-
-      if (evalExpression.countIfComputeExpression(tokens)) {
-        matches++
-      }
+      resultRow.push(matches)
     }
   }
 
-  return matches
+  return isSingleCriteria ? result[0][0] : result
 }
 
 /**
@@ -877,62 +874,8 @@ export function COUNTIFS() {
   }
 
   const resultsLength = numOfRows * numOfColumns
-  const results = new Array(resultsLength)
 
-  for (let i = 0; i < resultsLength; i++) {
-    results[i] = true
-  }
-
-  for (let rangeIndex = 0; rangeIndex < numOfArguments; rangeIndex += 2) {
-    const range = arguments[rangeIndex]
-
-    let criteria = arguments[rangeIndex + 1]
-    if (typeof criteria === 'undefined' || criteria === null) {
-      criteria = 0
-    }
-
-    const criteriaType = typeof criteria
-
-    if (criteriaType !== 'string' || !evalExpression.isValidExpression(criteria)) {
-      if (criteriaType === 'string' && utils.isValidNumber(criteria, true)) {
-        criteria = parseFloat(criteria)
-      }
-
-      for (let y = 0; y < numOfRows; y++) {
-        const row = range[y]
-
-        for (let x = 0; x < numOfColumns; x++) {
-          const resultIndex = y * numOfColumns + x
-
-          if (results[resultIndex]) {
-            if (!evalExpression.countIfCompare(row[x], criteria)) {
-              results[resultIndex] = false
-            }
-          }
-        }
-      }
-    } else {
-      const tokenizedCriteria = evalExpression.parse(criteria)
-
-      for (let y = 0; y < numOfRows; y++) {
-        const row = range[y]
-
-        for (let x = 0; x < numOfColumns; x++) {
-          const resultIndex = y * numOfColumns + x
-
-          if (results[resultIndex]) {
-            const tokens = [evalExpression.createToken(row[x], evalExpression.TOKEN_TYPE_LITERAL)].concat(
-              tokenizedCriteria
-            )
-
-            if (!evalExpression.countIfComputeExpression(tokens)) {
-              results[resultIndex] = false
-            }
-          }
-        }
-      }
-    }
-  }
+  const results = evalExpression.runCriterias(...arguments)
 
   let result = 0
 
