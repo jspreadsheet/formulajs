@@ -871,7 +871,7 @@ describe('Statistical', () => {
     ]
 
     const testArray2 = [
-      ['teste 1'],
+      ['tesTe 1'],
       ['teste 3'],
       [''],
       [false],

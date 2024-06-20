@@ -2032,63 +2032,50 @@ export function SUMIF(range, criteria, sum_range) {
     sum_range = range
   }
 
-  if (typeof criteria === 'undefined' || criteria === null) {
-    criteria = 0
+  let isSingleCriteria = false
+
+  if (!Array.isArray(criteria)) {
+    criteria = [[criteria]]
+    isSingleCriteria = true
   }
 
-  let result = 0
+  const result = []
 
-  const criteriaType = typeof criteria
+  const numOfCriteriaRows = criteria.length
+  const numOfCriteriaColumns = criteria[0].length
 
-  if (criteriaType !== 'string' || !evalExpression.isValidExpression(criteria)) {
-    if (criteriaType === 'string' && utils.isValidNumber(criteria, true)) {
-      criteria = parseFloat(criteria)
-    }
+  const executionResultLength = numOfRows * numOfColumns
 
-    for (let y = 0; y < numOfRows; y++) {
-      const rangeRow = range[y]
-      const sumRangeRow = sum_range[y]
+  for (let y = 0; y < numOfCriteriaRows; y++) {
+    const row = criteria[y]
 
-      for (let x = 0; x < numOfColumns; x++) {
-        if (evalExpression.countIfCompare(rangeRow[x], criteria)) {
-          const sumRangeCell = sumRangeRow[x]
+    const resultRow = []
+    result.push(resultRow)
 
-          if (typeof sumRangeCell === 'number') {
-            result += sumRangeCell
-          } else if (sumRangeCell instanceof Error) {
-            return sumRangeCell
+    for (let x = 0; x < numOfCriteriaColumns; x++) {
+      const singleCriteria = row[x]
+
+      const executionResult = evalExpression.runCriterias(range, singleCriteria)
+
+      let sum = 0
+
+      for (let i = 0; i < executionResultLength; i++) {
+        if (executionResult[i]) {
+          const value = sum_range[Math.trunc(i / numOfColumns)][i % numOfColumns]
+
+          if (typeof value === 'number') {
+            sum += value
+          } else if (value instanceof Error) {
+            return value
           }
         }
       }
-    }
 
-    return result
-  }
-
-  const tokenizedCriteria = evalExpression.parse(criteria)
-
-  for (let y = 0; y < numOfRows; y++) {
-    const rangeRow = range[y]
-    const sumRangeRow = sum_range[y]
-
-    for (let x = 0; x < numOfColumns; x++) {
-      const tokens = [evalExpression.createToken(rangeRow[x], evalExpression.TOKEN_TYPE_LITERAL)].concat(
-        tokenizedCriteria
-      )
-
-      if (evalExpression.countIfComputeExpression(tokens)) {
-        const sumRangeCell = sumRangeRow[x]
-
-        if (typeof sumRangeCell === 'number') {
-          result += sumRangeCell
-        } else if (sumRangeCell instanceof Error) {
-          return sumRangeCell
-        }
-      }
+      resultRow.push(sum)
     }
   }
 
-  return result
+  return isSingleCriteria ? result[0][0] : result
 }
 
 /**
