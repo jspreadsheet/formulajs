@@ -442,6 +442,10 @@ const compare = {
         return values[0] instanceof Error && values[0].message.toLowerCase() === values[1]
       }
 
+      if (values[1] === '') {
+        return values[0] === null
+      }
+
       if (typeof values[0] === 'string') {
         return stringCompare(values[0], values[1])
       }
