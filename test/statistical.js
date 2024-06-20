@@ -1713,7 +1713,7 @@ describe('Statistical', () => {
 
     expect(statistical.MINIFS([[1]], [[2]], 'A')).to.equal(0)
     expect(statistical.MINIFS([[2, 4, 6, 8]], [['A', 'A', 'B', 'B']], null)).to.equal(0)
-    expect(statistical.MINIFS([[2, 4, 6, 8]], [['A', 'A', 'B', 'B']], undefined)).to.equal(error.na)
+    expect(statistical.MINIFS([[2, 4, 6, 8]], [['A', 'A', 'B', 'B']], undefined)).to.equal(0)
     expect(statistical.MINIFS([[2, 4, 6]], [['A', 'A', 'B', 'B']], 'B')).to.equal(error.value)
     expect(statistical.MINIFS([[2], [4], [6]], [['A'], ['A'], ['B'], ['B']], 'B')).to.equal(error.value)
     expect(statistical.MINIFS([[2], [4], [6], [8]], [['A'], ['A'], ['B']], 'B')).to.equal(error.value)
@@ -1723,8 +1723,165 @@ describe('Statistical', () => {
     expect(statistical.MINIFS(undefined, [['A', 'A', 'B', 'B']], 'B', [['D', 'C', 'D', 'C']])).to.equal(error.na)
     expect(statistical.MINIFS(null, [['A', 'A', 'B', 'B']], 'B')).to.equal(error.value)
     expect(statistical.MINIFS('string', [['A', 'A', 'B', 'B']], 'B')).to.equal(error.value)
-    expect(statistical.MINIFS([[2, 4, 6, 8]], [['A', 'A', 'B', 'B']], [['a', 'b']])).to.equal(error.value)
-    expect(statistical.MINIFS([[2, 4, 6, 8]], 'string', 'B')).to.equal(error.na)
+    // expect(statistical.MINIFS([[2, 4, 6, 8]], [['A', 'A', 'B', 'B']], [['a', 'b']])).to.equal(error.value)
+    expect(statistical.MINIFS([[2, 4, 6, 8]], 'string', 'B')).to.equal(error.value)
+
+    const testArray1 = [
+      ['teste 1'],
+      ['teste 3'],
+      [''],
+      [false],
+      [true],
+      [null],
+      [-3],
+      ['-3'],
+      [-1.5],
+      ['-1.5'],
+      [0],
+      ['0'],
+      [3],
+      ['3'],
+      ['false'],
+      ['true'],
+      [error.nil],
+      [error.div0],
+      [error.value],
+      [error.ref],
+      [error.name],
+      [error.num],
+      [error.na],
+      [error.calc],
+      [error.spill]
+    ]
+
+    const testArray2 = [
+      [1],
+      [2],
+      [3],
+      [4],
+      [5],
+      [6],
+      [7],
+      [8],
+      [9],
+      [10],
+      [11],
+      [12],
+      [13],
+      [14],
+      [15],
+      [16],
+      [17],
+      [18],
+      [19],
+      [20],
+      [21],
+      [22],
+      [23],
+      [24],
+      [25]
+    ]
+
+    const testArray3 = [
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true]
+    ]
+
+    expect(statistical.MINIFS(testArray2, testArray3, true, testArray1, '<>')).to.equal(1)
+    expect(statistical.MINIFS(testArray2, testArray3, true, testArray1, '<>*')).to.equal(4)
+    expect(statistical.MINIFS(testArray2, testArray3, true, testArray1, '*')).to.equal(1)
+    expect(statistical.MINIFS(testArray2, testArray3, true, testArray1, '=*')).to.equal(1)
+    expect(statistical.MINIFS(testArray2, testArray3, true, testArray1, false)).to.equal(4)
+    expect(statistical.MINIFS(testArray2, testArray3, true, testArray1, 'false')).to.equal(4)
+    expect(statistical.MINIFS(testArray2, testArray3, true, testArray1, true)).to.equal(5)
+    expect(statistical.MINIFS(testArray2, testArray3, true, testArray1, 'true')).to.equal(5)
+    expect(statistical.MINIFS(testArray2, testArray3, true, testArray1, -1.5)).to.equal(9)
+    expect(statistical.MINIFS(testArray2, testArray3, true, testArray1, '-1.5')).to.equal(9)
+    expect(statistical.MINIFS(testArray2, testArray3, true, testArray1, 0)).to.equal(11)
+    expect(statistical.MINIFS(testArray2, testArray3, true, testArray1, '0')).to.equal(11)
+    expect(statistical.MINIFS(testArray2, testArray3, true, testArray1, 3)).to.equal(13)
+    expect(statistical.MINIFS(testArray2, testArray3, true, testArray1, '+3')).to.equal(13)
+
+    expect(statistical.MINIFS(testArray2, testArray3, true, testArray1, '')).to.equal(3)
+    expect(statistical.MINIFS([[1, 2]], [[null, '']], '')).to.equal(1)
+
+    expect(statistical.MINIFS(testArray2, testArray3, true, testArray1, null)).to.equal(11)
+    expect(statistical.MINIFS([[1, 2]], [['0', 0]], null)).to.equal(1)
+
+    expect(statistical.MINIFS(undefined, testArray3, true, testArray1, null)).to.equal(error.na)
+    expect(statistical.MINIFS(undefined, testArray3, true)).to.equal(error.na)
+    expect(statistical.MINIFS(testArray2, undefined, true, testArray1, null)).to.equal(error.na)
+    expect(statistical.MINIFS(testArray2, undefined, true)).to.equal(error.na)
+    expect(statistical.MINIFS(testArray2, testArray3, undefined, testArray1, null)).to.equal(0)
+    expect(statistical.MINIFS(testArray2, testArray3, true, undefined, null)).to.equal(error.na)
+    expect(statistical.MINIFS(testArray2, testArray3, true, undefined)).to.equal(error.na)
+    expect(statistical.MINIFS(testArray2, testArray3, true, testArray1, undefined)).to.equal(11)
+
+    expect(statistical.MINIFS(testArray2, testArray3, true, testArray1, '=false')).to.equal(4)
+    expect(statistical.MINIFS(testArray2, testArray3, true, testArray1, '=3')).to.equal(13)
+    expect(statistical.MINIFS(testArray2, testArray3, true, testArray1, '>0')).to.equal(13)
+
+    Object.values(error).forEach((err) => {
+      expect(statistical.MINIFS([[3, err]], [[true, true]], true)).to.equal(err)
+      expect(statistical.MINIFS([[3, err]], [[true, true]], '=true')).to.equal(err)
+      expect(statistical.MINIFS([[3, err]], [[true, false]], true)).to.equal(3)
+      expect(statistical.MINIFS([[3, err]], [[true, false]], '=true')).to.equal(3)
+      expect(statistical.MINIFS([[err, 3]], [[false, true]], true)).to.equal(3)
+      expect(statistical.MINIFS([[err, 3]], [[false, true]], '=true')).to.equal(3)
+    })
+
+    expect(statistical.MINIFS([[3, null]], [[true, true]], true)).to.equal(3)
+    expect(statistical.MINIFS([[3, -5]], [[true, true]], true)).to.equal(-5)
+    expect(statistical.MINIFS([[3, '-5']], [[true, true]], true)).to.equal(3)
+    expect(statistical.MINIFS([[3, 0]], [[true, true]], true)).to.equal(0)
+    expect(statistical.MINIFS([[3, '0']], [[true, true]], true)).to.equal(3)
+    expect(statistical.MINIFS([[3, 5]], [[true, true]], true)).to.equal(3)
+    expect(statistical.MINIFS([[3, '5']], [[true, true]], true)).to.equal(3)
+    expect(statistical.MINIFS([[3, true]], [[true, true]], true)).to.equal(3)
+    expect(statistical.MINIFS([[3, false]], [[true, true]], true)).to.equal(3)
+    expect(statistical.MINIFS([[3, 'true']], [[true, true]], true)).to.equal(3)
+    expect(statistical.MINIFS([[3, 'false']], [[true, true]], true)).to.equal(3)
+    expect(statistical.MINIFS([[3, '']], [[true, true]], true)).to.equal(3)
+    expect(statistical.MINIFS([[3, 'test']], [[true, true]], true)).to.equal(3)
+    expect(statistical.MINIFS([[3, 'test 1']], [[true, true]], true)).to.equal(3)
+
+    expect(statistical.MINIFS([[3, null]], [[true, true]], '=true')).to.equal(3)
+    expect(statistical.MINIFS([[3, -5]], [[true, true]], '=true')).to.equal(-5)
+    expect(statistical.MINIFS([[3, '-5']], [[true, true]], '=true')).to.equal(3)
+    expect(statistical.MINIFS([[3, 0]], [[true, true]], '=true')).to.equal(0)
+    expect(statistical.MINIFS([[3, '0']], [[true, true]], '=true')).to.equal(3)
+    expect(statistical.MINIFS([[3, 5]], [[true, true]], '=true')).to.equal(3)
+    expect(statistical.MINIFS([[3, '5']], [[true, true]], '=true')).to.equal(3)
+    expect(statistical.MINIFS([[3, true]], [[true, true]], '=true')).to.equal(3)
+    expect(statistical.MINIFS([[3, false]], [[true, true]], '=true')).to.equal(3)
+    expect(statistical.MINIFS([[3, 'true']], [[true, true]], '=true')).to.equal(3)
+    expect(statistical.MINIFS([[3, 'false']], [[true, true]], '=true')).to.equal(3)
+    expect(statistical.MINIFS([[3, '']], [[true, true]], '=true')).to.equal(3)
+    expect(statistical.MINIFS([[3, 'test']], [[true, true]], '=true')).to.equal(3)
+    expect(statistical.MINIFS([[3, 'test 1']], [[true, true]], '=true')).to.equal(3)
   })
 
   it('MIN', () => {
