@@ -1746,7 +1746,7 @@ describe('Math & Trig', () => {
     expect(mathTrig.SUMIFS([[1, 2, 3]], [[1, 2, 3]], '>4', [[1, 2, 3]])).to.equal(error.na)
 
     const testArray1 = [
-      ['teste 1'],
+      ['tesTe 1'],
       ['teste 3'],
       [''],
       [false],
@@ -1832,6 +1832,7 @@ describe('Math & Trig', () => {
     expect(mathTrig.SUMIFS(testArray2, testArray3, true, testArray1, '<>')).to.equal(24)
     expect(mathTrig.SUMIFS(testArray2, testArray3, true, testArray1, '<>*')).to.equal(16)
     expect(mathTrig.SUMIFS(testArray2, testArray3, true, testArray1, '*')).to.equal(9)
+    expect(mathTrig.SUMIFS(testArray2, testArray3, true, testArray1, '=')).to.equal(1)
     expect(mathTrig.SUMIFS(testArray2, testArray3, true, testArray1, '=*')).to.equal(9)
     expect(mathTrig.SUMIFS(testArray2, testArray3, true, testArray1, false)).to.equal(1)
     expect(mathTrig.SUMIFS(testArray2, testArray3, true, testArray1, 'false')).to.equal(1)
@@ -1843,6 +1844,7 @@ describe('Math & Trig', () => {
     expect(mathTrig.SUMIFS(testArray2, testArray3, true, testArray1, '0')).to.equal(2)
     expect(mathTrig.SUMIFS(testArray2, testArray3, true, testArray1, 3)).to.equal(2)
     expect(mathTrig.SUMIFS(testArray2, testArray3, true, testArray1, '+3')).to.equal(2)
+    expect(mathTrig.SUMIFS(testArray2, testArray3, true, testArray1, 'TESTE 1')).to.equal(1)
 
     expect(mathTrig.SUMIFS(testArray2, testArray3, true, testArray1, '')).to.equal(2)
     expect(mathTrig.SUMIFS([[1, 1]], [[null, '']], '')).to.equal(2)

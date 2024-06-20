@@ -2085,109 +2085,53 @@ export function SUMIF(range, criteria, sum_range) {
  *
  * @returns
  */
-export function SUMIFS() {
-  if (arguments.length < 3 || arguments.length % 2 === 0 || typeof arguments[0] === 'undefined') {
+export function SUMIFS(sum_range, ...criteria) {
+  if (arguments.length < 3 || arguments.length % 2 === 0 || typeof sum_range === 'undefined') {
     return error.na
   }
 
-  if (!Array.isArray(arguments[0])) {
-    arguments[0] = [[arguments[0]]]
+  if (!Array.isArray(sum_range)) {
+    sum_range = [[sum_range]]
   }
 
-  const sumRange = arguments[0]
+  const numOfRows = sum_range.length
+  const numOfColumns = sum_range[0].length
 
-  const numOfRows = sumRange.length
-  const numOfColumns = sumRange[0].length
+  const criteriaLength = criteria.length
 
-  const argumentsLength = arguments.length
-
-  for (let i = 1; i < argumentsLength; i += 2) {
-    if (typeof arguments[i] === 'undefined') {
+  for (let i = 0; i < criteriaLength; i += 2) {
+    if (typeof criteria[i] === 'undefined') {
       return error.na
     }
 
-    if (!Array.isArray(arguments[i])) {
-      arguments[i] = [[arguments[i]]]
+    if (!Array.isArray(criteria[i])) {
+      criteria[i] = [[criteria[i]]]
     }
 
-    if (numOfRows !== arguments[i].length || numOfColumns !== arguments[i][0].length) {
+    if (numOfRows !== criteria[i].length || numOfColumns !== criteria[i][0].length) {
       return error.value
     }
   }
 
   const resultsLength = numOfRows * numOfColumns
-  const results = new Array(resultsLength)
 
-  for (let i = 0; i < resultsLength; i++) {
-    results[i] = true
-  }
+  const results = evalExpression.runCriterias(...criteria)
 
-  for (let rangeIndex = 1; rangeIndex < argumentsLength; rangeIndex += 2) {
-    const range = arguments[rangeIndex]
-
-    let criteria = arguments[rangeIndex + 1]
-    if (typeof criteria === 'undefined' || criteria === null) {
-      criteria = 0
-    }
-
-    const criteriaType = typeof criteria
-
-    if (criteriaType !== 'string' || !evalExpression.isValidExpression(criteria)) {
-      if (criteriaType === 'string' && utils.isValidNumber(criteria, true)) {
-        criteria = parseFloat(criteria)
-      }
-
-      for (let y = 0; y < numOfRows; y++) {
-        const row = range[y]
-
-        for (let x = 0; x < numOfColumns; x++) {
-          const resultIndex = y * numOfColumns + x
-
-          if (results[resultIndex]) {
-            if (!evalExpression.countIfCompare(row[x], criteria)) {
-              results[resultIndex] = false
-            }
-          }
-        }
-      }
-    } else {
-      const tokenizedCriteria = evalExpression.parse(criteria)
-
-      for (let y = 0; y < numOfRows; y++) {
-        const row = range[y]
-
-        for (let x = 0; x < numOfColumns; x++) {
-          const resultIndex = y * numOfColumns + x
-
-          if (results[resultIndex]) {
-            const tokens = [evalExpression.createToken(row[x], evalExpression.TOKEN_TYPE_LITERAL)].concat(
-              tokenizedCriteria
-            )
-
-            if (!evalExpression.countIfComputeExpression(tokens)) {
-              results[resultIndex] = false
-            }
-          }
-        }
-      }
-    }
-  }
-
-  let result = 0
+  let sum = 0
 
   for (let i = 0; i < resultsLength; i++) {
     if (results[i]) {
-      const value = sumRange[Math.trunc(i / numOfColumns)][i % numOfColumns]
+      const value = sum_range[Math.trunc(i / numOfColumns)][i % numOfColumns]
 
       if (typeof value === 'number') {
-        result += value
+        sum += value
       } else if (value instanceof Error) {
         return value
       }
     }
   }
 
-  return result
+  return sum
 }
 
 /**
