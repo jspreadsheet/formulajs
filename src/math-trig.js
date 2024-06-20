@@ -2104,6 +2104,10 @@ export function SUMIFS(sum_range, ...criteria) {
       return error.na
     }
 
+    if (Array.isArray(criteria[i + 1])) {
+      return error.value
+    }
+
     if (!Array.isArray(criteria[i])) {
       criteria[i] = [[criteria[i]]]
     }

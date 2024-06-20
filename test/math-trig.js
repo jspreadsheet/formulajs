@@ -1917,6 +1917,8 @@ describe('Math & Trig', () => {
     expect(mathTrig.SUMIFS('test', true, '=true')).to.equal(0)
     expect(mathTrig.SUMIFS('test 1', true, '=true')).to.equal(0)
 
+    expect(mathTrig.SUMIFS([[2, 4, 6, 8]], [['A', 'A', 'B', 'B']], [['a', 'b']])).to.equal(error.value)
+
     expect(mathTrig.SUMIFS([[1, 2, 3]], [[4, 5, 6]], '>4')).to.equal(5)
     expect(mathTrig.SUMIFS([[5, 10]], [[4, '5']], '*')).to.equal(10)
     expect(mathTrig.SUMIFS([[1, 2, 3]], [[4, 5, 6]], '>4', [[7, 8, 9]], '<9')).to.equal(2)
