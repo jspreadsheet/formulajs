@@ -113,7 +113,7 @@ describe('Statistical', () => {
         [[1, 2]]
       )
     ).to.equal(error.value)
-    expect(statistical.AVERAGEIF([2, 4, 'invalid', 16], '>5')).to.equal(16)
+    expect(statistical.AVERAGEIF([[2, 4, 'invalid', 16]], '>5')).to.equal(16)
 
     expect(
       statistical.AVERAGEIF(
@@ -166,6 +166,149 @@ describe('Statistical', () => {
         [[5], [3], [null], [77], [null], [null], [null], [null], [null]]
       )
     ).to.equal(error.div0)
+
+    const testArray1 = [
+      ['tesTe 1'],
+      ['teste 3'],
+      [''],
+      [false],
+      [true],
+      [null],
+      [-3],
+      ['-3'],
+      [-1.5],
+      ['-1.5'],
+      [0],
+      ['0'],
+      [3],
+      ['3'],
+      ['false'],
+      ['true'],
+      [error.nil],
+      [error.div0],
+      [error.value],
+      [error.ref],
+      [error.name],
+      [error.num],
+      [error.na],
+      [error.calc],
+      [error.spill]
+    ]
+
+    const testArray2 = [
+      [2],
+      [4],
+      [8],
+      [16],
+      [32],
+      [64],
+      [128],
+      [256],
+      [512],
+      [1024],
+      [2048],
+      [4096],
+      [8192],
+      [16384],
+      [32768],
+      [65536],
+      [131072],
+      [262144],
+      [524288],
+      [1048576],
+      [2097152],
+      [4194304],
+      [8388608],
+      [16777216],
+      [33554432]
+    ]
+
+    expect(statistical.AVERAGEIF(testArray1, '<>', testArray2)).to.approximately(2796199.91666667, 1e-8)
+    expect(statistical.AVERAGEIF(testArray1, '<>*', testArray2)).to.equal(4186799)
+    expect(statistical.AVERAGEIF(testArray1, '*', testArray2)).to.equal(13342)
+    expect(statistical.AVERAGEIF(testArray1, '=', testArray2)).to.equal(64)
+    expect(statistical.AVERAGEIF(testArray1, '=*', testArray2)).to.equal(13342)
+    expect(statistical.AVERAGEIF(testArray1, false, testArray2)).to.equal(16)
+    expect(statistical.AVERAGEIF(testArray1, 'false', testArray2)).to.equal(16)
+    expect(statistical.AVERAGEIF(testArray1, true, testArray2)).to.equal(32)
+    expect(statistical.AVERAGEIF(testArray1, 'true', testArray2)).to.equal(32)
+    expect(statistical.AVERAGEIF(testArray1, -1.5, testArray2)).to.equal(768)
+    expect(statistical.AVERAGEIF(testArray1, '-1.5', testArray2)).to.equal(768)
+    expect(statistical.AVERAGEIF(testArray1, 0, testArray2)).to.equal(3072)
+    expect(statistical.AVERAGEIF(testArray1, '0', testArray2)).to.equal(3072)
+    expect(statistical.AVERAGEIF(testArray1, 3, testArray2)).to.equal(12288)
+    expect(statistical.AVERAGEIF(testArray1, '+3', testArray2)).to.equal(12288)
+    expect(statistical.AVERAGEIF(testArray1, 'TESTE 1', testArray2)).to.equal(2)
+
+    expect(statistical.AVERAGEIF(testArray1, '', testArray2)).to.equal(36)
+
+    expect(statistical.AVERAGEIF(testArray1, null, testArray2)).to.equal(3072)
+
+    expect(statistical.AVERAGEIF(undefined, null, testArray2)).to.equal(error.na)
+    expect(statistical.AVERAGEIF(undefined, null)).to.equal(error.na)
+    expect(statistical.AVERAGEIF(testArray1, undefined, testArray2)).to.equal(3072)
+    expect(statistical.AVERAGEIF(testArray1, undefined)).to.equal(0)
+    expect(statistical.AVERAGEIF(testArray1, null, undefined)).to.equal(error.na)
+
+    expect(statistical.AVERAGEIF(testArray1, '=false', testArray2)).to.equal(16)
+    expect(statistical.AVERAGEIF(testArray1, '=3', testArray2)).to.equal(12288)
+    expect(statistical.AVERAGEIF(testArray1, '>0', testArray2)).to.equal(8192)
+
+
+    Object.values(error).forEach((err) => {
+      expect(statistical.AVERAGEIF(err, err, 1)).to.equal(1)
+      expect(statistical.AVERAGEIF(err, 1, 1)).to.equal(error.div0)
+
+      expect(statistical.AVERAGEIF(true, true, err)).to.equal(err)
+      expect(statistical.AVERAGEIF([[true, true]], true, [[1, err]])).to.equal(err)
+      expect(statistical.AVERAGEIF([[true, true]], '=true', [[1, err]])).to.equal(err)
+      expect(statistical.AVERAGEIF([[true, false]], true, [[1, err]])).to.equal(1)
+      expect(statistical.AVERAGEIF([[true, false]], '=true', [[1, err]])).to.equal(1)
+    })
+
+    expect(
+      statistical.AVERAGEIF(
+        testArray1,
+        [
+          ['*', 3],
+          [true, '<>*']
+        ],
+        testArray2
+      )
+    ).to.eql([
+      [13342, 12288],
+      [32, 4186799]
+    ])
+
+    expect(statistical.AVERAGEIF(true, true, null)).to.equal(error.div0)
+    expect(statistical.AVERAGEIF(true, true, -5)).to.equal(-5)
+    expect(statistical.AVERAGEIF(true, true, '-5')).to.equal(error.div0)
+    expect(statistical.AVERAGEIF(true, true, 0)).to.equal(0)
+    expect(statistical.AVERAGEIF(true, true, '0')).to.equal(error.div0)
+    expect(statistical.AVERAGEIF(true, true, 5)).to.equal(5)
+    expect(statistical.AVERAGEIF(true, true, '5')).to.equal(error.div0)
+    expect(statistical.AVERAGEIF(true, true, true)).to.equal(error.div0)
+    expect(statistical.AVERAGEIF(true, true, false)).to.equal(error.div0)
+    expect(statistical.AVERAGEIF(true, true, 'true')).to.equal(error.div0)
+    expect(statistical.AVERAGEIF(true, true, 'false')).to.equal(error.div0)
+    expect(statistical.AVERAGEIF(true, true, '')).to.equal(error.div0)
+    expect(statistical.AVERAGEIF(true, true, 'test')).to.equal(error.div0)
+    expect(statistical.AVERAGEIF(true, true, 'test 1')).to.equal(error.div0)
+
+    expect(statistical.AVERAGEIF(true, '=true', null)).to.equal(error.div0)
+    expect(statistical.AVERAGEIF(true, '=true', -5)).to.equal(-5)
+    expect(statistical.AVERAGEIF(true, '=true', '-5')).to.equal(error.div0)
+    expect(statistical.AVERAGEIF(true, '=true', 0)).to.equal(0)
+    expect(statistical.AVERAGEIF(true, '=true', '0')).to.equal(error.div0)
+    expect(statistical.AVERAGEIF(true, '=true', 5)).to.equal(5)
+    expect(statistical.AVERAGEIF(true, '=true', '5')).to.equal(error.div0)
+    expect(statistical.AVERAGEIF(true, '=true', true)).to.equal(error.div0)
+    expect(statistical.AVERAGEIF(true, '=true', false)).to.equal(error.div0)
+    expect(statistical.AVERAGEIF(true, '=true', 'true')).to.equal(error.div0)
+    expect(statistical.AVERAGEIF(true, '=true', 'false')).to.equal(error.div0)
+    expect(statistical.AVERAGEIF(true, '=true', '')).to.equal(error.div0)
+    expect(statistical.AVERAGEIF(true, '=true', 'test')).to.equal(error.div0)
+    expect(statistical.AVERAGEIF(true, '=true', 'test 1')).to.equal(error.div0)
   })
 
   it('AVERAGEIFS', () => {
@@ -1645,7 +1788,7 @@ describe('Statistical', () => {
     expect(statistical.MAXIFS([[2, 4, 6, 8]], 'string', 'B')).to.equal(error.value)
 
     const testArray1 = [
-      ['teste 1'],
+      ['tesTe 1'],
       ['teste 3'],
       [''],
       [false],

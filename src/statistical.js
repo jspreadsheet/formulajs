@@ -97,61 +97,80 @@ export function AVERAGEA() {
  * @returns
  */
 export function AVERAGEIF(range, criteria, average_range) {
-  if (arguments.length < 2 || arguments.length > 3) {
+  if (
+    arguments.length < 2 ||
+    arguments.length > 3 ||
+    typeof range === 'undefined' ||
+    (arguments.length === 3 && typeof average_range === 'undefined')
+  ) {
     return error.na
   }
 
   if (!Array.isArray(range)) {
-    range = [range]
+    range = [[range]]
   }
 
-  if (!Array.isArray(range[0])) {
-    range[0] = [range[0]]
-  }
+  const numOfRows = range.length
+  const numOfColumns = range[0].length
 
   if (typeof average_range !== 'undefined') {
     if (!Array.isArray(average_range)) {
-      average_range = [average_range]
+      average_range = [[average_range]]
     }
 
-    if (!Array.isArray(average_range[0])) {
-      average_range[0] = [average_range[0]]
-    }
-
-    if (range.length !== average_range.length || range[0].length !== average_range[0].length) {
+    if (numOfRows !== average_range.length || numOfColumns !== average_range[0].length) {
       return error.value
     }
+  } else {
+    average_range = range
   }
 
-  average_range = utils.flatten(average_range || range)
+  let isSingleCriteria = false
 
-  range = utils.flatten(range)
+  if (!Array.isArray(criteria)) {
+    criteria = [[criteria]]
+    isSingleCriteria = true
+  }
 
-  let average_count = 0
-  let result = 0
-  const tokenizedCriteria = evalExpression.parse(criteria + '')
+  const result = []
 
-  const length = range.length
-  for (let i = 0; i < length; i++) {
-    if (typeof average_range[i] !== 'number') {
-      continue
+  const numOfCriteriaRows = criteria.length
+  const numOfCriteriaColumns = criteria[0].length
+
+  const executionResultLength = numOfRows * numOfColumns
+
+  for (let y = 0; y < numOfCriteriaRows; y++) {
+    const row = criteria[y]
+
+    const resultRow = []
+    result.push(resultRow)
+
+    for (let x = 0; x < numOfCriteriaColumns; x++) {
+      const singleCriteria = row[x]
+
+      const executionResult = evalExpression.runCriterias(range, singleCriteria)
+
+      let sum = 0
+      let counter = 0
+
+      for (let i = 0; i < executionResultLength; i++) {
+        if (executionResult[i]) {
+          const value = average_range[Math.trunc(i / numOfColumns)][i % numOfColumns]
+
+          if (typeof value === 'number') {
+            sum += value
+            counter++
+          } else if (value instanceof Error) {
+            return value
+          }
+        }
+      }
+
+      resultRow.push(counter !== 0 ? sum / counter : error.div0)
     }
-
-    const value = range[i]
-
-    const tokens = [evalExpression.createToken(value, evalExpression.TOKEN_TYPE_LITERAL)].concat(tokenizedCriteria)
-
-    if (evalExpression.countIfComputeExpression(tokens)) {
-      result += average_range[i]
-      average_count++
-    }
   }
 
-  if (average_count === 0) {
-    return error.div0
-  }
-
-  return result / average_count
+  return isSingleCriteria ? result[0][0] : result
 }
 
 /**
