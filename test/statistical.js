@@ -254,7 +254,6 @@ describe('Statistical', () => {
     expect(statistical.AVERAGEIF(testArray1, '=3', testArray2)).to.equal(12288)
     expect(statistical.AVERAGEIF(testArray1, '>0', testArray2)).to.equal(8192)
 
-
     Object.values(error).forEach((err) => {
       expect(statistical.AVERAGEIF(err, err, 1)).to.equal(1)
       expect(statistical.AVERAGEIF(err, 1, 1)).to.equal(error.div0)
@@ -464,7 +463,10 @@ describe('Statistical', () => {
       [true]
     ]
 
-    expect(statistical.AVERAGEIFS(testArray2, testArray3, true, testArray1, '<>')).to.approximately(2796199.91666667, 1e-8)
+    expect(statistical.AVERAGEIFS(testArray2, testArray3, true, testArray1, '<>')).to.approximately(
+      2796199.91666667,
+      1e-8
+    )
     expect(statistical.AVERAGEIFS(testArray2, testArray3, true, testArray1, '<>*')).to.equal(4186799)
     expect(statistical.AVERAGEIFS(testArray2, testArray3, true, testArray1, '*')).to.equal(13342)
     expect(statistical.AVERAGEIFS(testArray2, testArray3, true, testArray1, '=')).to.equal(64)
