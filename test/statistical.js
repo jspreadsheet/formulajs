@@ -379,6 +379,163 @@ describe('Statistical', () => {
     expect(statistical.AVERAGEIFS([[2, 4, 8, 16]], [[1, 2, 3, 4]], '<>')).to.equal(7.5)
     expect(statistical.AVERAGEIFS([[2, 4, 8, 16]], [[1, 2, 3, 4]], '>2', [[1, 2, 3, 4]], '>2')).to.equal(12)
     expect(statistical.AVERAGEIFS([[2, 4, 8, 16]], [[1, 2, 3, 4]], '>2', [[1, 1, 1, 1]], '>2')).to.equal(error.div0)
+
+    const testArray1 = [
+      ['tesTe 1'],
+      ['teste 3'],
+      [''],
+      [false],
+      [true],
+      [null],
+      [-3],
+      ['-3'],
+      [-1.5],
+      ['-1.5'],
+      [0],
+      ['0'],
+      [3],
+      ['3'],
+      ['false'],
+      ['true'],
+      [error.nil],
+      [error.div0],
+      [error.value],
+      [error.ref],
+      [error.name],
+      [error.num],
+      [error.na],
+      [error.calc],
+      [error.spill]
+    ]
+
+    const testArray2 = [
+      [2],
+      [4],
+      [8],
+      [16],
+      [32],
+      [64],
+      [128],
+      [256],
+      [512],
+      [1024],
+      [2048],
+      [4096],
+      [8192],
+      [16384],
+      [32768],
+      [65536],
+      [131072],
+      [262144],
+      [524288],
+      [1048576],
+      [2097152],
+      [4194304],
+      [8388608],
+      [16777216],
+      [33554432]
+    ]
+
+    const testArray3 = [
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true],
+      [true]
+    ]
+
+    expect(statistical.AVERAGEIFS(testArray2, testArray3, true, testArray1, '<>')).to.approximately(2796199.91666667, 1e-8)
+    expect(statistical.AVERAGEIFS(testArray2, testArray3, true, testArray1, '<>*')).to.equal(4186799)
+    expect(statistical.AVERAGEIFS(testArray2, testArray3, true, testArray1, '*')).to.equal(13342)
+    expect(statistical.AVERAGEIFS(testArray2, testArray3, true, testArray1, '=')).to.equal(64)
+    expect(statistical.AVERAGEIFS(testArray2, testArray3, true, testArray1, '=*')).to.equal(13342)
+    expect(statistical.AVERAGEIFS(testArray2, testArray3, true, testArray1, false)).to.equal(16)
+    expect(statistical.AVERAGEIFS(testArray2, testArray3, true, testArray1, 'false')).to.equal(16)
+    expect(statistical.AVERAGEIFS(testArray2, testArray3, true, testArray1, true)).to.equal(32)
+    expect(statistical.AVERAGEIFS(testArray2, testArray3, true, testArray1, 'true')).to.equal(32)
+    expect(statistical.AVERAGEIFS(testArray2, testArray3, true, testArray1, -1.5)).to.equal(768)
+    expect(statistical.AVERAGEIFS(testArray2, testArray3, true, testArray1, '-1.5')).to.equal(768)
+    expect(statistical.AVERAGEIFS(testArray2, testArray3, true, testArray1, 0)).to.equal(3072)
+    expect(statistical.AVERAGEIFS(testArray2, testArray3, true, testArray1, '0')).to.equal(3072)
+    expect(statistical.AVERAGEIFS(testArray2, testArray3, true, testArray1, 3)).to.equal(12288)
+    expect(statistical.AVERAGEIFS(testArray2, testArray3, true, testArray1, '+3')).to.equal(12288)
+    expect(statistical.AVERAGEIFS(testArray2, testArray3, true, testArray1, 'TESTE 1')).to.equal(2)
+
+    expect(statistical.AVERAGEIFS(testArray2, testArray3, true, testArray1, '')).to.equal(36)
+
+    expect(statistical.AVERAGEIFS(testArray2, testArray3, true, testArray1, null)).to.equal(3072)
+
+    expect(statistical.AVERAGEIFS(undefined, testArray3, true, testArray1, null)).to.equal(error.na)
+    expect(statistical.AVERAGEIFS(undefined, testArray3, true)).to.equal(error.na)
+    expect(statistical.AVERAGEIFS(testArray2, undefined, true, testArray1, null)).to.equal(error.na)
+    expect(statistical.AVERAGEIFS(testArray2, undefined, true)).to.equal(error.na)
+    expect(statistical.AVERAGEIFS(testArray2, testArray3, undefined)).to.equal(error.div0)
+    expect(statistical.AVERAGEIFS(testArray2, testArray3, true, undefined, null)).to.equal(error.na)
+    expect(statistical.AVERAGEIFS(testArray2, testArray3, true, testArray1, undefined)).to.equal(3072)
+
+    expect(statistical.AVERAGEIFS(testArray2, testArray3, true, testArray1, '=false')).to.equal(16)
+    expect(statistical.AVERAGEIFS(testArray2, testArray3, true, testArray1, '=3')).to.equal(12288)
+    expect(statistical.AVERAGEIFS(testArray2, testArray3, true, testArray1, '>0')).to.equal(8192)
+
+    Object.values(error).forEach((err) => {
+      expect(statistical.AVERAGEIFS(1, true, true, err, err)).to.equal(1)
+      expect(statistical.AVERAGEIFS(1, true, true, err, 1)).to.equal(error.div0)
+
+      expect(statistical.AVERAGEIFS([[1, err]], [[true, true]], true)).to.equal(err)
+      expect(statistical.AVERAGEIFS([[1, err]], [[true, false]], true)).to.equal(1)
+    })
+
+    expect(statistical.AVERAGEIFS(null, true, true)).to.equal(error.div0)
+    expect(statistical.AVERAGEIFS(-5, true, true)).to.equal(-5)
+    expect(statistical.AVERAGEIFS('-5', true, true)).to.equal(error.div0)
+    expect(statistical.AVERAGEIFS(0, true, true)).to.equal(0)
+    expect(statistical.AVERAGEIFS('0', true, true)).to.equal(error.div0)
+    expect(statistical.AVERAGEIFS(5, true, true)).to.equal(5)
+    expect(statistical.AVERAGEIFS('5', true, true)).to.equal(error.div0)
+    expect(statistical.AVERAGEIFS(true, true, true)).to.equal(error.div0)
+    expect(statistical.AVERAGEIFS(false, true, true)).to.equal(error.div0)
+    expect(statistical.AVERAGEIFS('true', true, true)).to.equal(error.div0)
+    expect(statistical.AVERAGEIFS('false', true, true)).to.equal(error.div0)
+    expect(statistical.AVERAGEIFS('', true, true)).to.equal(error.div0)
+    expect(statistical.AVERAGEIFS('test', true, true)).to.equal(error.div0)
+    expect(statistical.AVERAGEIFS('test 1', true, true)).to.equal(error.div0)
+
+    expect(statistical.AVERAGEIFS(null, true, '=true')).to.equal(error.div0)
+    expect(statistical.AVERAGEIFS(-5, true, '=true')).to.equal(-5)
+    expect(statistical.AVERAGEIFS('-5', true, '=true')).to.equal(error.div0)
+    expect(statistical.AVERAGEIFS(0, true, '=true')).to.equal(0)
+    expect(statistical.AVERAGEIFS('0', true, '=true')).to.equal(error.div0)
+    expect(statistical.AVERAGEIFS(5, true, '=true')).to.equal(5)
+    expect(statistical.AVERAGEIFS('5', true, '=true')).to.equal(error.div0)
+    expect(statistical.AVERAGEIFS(true, true, '=true')).to.equal(error.div0)
+    expect(statistical.AVERAGEIFS(false, true, '=true')).to.equal(error.div0)
+    expect(statistical.AVERAGEIFS('true', true, '=true')).to.equal(error.div0)
+    expect(statistical.AVERAGEIFS('false', true, '=true')).to.equal(error.div0)
+    expect(statistical.AVERAGEIFS('', true, '=true')).to.equal(error.div0)
+    expect(statistical.AVERAGEIFS('test', true, '=true')).to.equal(error.div0)
+    expect(statistical.AVERAGEIFS('test 1', true, '=true')).to.equal(error.div0)
+
+    expect(statistical.AVERAGEIFS([[2, 4, 6, 8]], [['A', 'A', 'B', 'B']], [['a', 'b']])).to.equal(error.value)
   })
 
   it('BETA.DIST', () => {

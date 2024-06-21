@@ -181,87 +181,59 @@ export function AVERAGEIF(range, criteria, average_range) {
  * @param {*} args One or more values to average, including numbers or names, arrays, or references that contain numbers.
  * @returns
  */
-export function AVERAGEIFS() {
-  if (arguments.length < 3 || arguments.length % 2 === 0) {
+export function AVERAGEIFS(average_range, ...criteria) {
+  if (arguments.length < 3 || arguments.length % 2 === 0 || typeof average_range === 'undefined') {
     return error.na
   }
 
-  if (!Array.isArray(arguments[0])) {
-    arguments[0] = [arguments[0]]
+  if (!Array.isArray(average_range)) {
+    average_range = [[average_range]]
   }
 
-  if (!Array.isArray(arguments[0][0])) {
-    arguments[0][0] = [arguments[0][0]]
-  }
+  const numOfRows = average_range.length
+  const numOfColumns = average_range[0].length
 
-  const height = arguments[0].length
-  const width = arguments[0][0].length
+  const criteriaLength = criteria.length
 
-  const args = utils.argsToArray(arguments)
-  const criteriaLength = (args.length - 1) / 2
-  const range = utils.flatten(args.shift())
-  let count = 0
-  let result = 0
-
-  for (let i = 0; i < args.length; i += 2) {
-    if (!Array.isArray(args[i])) {
-      args[i] = [args[i]]
+  for (let i = 0; i < criteriaLength; i += 2) {
+    if (typeof criteria[i] === 'undefined') {
+      return error.na
     }
 
-    if (!Array.isArray(args[i][0])) {
-      args[i][0] = [args[i][0]]
-    }
-
-    if (height !== args[i].length || width !== args[i][0].length) {
+    if (Array.isArray(criteria[i + 1])) {
       return error.value
     }
 
-    args[i] = utils.flatten(args[i])
-  }
-
-  for (let i = 0; i < range.length; i++) {
-    if (typeof range[i] !== 'number') {
-      continue
+    if (!Array.isArray(criteria[i])) {
+      criteria[i] = [[criteria[i]]]
     }
 
-    let isMeetCondition = false
+    if (numOfRows !== criteria[i].length || numOfColumns !== criteria[i][0].length) {
+      return error.value
+    }
+  }
 
-    for (let j = 0; j < criteriaLength; j++) {
-      const value = args[2 * j][i]
-      const criteria = args[2 * j + 1]
-      let computedResult = false
+  const resultsLength = numOfRows * numOfColumns
 
-      const tokenizedCriteria = evalExpression.parse(criteria + '')
-      const tokens = [evalExpression.createToken(value, evalExpression.TOKEN_TYPE_LITERAL)].concat(tokenizedCriteria)
+  const results = evalExpression.runCriterias(...criteria)
 
-      computedResult = evalExpression.countIfComputeExpression(tokens)
+  let sum = 0
+  let counter = 0
 
-      // Criterias are calculated as AND so any `false` breakes the loop as unmeet condition
-      if (!computedResult) {
-        isMeetCondition = false
-        break
+  for (let i = 0; i < resultsLength; i++) {
+    if (results[i]) {
+      const value = average_range[Math.trunc(i / numOfColumns)][i % numOfColumns]
+
+      if (typeof value === 'number') {
+        sum += value
+        counter++
+      } else if (value instanceof Error) {
+        return value
       }
-
-      isMeetCondition = true
-    }
-
-    if (isMeetCondition) {
-      result += range[i]
-      count++
     }
   }
 
-  if (count === 0) {
-    return error.div0
-  }
-
-  const average = result / count
-
-  if (isNaN(average)) {
-    return 0
-  } else {
-    return average
-  }
+  return counter === 0 ? error.div0 : sum / counter
 }
 
 export const BETA = {}
