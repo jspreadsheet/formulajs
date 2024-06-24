@@ -706,43 +706,167 @@ export function VLOOKUP(lookup_value, table_array, col_index_num, range_lookup =
   return resultRow[col_index_num - 1]
 }
 
+const typePrecedenceMap = {
+  number: 0,
+  string: 1,
+  boolean: 2
+}
+
+const getTypePrecedence = function (value) {
+  const type = typeof value
+
+  if (typeof typePrecedenceMap[type] !== 'undefined') {
+    return typePrecedenceMap[type]
+  }
+
+  return value === null ? 4 : 3
+}
+
+const compare = function (value1, value2) {
+  const typePrecedence1 = getTypePrecedence(value1)
+  const typePrecedence2 = getTypePrecedence(value2)
+
+  if (typePrecedence1 !== typePrecedence2) {
+    return typePrecedence1 < typePrecedence2 ? -1 : 1
+  }
+
+  if (typeof value2 === 'string') {
+    value2 = value2.toLowerCase()
+  }
+
+  if (value1 === value2) {
+    return 0
+  }
+
+  return value1 < value2 ? -1 : 1
+}
+
 function xLookupBinarySearch(arr, target, match_mode) {
   let left = 0
   let right = arr.length - 1
 
+  const targetIsString = typeof target === 'string'
+
+  if (targetIsString) {
+    target = target.toLowerCase()
+  }
+
   while (left <= right) {
-    const mid = Math.floor((left + right) / 2)
+    let mid = Math.floor((left + right) / 2)
 
-    if (match_mode === 2) {
-      const tokenizedCriteria = evalExpression.parse(target + '')
-      let tokens = [evalExpression.createToken(arr[mid], evalExpression.TOKEN_TYPE_LITERAL)].concat(tokenizedCriteria)
+    const comparisonResult = compare(target, arr[mid])
 
-      if (evalExpression.countIfComputeExpression(tokens)) {
-        // Element found
-        return mid
-      } else if (arr[mid] < target) {
-        // Continue search to the right half of the array
-        left = mid + 1
-      } else {
-        // Continue search to the left half of the array
-        right = mid - 1
+    if (comparisonResult === 0) {
+      while (mid > 0 && compare(target, arr[mid - 1]) === 0) {
+        mid--
       }
+
+      return mid
+    }
+
+    let changeLeft = comparisonResult > 0
+
+    if (changeLeft) {
+      // Continue search to the right half of the array
+      left = mid + 1
     } else {
-      if (arr[mid] === target) {
-        // Element found
-        return mid
-      } else if (arr[mid] < target) {
-        // Continue search to the right half of the array
-        left = mid + 1
-      } else {
-        // Continue search to the left half of the array
-        right = mid - 1
-      }
+      // Continue search to the left half of the array
+      right = mid - 1
     }
   }
 
-  // Element not found
-  return -1
+  if (match_mode === 0) {
+    return null
+  }
+
+  if (match_mode === -1) {
+    if (right < 0) {
+      return null
+    }
+
+    const comparisonResult = compare(target, arr[right])
+
+    if (comparisonResult > 0) {
+      return right
+    }
+
+    return right > 0 ? right - 1 : null
+  }
+
+  if (left >= arr.length) {
+    return null
+  }
+
+  const comparisonResult = compare(target, arr[left])
+
+  if (comparisonResult < 0) {
+    return left
+  }
+
+  return left < arr.length - 1 ? left + 1 : null
+}
+
+function invertedXLookupBinarySearch(arr, target, match_mode) {
+  let left = 0
+  let right = arr.length - 1
+
+  if (typeof target === 'string') {
+    target = target.toLowerCase()
+  }
+
+  while (left <= right) {
+    let mid = Math.floor((left + right) / 2)
+
+    const comparisonResult = compare(target, arr[mid])
+
+    if (comparisonResult === 0) {
+      while (mid < arr.length - 1 && compare(target, arr[mid + 1]) === 0) {
+        mid++
+      }
+
+      return mid
+    }
+
+    let changeLeft = comparisonResult < 0
+
+    if (changeLeft) {
+      // Continue search to the right half of the array
+      left = mid + 1
+    } else {
+      // Continue search to the left half of the array
+      right = mid - 1
+    }
+  }
+
+  if (match_mode === 0) {
+    return null
+  }
+
+  if (match_mode === -1) {
+    if (left >= arr.length) {
+      return null
+    }
+
+    const comparisonResult = compare(target, arr[left])
+
+    if (comparisonResult > 0) {
+      return left
+    }
+
+    return left > 0 ? left - 1 : null
+  }
+
+  if (right < 0) {
+    return null
+  }
+
+  const comparisonResult = compare(target, arr[right])
+
+  if (comparisonResult < 0) {
+    return right
+  }
+
+  return right < arr.length - 1 ? right + 1 : null
 }
 
 // Searches the index of a given value. Works with XLOOKUP arguments: match_mode and search_mode
@@ -794,15 +918,22 @@ function lookupIndex(value, lookup_array, match_mode, reverse) {
 
     return closest_larger_pos
   } else if (match_mode === 2) {
-    const tokenizedCriteria = evalExpression.parse(value + '')
+    if (typeof value !== 'string') {
+      for (let i = startIndex; i !== endIndex; i += step) {
+        if (lookup_array[i] === value) {
+          return i
+        }
+      }
+    } else {
+      const lowerCaseLookupValue = value.toLowerCase()
 
-    for (let i = startIndex; i !== endIndex; i += step) {
-      let tokens = [evalExpression.createToken(lookup_array[i], evalExpression.TOKEN_TYPE_LITERAL)].concat(
-        tokenizedCriteria
-      )
-
-      if (evalExpression.countIfComputeExpression(tokens)) {
-        return i
+      for (let i = startIndex; i !== endIndex; i += step) {
+        if (
+          typeof lookup_array[i] === 'string' &&
+          evalExpression.stringCompare(lookup_array[i].toLowerCase(), lowerCaseLookupValue)
+        ) {
+          return i
+        }
       }
     }
   }
@@ -857,10 +988,13 @@ export function XLOOKUP(
     utils.getVariableType(lookup_array) === 'single' ||
     utils.getVariableType(return_array) === 'single' ||
     ![-1, 0, 1, 2].includes(match_mode) ||
-    ![-2, -1, 1, 2].includes(search_mode) ||
-    lookup_value === null
+    ![-2, -1, 1, 2].includes(search_mode)
   ) {
     return error.value
+  }
+
+  if (match_mode === 2 && (search_mode === 2 || search_mode === -2)) {
+    return [[error.value]]
   }
 
   const type = utils.getVariableType(lookup_value)
@@ -871,13 +1005,13 @@ export function XLOOKUP(
     if (search_mode === 2) {
       p = xLookupBinarySearch(flattened, lookup_value, match_mode)
     } else if (search_mode === -2) {
-      p = flattened.length - xLookupBinarySearch(flattened.reverse(), lookup_value, match_mode) - 1
+      p = invertedXLookupBinarySearch(flattened, lookup_value, match_mode)
     } else {
       p = lookupIndex(lookup_value, flattened, match_mode, search_mode === -1)
     }
 
     if (typeof p !== 'number') {
-      return [[if_not_found]]
+      return Array.isArray(if_not_found) ? if_not_found : [[if_not_found]]
     }
 
     if (utils.getVariableType(lookup_array) === 'line') {
@@ -898,18 +1032,25 @@ export function XLOOKUP(
       result[i] = []
       for (let j = 0; j < value_columns; j++) {
         let p = xLookupBinarySearch(flattened, lookup_value[i][j], match_mode)
-        result[i][j] = getVal(p, return_array, if_not_found, lookup_type)
+        result[i][j] = getVal(
+          p,
+          return_array,
+          (Array.isArray(if_not_found) && if_not_found[i] && if_not_found[i][j]) || error.value,
+          lookup_type
+        )
       }
     }
   } else if (search_mode === -2) {
-    let flattenedLength = flattened.length
-    let flattenedReverse = flattened.reverse()
-
     for (let i = 0; i < value_rows; i++) {
       result[i] = []
       for (let j = 0; j < value_columns; j++) {
-        let p = flattenedLength - xLookupBinarySearch(flattenedReverse, lookup_value[i][j], match_mode) - 1
-        result[i][j] = getVal(p, return_array, if_not_found, lookup_type)
+        let p = invertedXLookupBinarySearch(flattened, lookup_value[i][j], match_mode)
+        result[i][j] = getVal(
+          p,
+          return_array,
+          (Array.isArray(if_not_found) && if_not_found[i] && if_not_found[i][j]) || error.value,
+          lookup_type
+        )
       }
     }
   } else {
@@ -917,7 +1058,12 @@ export function XLOOKUP(
       result[i] = []
       for (let j = 0; j < value_columns; j++) {
         let p = lookupIndex(lookup_value[i][j], flattened, match_mode, search_mode === -1)
-        result[i][j] = getVal(p, return_array, if_not_found, lookup_type)
+        result[i][j] = getVal(
+          p,
+          return_array,
+          (Array.isArray(if_not_found) && if_not_found[i] && if_not_found[i][j]) || error.value,
+          lookup_type
+        )
       }
     }
   }
