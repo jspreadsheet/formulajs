@@ -2158,7 +2158,7 @@ describe('Statistical', () => {
     expect(statistical.MINIFS([[2, 4, 6, 8]], 'string', 'B')).to.equal(error.value)
 
     const testArray1 = [
-      ['teste 1'],
+      ['tesTe 1'],
       ['teste 3'],
       [''],
       [false],
