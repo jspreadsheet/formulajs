@@ -3804,7 +3804,7 @@ describe('Lookup Reference', () => {
       })
 
       it('match_mode 0', () => {
-        expect(lookup.XLOOKUP('bob', [['john', 'carlos', 'bob', 'ana']], [[1, 2, 3, 4]], 0, 0, -2)).to.eql(3)
+        expect(lookup.XLOOKUP('bOb', [['john', 'carlos', 'boB', 'ana']], [[1, 2, 3, 4]], 0, 0, -2)).to.eql(3)
         expect(lookup.XLOOKUP(3, [[4, 3, 2, 1]], [['ana', 'bob', 'carlos', 'john']], 0, 0, -2)).to.eql('bob')
         expect(lookup.XLOOKUP([[3, 4]], [[4, 3, 2, 1]], [['ana', 'bob', 'carlos', 'john']], 0, 0, -2)).to.eql([
           ['bob', 'ana']
@@ -3819,7 +3819,7 @@ describe('Lookup Reference', () => {
           error.div0
         )
 
-        expect(lookup.XLOOKUP([[6, 7]], [[6, 'a', 6]], [[1, 2, 3]], 'something', 0, -2)).to.eql([[3, error.value]])
+        expect(lookup.XLOOKUP([[6, 7]], [[6, 'a', 6]], [[1, 2, 3]], 'something', 0, -2)).to.eql([[3, 'something']])
 
         expect(lookup.XLOOKUP(6, [[6, 'a', 6]], [[1, 2, 3]], 'something', 0, -2)).to.eql(3)
         expect(lookup.XLOOKUP(6, [[6, true, 6]], [[1, 2, 3]], 'something', 0, -2)).to.eql(3)
@@ -3859,8 +3859,8 @@ describe('Lookup Reference', () => {
         expect(lookup.XLOOKUP(6, [[6, error.div0, 6]], [[1, 2, 3]], 'something', 1, -2)).to.eql(3)
         expect(lookup.XLOOKUP(6, [[6, null, 6]], [[1, 2, 3]], 'something', 1, -2)).to.eql(3)
 
-        expect(lookup.XLOOKUP('a', [['a', 5, 'a']], [[1, 2, 3]], 'something', 1, -2)).to.eql(1)
-        expect(lookup.XLOOKUP('a', [['a', true, 'a']], [[1, 2, 3]], 'something', 1, -2)).to.eql(3)
+        expect(lookup.XLOOKUP('A', [['a', 5, 'a']], [[1, 2, 3]], 'something', 1, -2)).to.eql(1)
+        expect(lookup.XLOOKUP('a', [['A', true, 'A']], [[1, 2, 3]], 'something', 1, -2)).to.eql(3)
         expect(lookup.XLOOKUP('a', [['a', error.div0, 'a']], [[1, 2, 3]], 'something', 1, -2)).to.eql(3)
         expect(lookup.XLOOKUP('a', [['a', null, 'a']], [[1, 2, 3]], 'something', 1, -2)).to.eql(3)
 
@@ -4336,7 +4336,7 @@ describe('Lookup Reference', () => {
         expect(lookup.XLOOKUP('l', [['a', 'b', 'c', 'd']], [[1, 2, 3, 4]])).to.eql(error.na)
         expect(lookup.XLOOKUP('l', [['a', 'b', 'c', 'd']], [[1, 2, 3, 4]], 'Not Found')).to.eql('Not Found')
         expect(lookup.XLOOKUP([['c', 'l']], [['a', 'b', 'c', 'd']], [[1, 2, 3, 4]], 'Not Found')).to.eql([
-          [3, error.value]
+          [3, 'Not Found']
         ])
       })
     })
@@ -4367,8 +4367,8 @@ describe('Lookup Reference', () => {
         expect(lookup.XLOOKUP(6, [[6, error.div0, 6]], [[1, 2, 3]], 'something', -1, 2)).to.eql(1)
         expect(lookup.XLOOKUP(6, [[6, null, 6]], [[1, 2, 3]], 'something', -1, 2)).to.eql(1)
 
-        expect(lookup.XLOOKUP('a', [['a', 5, 'a']], [[1, 2, 3]], 'something', -1, 2)).to.eql(3)
-        expect(lookup.XLOOKUP('a', [['a', true, 'a']], [[1, 2, 3]], 'something', -1, 2)).to.eql(1)
+        expect(lookup.XLOOKUP('a', [[' A', 5, ' A']], [[1, 2, 3]], 'something', -1, 2)).to.eql(3)
+        expect(lookup.XLOOKUP('A', [['a', true, 'a']], [[1, 2, 3]], 'something', -1, 2)).to.eql(1)
         expect(lookup.XLOOKUP('a', [['a', error.div0, 'a']], [[1, 2, 3]], 'something', -1, 2)).to.eql(1)
         expect(lookup.XLOOKUP('a', [['a', null, 'a']], [[1, 2, 3]], 'something', -1, 2)).to.eql(1)
 
@@ -4407,15 +4407,15 @@ describe('Lookup Reference', () => {
           error.div0
         )
 
-        expect(lookup.XLOOKUP([[6, 7]], [[6, 'a', 6]], [[1, 2, 3]], 'something', 0, 2)).to.eql([[1, error.value]])
+        expect(lookup.XLOOKUP([[6, 7]], [[6, 'a', 6]], [[1, 2, 3]], 'something', 0, 2)).to.eql([[1, 'something']])
 
         expect(lookup.XLOOKUP(6, [[6, 'a', 6]], [[1, 2, 3]], 'something', 0, 2)).to.eql(1)
         expect(lookup.XLOOKUP(6, [[6, true, 6]], [[1, 2, 3]], 'something', 0, 2)).to.eql(1)
         expect(lookup.XLOOKUP(6, [[6, error.div0, 6]], [[1, 2, 3]], 'something', 0, 2)).to.eql(1)
         expect(lookup.XLOOKUP(6, [[6, null, 6]], [[1, 2, 3]], 'something', 0, 2)).to.eql(1)
 
-        expect(lookup.XLOOKUP('a', [['a', 5, 'a']], [[1, 2, 3]], 'something', 0, 2)).to.eql(3)
-        expect(lookup.XLOOKUP('a', [['a', true, 'a']], [[1, 2, 3]], 'something', 0, 2)).to.eql(1)
+        expect(lookup.XLOOKUP('a', [['A', 5, 'A']], [[1, 2, 3]], 'something', 0, 2)).to.eql(3)
+        expect(lookup.XLOOKUP('A', [['a', true, 'a']], [[1, 2, 3]], 'something', 0, 2)).to.eql(1)
         expect(lookup.XLOOKUP('a', [['a', error.div0, 'a']], [[1, 2, 3]], 'something', 0, 2)).to.eql(1)
         expect(lookup.XLOOKUP('a', [['a', null, 'a']], [[1, 2, 3]], 'something', 0, 2)).to.eql(1)
 
@@ -4455,8 +4455,8 @@ describe('Lookup Reference', () => {
         expect(lookup.XLOOKUP(6, [[6, error.div0, 6]], [[1, 2, 3]], 'something', 1, 2)).to.eql(1)
         expect(lookup.XLOOKUP(6, [[6, null, 6]], [[1, 2, 3]], 'something', 1, 2)).to.eql(1)
 
-        expect(lookup.XLOOKUP('a', [['a', 5, 'a']], [[1, 2, 3]], 'something', 1, 2)).to.eql(3)
-        expect(lookup.XLOOKUP('a', [['a', true, 'a']], [[1, 2, 3]], 'something', 1, 2)).to.eql(1)
+        expect(lookup.XLOOKUP('a', [['A', 5, 'A']], [[1, 2, 3]], 'something', 1, 2)).to.eql(3)
+        expect(lookup.XLOOKUP('A', [['a', true, 'a']], [[1, 2, 3]], 'something', 1, 2)).to.eql(1)
         expect(lookup.XLOOKUP('a', [['a', error.div0, 'a']], [[1, 2, 3]], 'something', 1, 2)).to.eql(1)
         expect(lookup.XLOOKUP('a', [['a', null, 'a']], [[1, 2, 3]], 'something', 1, 2)).to.eql(1)
 
@@ -4576,6 +4576,19 @@ describe('Lookup Reference', () => {
           ]
         )
       ).to.eql([['c', 'b']])
+
+      expect(lookup.XLOOKUP([[3, 1]], 1, [['a', 'b', 'c', 'd']])).to.eql([[error.na, 'a']])
+
+      expect(lookup.XLOOKUP([[3, 1]], 1, [['a'], ['e']])).to.eql([[error.na, 'a']])
+
+      expect(
+        lookup.XLOOKUP([[3, 1]], 1, [
+          ['a', 'b', 'c', 'd'],
+          ['e', 'f', 'g', 'h']
+        ])
+      ).to.eql([[error.value, error.value]])
+
+      expect(lookup.XLOOKUP([[3, 2]], 2, 'b')).to.eql([[error.na, 'b']])
     })
 
     it('others tests', () => {

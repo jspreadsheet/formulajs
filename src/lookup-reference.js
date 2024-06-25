@@ -741,7 +741,7 @@ const compare = function (value1, value2) {
   return value1 < value2 ? -1 : 1
 }
 
-function xLookupBinarySearch(arr, target, match_mode) {
+function xLookupBinarySearch(target, arr, match_mode) {
   let left = 0
   let right = arr.length - 1
 
@@ -806,7 +806,7 @@ function xLookupBinarySearch(arr, target, match_mode) {
   return left < arr.length - 1 ? left + 1 : null
 }
 
-function invertedXLookupBinarySearch(arr, target, match_mode) {
+function invertedXLookupBinarySearch(target, arr, match_mode) {
   let left = 0
   let right = arr.length - 1
 
@@ -949,13 +949,12 @@ function lookupIndex(value, lookup_array, match_mode, reverse) {
   }
 }
 
-function getVal(p, return_array, if_not_found, lookup_type) {
-  if (typeof p !== 'number') {
-    return if_not_found
-  } else if (lookup_type === 'line') {
-    return return_array[0][p]
-  } else if (lookup_type === 'column') {
-    return return_array[p][0]
+const xLookupSearchFunctions = {
+  2: xLookupBinarySearch,
+  '-2': invertedXLookupBinarySearch,
+  1: lookupIndex,
+  '-1': function () {
+    return lookupIndex.call(this, ...arguments, true)
   }
 }
 
@@ -972,14 +971,7 @@ function getVal(p, return_array, if_not_found, lookup_type) {
  * @param {*} search_mode Optional. Specify the search mode to use: 1 - Perform a search starting at the first item. This is the default. -1 - Perform a reverse search starting at the last item. 2 - Perform a binary search that relies on lookup_array being sorted in ascending order. If not sorted, invalid results will be returned. -2 - Perform a binary search that relies on lookup_array being sorted in descending order. If not sorted, invalid results will be returned.
  * @returns
  */
-export function XLOOKUP(
-  lookup_value,
-  lookup_array,
-  return_array,
-  if_not_found = error.na,
-  match_mode = 0,
-  search_mode = 1
-) {
+export function XLOOKUP(lookup_value, lookup_array, return_array, if_not_found, match_mode = 0, search_mode = 1) {
   if (arguments.length > 6 || arguments.length < 3 || utils.anyIsUndefined(lookup_value, lookup_array, return_array)) {
     return error.na
   }
@@ -1010,7 +1002,7 @@ export function XLOOKUP(
     return error.value
   }
 
-  let flattened = lookup_arrayType !== 'single' ? utils.flatten(lookup_array) : [lookup_array]
+  let flattened
   if (lookup_arrayType === 'single') {
     flattened = [lookup_array]
   } else {
@@ -1027,22 +1019,19 @@ export function XLOOKUP(
         return error.value
       }
     }
+
+    flattened = utils.flatten(lookup_array)
   }
 
   const type = utils.getVariableType(lookup_value)
 
+  const searchFunction = xLookupSearchFunctions[search_mode]
+
   if (type === 'single') {
-    let p
-    if (search_mode === 2) {
-      p = xLookupBinarySearch(flattened, lookup_value, match_mode)
-    } else if (search_mode === -2) {
-      p = invertedXLookupBinarySearch(flattened, lookup_value, match_mode)
-    } else {
-      p = lookupIndex(lookup_value, flattened, match_mode, search_mode === -1)
-    }
+    const p = searchFunction(lookup_value, flattened, match_mode)
 
     if (typeof p !== 'number') {
-      return if_not_found
+      return typeof if_not_found !== 'undefined' ? if_not_found : error.na
     }
 
     if (lookup_arrayType === 'single') {
@@ -1062,50 +1051,45 @@ export function XLOOKUP(
     return return_array[p].length === 1 ? return_array[p][0] : [return_array[p]]
   }
 
-  let value_rows = lookup_value.length
-  let value_columns = lookup_value[0].length
-  let result = []
-  const lookup_type = utils.getVariableType(lookup_array)
+  const value_rows = lookup_value.length
+  const value_columns = lookup_value[0].length
+  const result = []
 
   // Iterate through each value when lookup_value is a range
-  if (search_mode === 2) {
-    for (let i = 0; i < value_rows; i++) {
-      result[i] = []
-      for (let j = 0; j < value_columns; j++) {
-        let p = xLookupBinarySearch(flattened, lookup_value[i][j], match_mode)
-        result[i][j] = getVal(
-          p,
-          return_array,
-          (Array.isArray(if_not_found) && if_not_found[i] && if_not_found[i][j]) || error.value,
-          lookup_type
-        )
+  for (let i = 0; i < value_rows; i++) {
+    const resultRow = []
+    result.push(resultRow)
+
+    for (let j = 0; j < value_columns; j++) {
+      if (lookup_arrayType === 'single') {
+        if (Array.isArray(return_array) && return_array.length > 1 && return_array[0].length > 1) {
+          resultRow.push(error.value)
+
+          continue
+        }
       }
-    }
-  } else if (search_mode === -2) {
-    for (let i = 0; i < value_rows; i++) {
-      result[i] = []
-      for (let j = 0; j < value_columns; j++) {
-        let p = invertedXLookupBinarySearch(flattened, lookup_value[i][j], match_mode)
-        result[i][j] = getVal(
-          p,
-          return_array,
-          (Array.isArray(if_not_found) && if_not_found[i] && if_not_found[i][j]) || error.value,
-          lookup_type
-        )
+
+      const p = searchFunction(lookup_value[i][j], flattened, match_mode)
+
+      let resultItem
+
+      if (typeof p !== 'number') {
+        if (typeof if_not_found === 'undefined') {
+          resultItem = error.na
+        } else {
+          resultItem = Array.isArray(if_not_found) ? if_not_found[0][0] : if_not_found
+        }
+      } else {
+        if (lookup_arrayType === 'line') {
+          resultItem = return_array[0][p]
+        } else if (lookup_arrayType === 'column') {
+          resultItem = return_array[p][0]
+        } else {
+          resultItem = Array.isArray(return_array) ? return_array[0][0] : return_array
+        }
       }
-    }
-  } else {
-    for (let i = 0; i < value_rows; i++) {
-      result[i] = []
-      for (let j = 0; j < value_columns; j++) {
-        let p = lookupIndex(lookup_value[i][j], flattened, match_mode, search_mode === -1)
-        result[i][j] = getVal(
-          p,
-          return_array,
-          (Array.isArray(if_not_found) && if_not_found[i] && if_not_found[i][j]) || error.value,
-          lookup_type
-        )
-      }
+
+      resultRow.push(resultItem)
     }
   }
 
