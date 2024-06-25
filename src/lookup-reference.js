@@ -877,41 +877,51 @@ function lookupIndex(value, lookup_array, match_mode, reverse) {
   const endIndex = reverse ? -1 : arrLength
   const step = reverse ? -1 : 1
 
+  if (typeof value === 'string') {
+    value = value.toLowerCase()
+  }
+
   if (match_mode === 0) {
     for (let i = startIndex; i !== endIndex; i += step) {
-      if (lookup_array[i] === value) {
+      if (compare(value, lookup_array[i]) === 0) {
         return i
       }
     }
   } else if (match_mode === -1) {
-    let closest_smaller = -Infinity
+    let closest_smaller = undefined
     let closest_smaller_pos = false
 
     for (let i = startIndex; i !== endIndex; i += step) {
       let current = lookup_array[i]
 
-      if (current === value) {
+      const comparisonResult = compare(value, current)
+
+      if (comparisonResult === 0) {
         return i
       }
-      if (current < value && current > closest_smaller) {
-        closest_smaller = current
+
+      if (comparisonResult > 0 && (typeof closest_smaller === 'undefined' || compare(closest_smaller, current) < 0)) {
+        closest_smaller = typeof current === 'string' ? current.toLowerCase() : current
         closest_smaller_pos = i
       }
     }
 
     return closest_smaller_pos
   } else if (match_mode === 1) {
-    let closest_larger = +Infinity
+    let closest_larger = undefined
     let closest_larger_pos = false
 
     for (let i = startIndex; i !== endIndex; i += step) {
       let current = lookup_array[i]
 
-      if (current === value) {
+      const comparisonResult = compare(value, current)
+
+      if (comparisonResult === 0) {
         return i
       }
-      if (current > value && current < closest_larger) {
-        closest_larger = current
+
+      if (comparisonResult < 0 && (typeof closest_larger === 'undefined' || compare(closest_larger, current) > 0)) {
+        closest_larger = typeof current === 'string' ? current.toLowerCase() : current
         closest_larger_pos = i
       }
     }
@@ -985,8 +995,6 @@ export function XLOOKUP(
 
   if (
     utils.anyIsError(match_mode, search_mode) ||
-    utils.getVariableType(lookup_array) === 'single' ||
-    utils.getVariableType(return_array) === 'single' ||
     ![-1, 0, 1, 2].includes(match_mode) ||
     ![-2, -1, 1, 2].includes(search_mode)
   ) {
@@ -994,11 +1002,34 @@ export function XLOOKUP(
   }
 
   if (match_mode === 2 && (search_mode === 2 || search_mode === -2)) {
-    return [[error.value]]
+    return error.value
+  }
+
+  const lookup_arrayType = utils.getVariableType(lookup_array)
+  if (lookup_arrayType === 'matrix') {
+    return error.value
+  }
+
+  let flattened = lookup_arrayType !== 'single' ? utils.flatten(lookup_array) : [lookup_array]
+  if (lookup_arrayType === 'single') {
+    flattened = [lookup_array]
+  } else {
+    if (!Array.isArray(return_array)) {
+      return error.value
+    }
+
+    if (lookup_arrayType === 'line') {
+      if (return_array[0].length !== lookup_array[0].length) {
+        return error.value
+      }
+    } else {
+      if (return_array.length !== lookup_array.length) {
+        return error.value
+      }
+    }
   }
 
   const type = utils.getVariableType(lookup_value)
-  const flattened = utils.flatten(lookup_array)
 
   if (type === 'single') {
     let p
@@ -1011,14 +1042,24 @@ export function XLOOKUP(
     }
 
     if (typeof p !== 'number') {
-      return Array.isArray(if_not_found) ? if_not_found : [[if_not_found]]
+      return if_not_found
+    }
+
+    if (lookup_arrayType === 'single') {
+      if (Array.isArray(return_array) && return_array.length > 1 && return_array[0].length > 1) {
+        return error.value
+      }
+
+      return return_array
     }
 
     if (utils.getVariableType(lookup_array) === 'line') {
-      return utils.getColumnAsMatrix(return_array, p)
+      const result = utils.getColumnAsMatrix(return_array, p)
+
+      return result.length === 1 ? result[0][0] : result
     }
 
-    return [return_array[p]]
+    return return_array[p].length === 1 ? return_array[p][0] : [return_array[p]]
   }
 
   let value_rows = lookup_value.length
