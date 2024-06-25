@@ -4,15 +4,9 @@ import * as criteriaEval from '../../src/utils/criteria-eval.js'
 
 describe('Utils => criteria eval', () => {
   it('parse', () => {
-    expect(criteriaEval.parse('')).to.deep.equal([])
-    expect(criteriaEval.parse('test')).to.deep.equal([
-      { type: 'operator', value: '=' },
-      { type: 'literal', value: 'test' }
-    ])
-    expect(criteriaEval.parse('10')).to.deep.equal([
-      { type: 'operator', value: '=' },
-      { type: 'literal', value: 10 }
-    ])
+    expect(criteriaEval.parse('')).to.deep.equal([{ type: 'literal', value: '' }])
+    expect(criteriaEval.parse('test')).to.deep.equal([{ type: 'literal', value: 'test' }])
+    expect(criteriaEval.parse('10')).to.deep.equal([{ type: 'literal', value: 10 }])
     expect(criteriaEval.parse('=10')).to.deep.equal([
       { type: 'operator', value: '=' },
       { type: 'literal', value: 10 }
@@ -37,14 +31,8 @@ describe('Utils => criteria eval', () => {
       { type: 'operator', value: '>=' },
       { type: 'literal', value: 10 }
     ])
-    expect(criteriaEval.parse('==10')).to.deep.equal([
-      { type: 'operator', value: '=' },
-      { type: 'literal', value: '==10' }
-    ])
-    expect(criteriaEval.parse('==10>')).to.deep.equal([
-      { type: 'operator', value: '=' },
-      { type: 'literal', value: '==10>' }
-    ])
+    expect(criteriaEval.parse('==10')).to.deep.equal([{ type: 'literal', value: '==10' }])
+    expect(criteriaEval.parse('==10>')).to.deep.equal([{ type: 'literal', value: '==10>' }])
     expect(criteriaEval.parse('>test')).to.deep.equal([
       { type: 'operator', value: '>' },
       { type: 'literal', value: 'test' }
@@ -57,18 +45,9 @@ describe('Utils => criteria eval', () => {
       { type: 'operator', value: '<=' },
       { type: 'literal', value: 'test' }
     ])
-    expect(criteriaEval.parse('==test')).to.deep.equal([
-      { type: 'operator', value: '=' },
-      { type: 'literal', value: '==test' }
-    ])
-    expect(criteriaEval.parse('`')).to.deep.equal([
-      { type: 'operator', value: '=' },
-      { type: 'literal', value: '`' }
-    ])
-    expect(criteriaEval.parse('!@#$%^&*()_+')).to.deep.equal([
-      { type: 'operator', value: '=' },
-      { type: 'literal', value: '!@#$%^&*()_+' }
-    ])
+    expect(criteriaEval.parse('==test')).to.deep.equal([{ type: 'literal', value: '==test' }])
+    expect(criteriaEval.parse('`')).to.deep.equal([{ type: 'literal', value: '`' }])
+    expect(criteriaEval.parse('!@#$%^&*()_+')).to.deep.equal([{ type: 'literal', value: '!@#$%^&*()_+' }])
     expect(criteriaEval.parse('>!@#$%^&*()_+')).to.deep.equal([
       { type: 'operator', value: '>' },
       { type: 'literal', value: '!@#$%^&*()_+' }

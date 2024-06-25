@@ -2004,60 +2004,78 @@ export function SUM() {
  * @returns
  */
 export function SUMIF(range, criteria, sum_range) {
-  if (arguments.length < 2 || arguments.length > 3) {
+  if (
+    arguments.length < 2 ||
+    arguments.length > 3 ||
+    typeof range === 'undefined' ||
+    (arguments.length === 3 && typeof sum_range === 'undefined')
+  ) {
     return error.na
   }
 
-  if (sum_range) {
-    const isArray = Array.isArray(range)
-    if (isArray !== Array.isArray(sum_range)) {
+  if (!Array.isArray(range)) {
+    range = [[range]]
+  }
+
+  const numOfRows = range.length
+  const numOfColumns = range[0].length
+
+  if (typeof sum_range !== 'undefined') {
+    if (!Array.isArray(sum_range)) {
+      sum_range = [[sum_range]]
+    }
+
+    if (numOfRows !== sum_range.length || numOfColumns !== sum_range[0].length) {
       return error.value
     }
-
-    if (isArray) {
-      if (range.length !== sum_range.length || range[0].length !== sum_range[0].length) {
-        return error.value
-      }
-    }
-  }
-
-  if (!Array.isArray(range)) {
-    range = [range]
-  }
-
-  range = utils.flatten(range)
-
-  if (sum_range) {
-    if (!Array.isArray(sum_range)) {
-      sum_range = [sum_range]
-    }
-
-    sum_range = utils.flatten(sum_range)
   } else {
     sum_range = range
   }
 
-  if (range instanceof Error) {
-    return range
+  let isSingleCriteria = false
+
+  if (!Array.isArray(criteria)) {
+    criteria = [[criteria]]
+    isSingleCriteria = true
   }
 
-  if (criteria === undefined || criteria === null || criteria instanceof Error) {
-    return 0
+  const result = []
+
+  const numOfCriteriaRows = criteria.length
+  const numOfCriteriaColumns = criteria[0].length
+
+  const executionResultLength = numOfRows * numOfColumns
+
+  for (let y = 0; y < numOfCriteriaRows; y++) {
+    const row = criteria[y]
+
+    const resultRow = []
+    result.push(resultRow)
+
+    for (let x = 0; x < numOfCriteriaColumns; x++) {
+      const singleCriteria = row[x]
+
+      const executionResult = evalExpression.runCriterias(range, singleCriteria)
+
+      let sum = 0
+
+      for (let i = 0; i < executionResultLength; i++) {
+        if (executionResult[i]) {
+          const value = sum_range[Math.trunc(i / numOfColumns)][i % numOfColumns]
+
+          if (typeof value === 'number') {
+            sum += value
+          } else if (value instanceof Error) {
+            return value
+          }
+        }
+      }
+
+      resultRow.push(sum)
+    }
   }
 
-  let result = 0
-  const tokenizedCriteria = evalExpression.parse(criteria + '')
-
-  for (let i = 0; i < range.length; i++) {
-    const value = range[i]
-    const sumValue = sum_range[i]
-
-    const tokens = [evalExpression.createToken(value, evalExpression.TOKEN_TYPE_LITERAL)].concat(tokenizedCriteria)
-
-    result += evalExpression.countIfComputeExpression(tokens) ? sumValue : 0
-  }
-
-  return result
+  return isSingleCriteria ? result[0][0] : result
 }
 
 /**
@@ -2067,80 +2085,57 @@ export function SUMIF(range, criteria, sum_range) {
  *
  * @returns
  */
-export function SUMIFS() {
-  if (arguments.length < 3 || (arguments.length > 3 && arguments.length % 2 === 0)) {
+export function SUMIFS(sum_range, ...criteria) {
+  if (arguments.length < 3 || arguments.length % 2 === 0 || typeof sum_range === 'undefined') {
     return error.na
   }
 
-  if (!Array.isArray(arguments[0])) {
-    arguments[0] = [arguments[0]]
+  if (!Array.isArray(sum_range)) {
+    sum_range = [[sum_range]]
   }
 
-  if (!Array.isArray(arguments[0][0])) {
-    arguments[0][0] = [arguments[0][0]]
-  }
+  const numOfRows = sum_range.length
+  const numOfColumns = sum_range[0].length
 
-  const height = arguments[0].length
-  const width = arguments[0][0].length
+  const criteriaLength = criteria.length
 
-  const args = utils.argsToArray(arguments)
-  const range = utils.parseNumberArray(utils.flatten(args.shift()))
-
-  if (range instanceof Error) {
-    return range
-  }
-
-  const criterias = args
-  const criteriaLength = criterias.length / 2
-
-  for (let i = 0; i < criteriaLength; i++) {
-    if (!Array.isArray(criterias[i * 2])) {
-      criterias[i * 2] = [criterias[i * 2]]
+  for (let i = 0; i < criteriaLength; i += 2) {
+    if (typeof criteria[i] === 'undefined') {
+      return error.na
     }
 
-    if (!Array.isArray(criterias[i * 2][0])) {
-      criterias[i * 2][0] = [criterias[i * 2][0]]
-    }
-
-    if (height !== criterias[i * 2].length || width !== criterias[i * 2][0].length) {
+    if (Array.isArray(criteria[i + 1])) {
       return error.value
     }
 
-    criterias[i * 2] = utils.flatten(criterias[i * 2])
+    if (!Array.isArray(criteria[i])) {
+      criteria[i] = [[criteria[i]]]
+    }
+
+    if (numOfRows !== criteria[i].length || numOfColumns !== criteria[i][0].length) {
+      return error.value
+    }
   }
 
-  let result = 0
+  const resultsLength = numOfRows * numOfColumns
 
-  for (let i = 0; i < range.length; i++) {
-    let isMeetCondition = false
+  const results = evalExpression.runCriterias(...criteria)
 
-    for (let j = 0; j < criteriaLength; j++) {
-      const valueToTest = criterias[j * 2][i]
-      const criteria = criterias[j * 2 + 1]
-      let computedResult = false
+  let sum = 0
 
-      const tokenizedCriteria = evalExpression.parse(criteria + '')
-      const tokens = [evalExpression.createToken(valueToTest, evalExpression.TOKEN_TYPE_LITERAL)].concat(
-        tokenizedCriteria
-      )
+  for (let i = 0; i < resultsLength; i++) {
+    if (results[i]) {
+      const value = sum_range[Math.trunc(i / numOfColumns)][i % numOfColumns]
 
-      computedResult = evalExpression.countIfComputeExpression(tokens)
-
-      // Criterias are calculated as AND so any `false` breakes the loop as unmeet condition
-      if (!computedResult) {
-        isMeetCondition = false
-        break
+      if (typeof value === 'number') {
+        sum += value
+      } else if (value instanceof Error) {
+        return value
       }
-
-      isMeetCondition = true
-    }
-
-    if (isMeetCondition) {
-      result += range[i]
     }
   }
 
-  return result
+  return sum
 }
 
 /**
