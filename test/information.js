@@ -26,27 +26,6 @@ describe('Information', () => {
     expect(information.INFO).to.throw('INFO is not implemented')
   })
 
-  it('ISBLANK', () => {
-    expect(information.ISBLANK(null)).to.equal(true)
-
-    expect(information.ISBLANK('text')).to.equal(false)
-    expect(information.ISBLANK(1)).to.equal(false)
-    expect(information.ISBLANK('1')).to.equal(false)
-    expect(information.ISBLANK('2022-03-11')).to.equal(false)
-    expect(information.ISBLANK('08:45 AM')).to.equal(false)
-
-    expect(information.ISBLANK('')).to.equal(false)
-    expect(information.ISBLANK(' ')).to.equal(false)
-    expect(information.ISBLANK('45%')).to.equal(false)
-
-    Object.values(error).forEach((err) => {
-      expect(information.ISBLANK(err)).to.equal(false)
-    })
-
-    expect(information.ISBLANK()).to.equal(error.na)
-    expect(information.ISBLANK('', 3)).to.equal(error.na)
-  })
-
   it('ISERR', () => {
     expect(information.ISERR(NaN)).to.equal(true)
     expect(information.ISERR(1 / 0)).to.equal(true)

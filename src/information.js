@@ -55,22 +55,6 @@ export function INFO() {
 }
 
 /**
- * Returns TRUE if the value is blank.
- *
- * Category: Information
- *
- * @param {*} value The value that you want tested. The value argument can be a blank (empty value), error, logical value, text, number, or reference value, or a name referring to any of these.
- * @returns
- */
-export function ISBLANK(value) {
-  if (arguments.length !== 1) {
-    return error.na
-  }
-
-  return value === null
-}
-
-/**
  * Returns TRUE if the value is any error value except #N/A.
  *
  * Category: Information
