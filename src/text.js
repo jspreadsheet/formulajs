@@ -556,8 +556,8 @@ export function NUMBERVALUE(text, decimal_separator, group_separator) {
 /**
  * -- Not implemented --
  */
-export function PRONETIC() {
-  throw new Error('PRONETIC is not implemented')
+export function PHONETIC() {
+  throw new Error('PHONETIC is not implemented')
 }
 
 /**

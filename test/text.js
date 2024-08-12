@@ -548,8 +548,8 @@ describe('Text', () => {
     })
   })
 
-  it('PRONETIC', () => {
-    expect(text.PRONETIC).to.throw('PRONETIC is not implemented')
+  it('PHONETIC', () => {
+    expect(text.PHONETIC).to.throw('PHONETIC is not implemented')
   })
 
   it('PROPER', () => {
