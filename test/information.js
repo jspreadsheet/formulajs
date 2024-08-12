@@ -4,11 +4,6 @@ import * as error from '../src/utils/error.js'
 import * as information from '../src/information.js'
 
 describe('Information', () => {
-  // TODO
-  it('CELL', () => {
-    expect(information.CELL).to.throw('CELL is not implemented')
-  })
-
   it('ERROR.TYPE', () => {
     expect(information.ERROR.TYPE(error.nil)).to.equal(1)
     expect(information.ERROR.TYPE(error.div0)).to.equal(2)
@@ -19,11 +14,6 @@ describe('Information', () => {
     expect(information.ERROR.TYPE(error.na)).to.equal(7)
     expect(information.ERROR.TYPE(error.data)).to.equal(8)
     expect(information.ERROR.TYPE(1)).to.equal(error.na)
-  })
-
-  // TODO
-  it('INFO', () => {
-    expect(information.INFO).to.throw('INFO is not implemented')
   })
 
   it('ISERR', () => {
@@ -370,11 +360,6 @@ describe('Information', () => {
     ).to.equal(error.value)
   })
 
-  // TODO
-  it('ISREF', () => {
-    expect(information.ISREF).to.throw('ISREF is not implemented')
-  })
-
   it('ISTEXT', () => {
     expect(information.ISTEXT()).to.equal(error.na)
     expect(information.ISTEXT('text', 2)).to.equal(error.na)
@@ -441,16 +426,6 @@ describe('Information', () => {
 
   it('NA', () => {
     expect(information.NA()).to.equal(error.na)
-  })
-
-  // TODO
-  it('SHEET', () => {
-    expect(information.SHEET).to.throw('SHEET is not implemented')
-  })
-
-  // TODO
-  it('SHEETS', () => {
-    expect(information.SHEETS).to.throw('SHEETS is not implemented')
   })
 
   it('TYPE', () => {
