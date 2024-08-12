@@ -1375,14 +1375,6 @@ export function ADDRESS(row, column, absoluteNum = 1, a1Style = true, sheetName)
   return result + r1c1Absolute[absoluteNum](row, column)
 }
 
-export function AREAS() {
-  throw new Error('AREAS is not implemented')
-}
-
-export function FORMULATEXT() {
-  throw new Error('FORMULATEXT is not implemented')
-}
-
 export function GETPIVOTDATA() {
   throw new Error('GETPIVOTDATA is not implemented')
 }
