@@ -591,31 +591,107 @@ export function PROPER(text) {
 }
 
 export function REGEXEXTRACT(text, regular_expression) {
-  if (arguments.length < 2) {
+  if (arguments.length !== 2) {
     return error.na
+  }
+
+  if (text instanceof Error) {
+    return text
+  }
+
+  if (typeof text === 'undefined' || text === null) {
+    text = ''
+  } else if (typeof text !== 'string') {
+    return error.value
+  }
+
+  if (regular_expression instanceof Error) {
+    return regular_expression
+  }
+
+  if (typeof regular_expression === 'undefined' || regular_expression === null) {
+    regular_expression = ''
+  } else if (typeof regular_expression !== 'string') {
+    return error.value
   }
 
   const match = text.match(new RegExp(regular_expression))
 
-  return match ? match[match.length > 1 ? match.length - 1 : 0] : null
+  if (!match) {
+    return error.na
+  }
+
+  if (match.length <= 2) {
+    return match[match.length - 1];
+  }
+
+  return [match.slice(1)]
 }
 
 export function REGEXREPLACE(text, regular_expression, replacement) {
-  if (arguments.length < 3) {
+  if (arguments.length !== 3) {
     return error.na
   }
 
-  return text.replace(new RegExp(regular_expression), replacement)
+  if (text instanceof Error) {
+    return text
+  }
+
+  if (typeof text === 'undefined' || text === null) {
+    text = ''
+  } else if (typeof text !== 'string') {
+    return error.value
+  }
+
+  if (regular_expression instanceof Error) {
+    return regular_expression
+  }
+
+  if (typeof regular_expression === 'undefined' || regular_expression === null) {
+    regular_expression = ''
+  } else if (typeof regular_expression !== 'string') {
+    return error.value
+  }
+
+  if (replacement instanceof Error) {
+    return replacement
+  }
+
+  if (typeof replacement === 'undefined' || replacement === null) {
+    replacement = ''
+  } else if (typeof replacement !== 'string') {
+    return error.value
+  }
+
+  return text.replace(new RegExp(regular_expression, 'g'), replacement)
 }
 
-export function REGEXMATCH(text, regular_expression, full) {
-  if (arguments.length < 2) {
+export function REGEXMATCH(text, regular_expression) {
+  if (arguments.length !== 2) {
     return error.na
   }
 
-  const match = text.match(new RegExp(regular_expression))
+  if (text instanceof Error) {
+    return text
+  }
 
-  return full ? match : !!match
+  if (typeof text === 'undefined' || text === null) {
+    text = ''
+  } else if (typeof text !== 'string') {
+    return error.value
+  }
+
+  if (regular_expression instanceof Error) {
+    return regular_expression
+  }
+
+  if (typeof regular_expression === 'undefined' || regular_expression === null) {
+    regular_expression = ''
+  } else if (typeof regular_expression !== 'string') {
+    return error.value
+  }
+
+  return new RegExp(regular_expression).test(text)
 }
 
 /**

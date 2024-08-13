@@ -581,25 +581,117 @@ describe('Text', () => {
   })
 
   it('REGEXEXTRACT', () => {
-    expect(text.REGEXEXTRACT('(Content) between brackets', '(([A-Za-z]+))')).to.equal('Content')
+    expect(text.REGEXEXTRACT('(Content) between brackets', '\\(([A-Za-z]+)\\)')).to.equal('Content')
     expect(text.REGEXEXTRACT('The price today is $826.25', '[0-9]+.[0-9]+[0-9]+')).to.equal('826.25')
     expect(text.REGEXEXTRACT('Google Doc 101', '[0-9]+')).to.equal('101')
+    expect(text.REGEXEXTRACT('1 test 20', '(\\d+)\\D+(\\d+)')).to.eql([['1', '20']])
+    expect(text.REGEXEXTRACT('Google Doc 101', 'a')).to.equal(error.na)
+
+    expect(text.REGEXEXTRACT('', '\\D+')).to.equal(error.na)
+    expect(text.REGEXEXTRACT(null, '\\D+')).to.equal(error.na)
+    expect(text.REGEXEXTRACT(undefined, '\\D+')).to.equal(error.na)
+    expect(text.REGEXEXTRACT('1 test 20', '')).to.equal('')
+    expect(text.REGEXEXTRACT('1 test 20', null)).to.equal('')
+    expect(text.REGEXEXTRACT('1 test 20', undefined)).to.equal('')
+
+    expect(text.REGEXEXTRACT(1, 'e')).to.equal(error.value)
+    expect(text.REGEXEXTRACT('test', 1)).to.equal(error.value)
+    expect(text.REGEXEXTRACT(true, 'e')).to.equal(error.value)
+    expect(text.REGEXEXTRACT('test', true)).to.equal(error.value)
+    expect(text.REGEXEXTRACT('1 test 20', [['(\\d+)\\D+(\\d+)', '(\\d+)\\D+']])).to.equal(error.value)
+    expect(text.REGEXEXTRACT([['1 test 20', '1 test 18']], '(\\d+)\\D+(\\d+)')).to.equal(error.value)
+    expect(text.REGEXEXTRACT([['1 test 20', '1 test 18']], [['(\\d+)\\D+(\\d+)', '(\\d+)\\D+']])).to.equal(error.value)
+
+    expect(text.REGEXEXTRACT('test', 'e', true)).to.equal(error.na)
     expect(text.REGEXEXTRACT('Google Doc 101')).to.equal(error.na)
     expect(text.REGEXEXTRACT()).to.equal(error.na)
+
+    Object.values(error).forEach((err) => {
+      expect(text.REGEXEXTRACT('test', err)).to.equal(err)
+      expect(text.REGEXEXTRACT(err, 'e')).to.equal(err)
+    })
   })
 
   it('REGEXREPLACE', () => {
-    expect(text.REGEXREPLACE('(Content) between brackets', '(([A-Za-z]+))', 'Me')).to.equal('(Me) between brackets')
+    expect(text.REGEXREPLACE('(Content) between brackets', '\\([A-Za-z]+\\)', 'Me')).to.equal('Me between brackets')
+    expect(text.REGEXREPLACE('(Content) between brackets', '(([A-Za-z]+))', 'Me')).to.equal('(Me) Me Me')
+    expect(text.REGEXREPLACE('1 test 20 something 3', '\\D+\\d+', 'replacement')).to.equal('1replacementreplacement')
+    expect(text.REGEXREPLACE('1 test 20 something 3', '(\\D+)(\\d+)', 'replacement')).to.equal('1replacementreplacement')
+
+    expect(text.REGEXREPLACE('', '\\D+\\d+', 'replacement')).to.equal('')
+    expect(text.REGEXREPLACE(null, '\\D+\\d+', 'replacement')).to.equal('')
+    expect(text.REGEXREPLACE(undefined, '\\D+\\d+', 'replacement')).to.equal('')
+
+    expect(text.REGEXREPLACE('1 test', '', 'a')).to.equal('a1a ataeasata')
+    expect(text.REGEXREPLACE('1 test', null, 'a')).to.equal('a1a ataeasata')
+    expect(text.REGEXREPLACE('1 test', undefined, 'a')).to.equal('a1a ataeasata')
+
+    expect(text.REGEXREPLACE('1 test 20 something 3', '\\D+\\d+', '')).to.equal('1')
+    expect(text.REGEXREPLACE('1 test 20 something 3', '\\D+\\d+', null)).to.equal('1')
+    expect(text.REGEXREPLACE('1 test 20 something 3', '\\D+\\d+', undefined)).to.equal('1')
+
+    expect(text.REGEXREPLACE(1, '\\D+\\d+', 'replacement')).to.equal(error.value)
+    expect(text.REGEXREPLACE(true, '\\D+\\d+', 'replacement')).to.equal(error.value)
+    expect(text.REGEXREPLACE('1 test 20 something 3', 1, 'replacement')).to.equal(error.value)
+    expect(text.REGEXREPLACE('1 test 20 something 3', true, 'replacement')).to.equal(error.value)
+    expect(text.REGEXREPLACE('1 test 20 something 3', '\\D+\\d+', 1)).to.equal(error.value)
+    expect(text.REGEXREPLACE('1 test 20 something 3', '\\D+\\d+', true)).to.equal(error.value)
+    expect(text.REGEXREPLACE([['1 test 20 something 3', '2 test 21 something 4']], '\\D+\\d+', 'replacement')).to.equal(error.value)
+    expect(text.REGEXREPLACE('1 test 20 something 3', [['\\D+\\d+', '\\d+']], 'replacement')).to.equal(error.value)
+    expect(text.REGEXREPLACE('1 test 20 something 3', '\\D+\\d+', [['replacement', 'replace']])).to.equal(error.value)
+
+    expect(text.REGEXREPLACE('(Content) between brackets', '(([A-Za-z]+))', 'Me', true)).to.equal(error.na)
     expect(text.REGEXREPLACE('(Content) between brackets', '(([A-Za-z]+))')).to.equal(error.na)
     expect(text.REGEXREPLACE('(Content) between brackets')).to.equal(error.na)
     expect(text.REGEXREPLACE()).to.equal(error.na)
+
+    Object.values(error).forEach((err) => {
+      expect(text.REGEXREPLACE(err, '\\D+\\d+', 'replacement')).to.equal(err)
+      expect(text.REGEXREPLACE('1 test 20 something 3', err, 'replacement')).to.equal(err)
+      expect(text.REGEXREPLACE('1 test 20 something 3', '\\D+\\d+', err)).to.equal(err)
+    })
   })
 
   it('REGEXMATCH', () => {
-    expect(text.REGEXMATCH('(Content) between brackets', '(([A-Za-z]+))', true)).to.be.a('array')
-    expect(text.REGEXMATCH('(Content) between brackets', '(([A-Za-z]+))', false)).to.equal(true)
-    expect(text.REGEXMATCH('(Content) between brackets')).to.equal(error.na)
+    expect(text.REGEXMATCH('test 100', '\\D\\d')).to.equal(true)
+    expect(text.REGEXMATCH('test 100', '^\\D\\d$')).to.equal(false)
+    expect(text.REGEXMATCH('test 100', '^\\D+\\d+$')).to.equal(true)
+
+    expect(text.REGEXMATCH('test 100', null)).to.equal(true)
+    expect(text.REGEXMATCH('test 100', '')).to.equal(true)
+    expect(text.REGEXMATCH('test 100', undefined)).to.equal(true)
+
+    expect(text.REGEXMATCH(null, null)).to.equal(true)
+    expect(text.REGEXMATCH(null, '')).to.equal(true)
+    expect(text.REGEXMATCH(null, undefined)).to.equal(true)
+
+    expect(text.REGEXMATCH('', '')).to.equal(true)
+    expect(text.REGEXMATCH('', undefined)).to.equal(true)
+    expect(text.REGEXMATCH('', null)).to.equal(true)
+
+    expect(text.REGEXMATCH(undefined, '')).to.equal(true)
+    expect(text.REGEXMATCH(undefined, null)).to.equal(true)
+    expect(text.REGEXMATCH(undefined, undefined)).to.equal(true)
+
+    expect(text.REGEXMATCH(null, '\\D\\d')).to.equal(false)
+    expect(text.REGEXMATCH(undefined, '\\D\\d')).to.equal(false)
+    expect(text.REGEXMATCH('', '\\D\\d')).to.equal(false)
+
+    expect(text.REGEXMATCH(1, '^\\D+\\d+$')).to.equal(error.value)
+    expect(text.REGEXMATCH(true, '^\\D+\\d+$')).to.equal(error.value)
+    expect(text.REGEXMATCH('test 100', 1)).to.equal(error.value)
+    expect(text.REGEXMATCH('test 100', true)).to.equal(error.value)
+    expect(text.REGEXMATCH([['test 100', 'test 101']], '^\\D+\\d+$')).to.equal(error.value)
+    expect(text.REGEXMATCH('test 100', [['^\\D+\\d+$', '\\d+']])).to.equal(error.value)
+
+    expect(text.REGEXMATCH('test 100', '\\D\\d', true)).to.equal(error.na)
+    expect(text.REGEXMATCH('test 100')).to.equal(error.na)
     expect(text.REGEXMATCH()).to.equal(error.na)
+
+    Object.values(error).forEach((err) => {
+      expect(text.REGEXMATCH(err, '^\\D+\\d+$')).to.equal(err)
+      expect(text.REGEXMATCH('test 100', err)).to.equal(err)
+    })
   })
 
   it('REPLACE', () => {
