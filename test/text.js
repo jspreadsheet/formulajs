@@ -616,7 +616,9 @@ describe('Text', () => {
     expect(text.REGEXREPLACE('(Content) between brackets', '\\([A-Za-z]+\\)', 'Me')).to.equal('Me between brackets')
     expect(text.REGEXREPLACE('(Content) between brackets', '(([A-Za-z]+))', 'Me')).to.equal('(Me) Me Me')
     expect(text.REGEXREPLACE('1 test 20 something 3', '\\D+\\d+', 'replacement')).to.equal('1replacementreplacement')
-    expect(text.REGEXREPLACE('1 test 20 something 3', '(\\D+)(\\d+)', 'replacement')).to.equal('1replacementreplacement')
+    expect(text.REGEXREPLACE('1 test 20 something 3', '(\\D+)(\\d+)', 'replacement')).to.equal(
+      '1replacementreplacement'
+    )
 
     expect(text.REGEXREPLACE('', '\\D+\\d+', 'replacement')).to.equal('')
     expect(text.REGEXREPLACE(null, '\\D+\\d+', 'replacement')).to.equal('')
@@ -636,7 +638,9 @@ describe('Text', () => {
     expect(text.REGEXREPLACE('1 test 20 something 3', true, 'replacement')).to.equal(error.value)
     expect(text.REGEXREPLACE('1 test 20 something 3', '\\D+\\d+', 1)).to.equal(error.value)
     expect(text.REGEXREPLACE('1 test 20 something 3', '\\D+\\d+', true)).to.equal(error.value)
-    expect(text.REGEXREPLACE([['1 test 20 something 3', '2 test 21 something 4']], '\\D+\\d+', 'replacement')).to.equal(error.value)
+    expect(text.REGEXREPLACE([['1 test 20 something 3', '2 test 21 something 4']], '\\D+\\d+', 'replacement')).to.equal(
+      error.value
+    )
     expect(text.REGEXREPLACE('1 test 20 something 3', [['\\D+\\d+', '\\d+']], 'replacement')).to.equal(error.value)
     expect(text.REGEXREPLACE('1 test 20 something 3', '\\D+\\d+', [['replacement', 'replace']])).to.equal(error.value)
 

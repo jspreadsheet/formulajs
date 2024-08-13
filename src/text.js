@@ -622,7 +622,7 @@ export function REGEXEXTRACT(text, regular_expression) {
   }
 
   if (match.length <= 2) {
-    return match[match.length - 1];
+    return match[match.length - 1]
   }
 
   return [match.slice(1)]
