@@ -46,7 +46,7 @@ export function createToken(value, type) {
  * @return {*}
  */
 function castValueToCorrectType(value) {
-  if (isValidNumber(value, true)) {
+  if (isValidNumber(value.trim(), true)) {
     return value.indexOf('.') === -1 ? parseInt(value, 10) : parseFloat(value)
   }
 

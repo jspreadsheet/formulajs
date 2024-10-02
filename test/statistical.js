@@ -1136,6 +1136,41 @@ describe('Statistical', () => {
         ['a', 4, 'c']
       ])
     ).to.equal(error.na)
+
+    expect(
+      statistical.COUNTIF(
+        [
+          [0],
+        ],
+        '<>0'
+      )
+    ).to.equal(0)
+    expect(
+      statistical.COUNTIF(
+        [
+          [0],
+        ],
+        '<> 0'
+      )
+    ).to.equal(0)
+    expect(
+      statistical.COUNTIF(
+        [
+          ['0'],
+          [' 0'],
+        ],
+        '<>0'
+      )
+    ).to.equal(2)
+    expect(
+      statistical.COUNTIF(
+        [
+          ['0'],
+          [' 0'],
+        ],
+        '<> 0'
+      )
+    ).to.equal(2)
   })
 
   it('COUNTIFS', () => {
