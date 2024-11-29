@@ -596,6 +596,204 @@ export function TRANSPOSE(array) {
   return result
 }
 
+const rowExistInArray = (targetRow, array) => {
+  const numOfRows = array.length
+  const numOfColumns = array[0].length
+
+  let columnIndex
+
+  for (let rowIndex = 0; rowIndex < numOfRows; rowIndex++) {
+    const row = array[rowIndex]
+
+    for (columnIndex = 0; columnIndex < numOfColumns; columnIndex++) {
+      if (row[columnIndex] !== targetRow[columnIndex]) {
+        break
+      }
+    }
+
+    if (columnIndex === numOfColumns) {
+      return true
+    }
+  }
+
+  return false
+}
+
+const getArrayWithoutDuplicateRows = (array) => {
+  const uniqueRows = [array[0]]
+
+  const numOfRows = array.length
+  for (let rowIndex = 1; rowIndex < numOfRows; rowIndex++) {
+    const row = array[rowIndex]
+
+    if (!rowExistInArray(row, uniqueRows)) {
+      uniqueRows.push(row)
+    }
+  }
+
+  return uniqueRows
+}
+
+const compareRows = (row1, row2) => {
+  const numOfColumns = row1.length
+
+  for (let columnIndex = 0; columnIndex < numOfColumns; columnIndex++) {
+    if (row1[columnIndex] !== row2[columnIndex]) {
+      return false
+    }
+  }
+
+  return true
+}
+
+const filterNonDuplicateRows = (array) => {
+  const result = []
+
+  const numOfRows = array.length
+
+  let rowIndex
+
+  for (let targetRowIndex = 0; targetRowIndex < numOfRows; targetRowIndex++) {
+    const targetRow = array[targetRowIndex]
+
+    for (rowIndex = 0; rowIndex < numOfRows; rowIndex++) {
+      if (targetRowIndex === rowIndex) {
+        continue
+      }
+
+      if (compareRows(targetRow, array[rowIndex])) {
+        break
+      }
+    }
+
+    if (rowIndex === numOfRows) {
+      result.push(targetRow)
+    }
+  }
+
+  return result
+}
+
+const columnExistInArray = (baseArray, baseColumnIndex, targetArray) => {
+  const numOfRows = targetArray.length
+  const numOfColumns = targetArray[0].length
+
+  let rowIndex
+
+  for (let columnIndex = 0; columnIndex < numOfColumns; columnIndex++) {
+    for (rowIndex = 0; rowIndex < numOfRows; rowIndex++) {
+      if (baseArray[rowIndex][baseColumnIndex] !== targetArray[rowIndex][columnIndex]) {
+        break
+      }
+    }
+
+    if (rowIndex === numOfRows) {
+      return true
+    }
+  }
+
+  return false
+}
+
+const compareColumns = (array1, columnIndex1, array2, columnIndex2) => {
+  const numOfRows = array1.length
+
+  for (let rowIndex = 0; rowIndex < numOfRows; rowIndex++) {
+    if (array1[rowIndex][columnIndex1] !== array2[rowIndex][columnIndex2]) {
+      return false
+    }
+  }
+
+  return true
+}
+
+const copyColumn = (baseArray, targetArray, columnIndex) => {
+  const numOfRows = baseArray.length
+
+  for (let rowIndex = 0; rowIndex < numOfRows; rowIndex++) {
+    if (!targetArray[rowIndex]) {
+      targetArray.push([])
+    }
+
+    targetArray[rowIndex].push(baseArray[rowIndex][columnIndex])
+  }
+}
+
+const getArrayWithoutDuplicateColumns = (array) => {
+  const uniqueColumns = []
+  copyColumn(array, uniqueColumns, 0)
+
+  const numOfColumns = array[0].length
+  for (let columnIndex = 1; columnIndex < numOfColumns; columnIndex++) {
+    if (!columnExistInArray(array, columnIndex, uniqueColumns)) {
+      copyColumn(array, uniqueColumns, columnIndex)
+    }
+  }
+
+  return uniqueColumns
+}
+
+const filterNonDuplicateColumns = (array) => {
+  const result = []
+
+  let columnIndex
+
+  const numOfColumns = array[0].length
+
+  for (let targetColumnIndex = 0; targetColumnIndex < numOfColumns; targetColumnIndex++) {
+    for (columnIndex = 0; columnIndex < numOfColumns; columnIndex++) {
+      if (targetColumnIndex === columnIndex) {
+        continue
+      }
+
+      if (compareColumns(array, targetColumnIndex, array, columnIndex)) {
+        break
+      }
+    }
+
+    if (columnIndex === numOfColumns) {
+      copyColumn(array, result, targetColumnIndex)
+    }
+  }
+
+  return result
+}
+
+const copy = function (obj) {
+  if (typeof obj !== 'object' || obj === null) {
+    return obj
+  }
+
+  if (Array.isArray(obj)) {
+    const numOfItems = obj.length
+
+    const result = []
+
+    for (let i = 0; i < numOfItems; i++) {
+      result.push(copy(obj[i]))
+    }
+
+    return result
+  }
+
+  if (obj instanceof Error) {
+    return obj
+  }
+
+  const entries = Object.entries(obj)
+  const entriesLength = entries.length
+
+  const result = {}
+
+  for (let i = 0; i < entriesLength; i++) {
+    const [key, value] = entries[i]
+
+    result[key] = copy(value)
+  }
+
+  return result
+}
+
 /**
  * Returns a list of unique values in a list or range.
  *
@@ -603,30 +801,63 @@ export function TRANSPOSE(array) {
  *
  * @returns
  */
-export function UNIQUE() {
-  const result = []
+export function UNIQUE(array, by_col, exactly_once) {
+  if (arguments.length === 0 || arguments.length > 3) {
+    return error.na
+  }
 
-  for (let i = 0; i < arguments.length; ++i) {
-    let hasElement = false
-    const element = arguments[i]
+  if (typeof array === 'undefined') {
+    return 0
+  }
 
-    // Check if we've already seen this element.
+  if (!Array.isArray(array)) {
+    array = [[array]]
+  }
 
-    for (let j = 0; j < result.length; ++j) {
-      hasElement = result[j] === element
+  if (typeof by_col === 'undefined') {
+    by_col = false
+  } else {
+    by_col = utils.parseBool(by_col)
 
-      if (hasElement) {
-        break
-      }
-    }
-
-    // If we did not find it, add it to the result.
-    if (!hasElement) {
-      result.push(element)
+    if (typeof by_col !== 'boolean') {
+      return by_col
     }
   }
 
-  return result
+  if (typeof exactly_once === 'undefined') {
+    exactly_once = false
+  } else {
+    exactly_once = utils.parseBool(exactly_once)
+
+    if (typeof exactly_once !== 'boolean') {
+      return exactly_once
+    }
+  }
+
+  let filterFunction = by_col
+    ? exactly_once
+      ? filterNonDuplicateColumns
+      : getArrayWithoutDuplicateColumns
+    : exactly_once
+    ? filterNonDuplicateRows
+    : getArrayWithoutDuplicateRows
+
+  const result = copy(filterFunction(array))
+
+  const numOfRows = result.length
+  const numOfColumns = result[0].length
+
+  for (let rowIndex = 0; rowIndex < numOfRows; rowIndex++) {
+    const row = result[rowIndex]
+
+    for (let columnIndex = 0; columnIndex < numOfColumns; columnIndex++) {
+      if (row[columnIndex] === null) {
+        row[columnIndex] = 0
+      }
+    }
+  }
+
+  return numOfRows === 1 && numOfColumns === 1 ? result[0][0] : result
 }
 
 /**

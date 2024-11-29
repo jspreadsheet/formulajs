@@ -1759,10 +1759,155 @@ describe('Lookup Reference', () => {
   })
 
   it('UNIQUE', () => {
-    expect(lookup.UNIQUE(1, 2, 3, 4, 5, 6, 6, 3)).to.deep.equal([1, 2, 3, 4, 5, 6])
-    expect(lookup.UNIQUE('jima', 'jimb', 'jima', 'jimc')).to.deep.equal(['jima', 'jimb', 'jimc'])
-    expect(lookup.UNIQUE()).to.eql([])
-    expect(lookup.UNIQUE([])).to.eql([[]])
+    expect(lookup.UNIQUE([[null], [null]])).to.equal(0)
+    expect(lookup.UNIQUE([[0], [0]])).to.equal(0)
+    expect(lookup.UNIQUE([[null], [0]])).to.deep.equal([[0], [0]])
+
+    expect(lookup.UNIQUE([[null, null]], true)).to.equal(0)
+    expect(lookup.UNIQUE([[0, 0]], true)).to.equal(0)
+    expect(lookup.UNIQUE([[null, 0]], true)).to.deep.equal([[0, 0]])
+
+    expect(lookup.UNIQUE(undefined, undefined)).to.equal(0)
+    expect(lookup.UNIQUE(undefined, true)).to.equal(0)
+    expect(lookup.UNIQUE(undefined, undefined, true)).to.equal(0)
+    expect(lookup.UNIQUE(undefined, true, true)).to.equal(0)
+
+    expect(lookup.UNIQUE([['test'], ['test1'], ['test2'], ['test']])).to.deep.equal([['test'], ['test1'], ['test2']])
+    expect(lookup.UNIQUE([['test'], ['test1'], ['test2'], ['test']], false)).to.deep.equal([
+      ['test'],
+      ['test1'],
+      ['test2']
+    ])
+    expect(lookup.UNIQUE([['test'], ['test1'], ['test2'], ['test']], true)).to.deep.equal([
+      ['test'],
+      ['test1'],
+      ['test2'],
+      ['test']
+    ])
+
+    expect(lookup.UNIQUE([['test'], ['test1'], ['test2'], ['test']], undefined, true)).to.deep.equal([
+      ['test1'],
+      ['test2']
+    ])
+    expect(lookup.UNIQUE([['test'], ['test1'], ['test2'], ['test']], false, true)).to.deep.equal([['test1'], ['test2']])
+    expect(lookup.UNIQUE([['test'], ['test1'], ['test2'], ['test']], true, true)).to.deep.equal([
+      ['test'],
+      ['test1'],
+      ['test2'],
+      ['test']
+    ])
+
+    expect(
+      lookup.UNIQUE([
+        [1, 1],
+        [1, 2],
+        [2, 2],
+        [1, 2],
+        [2, 3]
+      ])
+    ).to.deep.equal([
+      [1, 1],
+      [1, 2],
+      [2, 2],
+      [2, 3]
+    ])
+    expect(
+      lookup.UNIQUE(
+        [
+          [1, 1],
+          [1, 2],
+          [2, 2],
+          [1, 2],
+          [2, 3]
+        ],
+        undefined,
+        true
+      )
+    ).to.deep.equal([
+      [1, 1],
+      [2, 2],
+      [2, 3]
+    ])
+
+    expect(
+      lookup.UNIQUE(
+        [
+          [1, 1, 2, 1, 2],
+          [1, 2, 2, 2, 3]
+        ],
+        true
+      )
+    ).to.deep.equal([
+      [1, 1, 2, 2],
+      [1, 2, 2, 3]
+    ])
+    expect(
+      lookup.UNIQUE(
+        [
+          [1, 1, 2, 1, 2],
+          [1, 2, 2, 2, 3]
+        ],
+        true,
+        true
+      )
+    ).to.deep.equal([
+      [1, 2, 2],
+      [1, 2, 3]
+    ])
+
+    expect(lookup.UNIQUE([[1], ['1'], [true], ['true'], [0], ['0'], [false], ['false'], [null]])).to.deep.equal([
+      [1],
+      ['1'],
+      [true],
+      ['true'],
+      [0],
+      ['0'],
+      [false],
+      ['false'],
+      [0]
+    ])
+
+    expect(lookup.UNIQUE([[1, '1', true, 'true', 0, '0', false, 'false', null]], true, true)).to.deep.equal([
+      [1, '1', true, 'true', 0, '0', false, 'false', 0]
+    ])
+
+    expect(lookup.UNIQUE([[1, 2, 1, 3]])).to.deep.equal([[1, 2, 1, 3]])
+    expect(lookup.UNIQUE([[1, 2, 1, 3]], true)).to.deep.equal([[1, 2, 3]])
+    expect(lookup.UNIQUE([[1, 2, 1, 3]], true, true)).to.deep.equal([[2, 3]])
+    expect(lookup.UNIQUE([[1, 2, 1, 3]], undefined, true)).to.deep.equal([[1, 2, 1, 3]])
+
+    expect(lookup.UNIQUE([[1, 2, 1, 3]], 8)).to.deep.equal([[1, 2, 3]])
+    expect(lookup.UNIQUE([[1, 2, 1, 3]], 'true')).to.deep.equal([[1, 2, 3]])
+    expect(lookup.UNIQUE([[1, 2, 1, 3]], 0)).to.deep.equal([[1, 2, 1, 3]])
+    expect(lookup.UNIQUE([[1, 2, 1, 3]], 'false')).to.deep.equal([[1, 2, 1, 3]])
+    expect(lookup.UNIQUE([[1, 2, 1, 3]], '1')).to.equal(error.value)
+    expect(lookup.UNIQUE([[1, 2, 1, 3]], null)).to.deep.equal([[1, 2, 1, 3]])
+
+    expect(lookup.UNIQUE([[1, 2, 1, 3]], true, 5)).to.deep.equal([[2, 3]])
+    expect(lookup.UNIQUE([[1, 2, 1, 3]], true, 'true')).to.deep.equal([[2, 3]])
+    expect(lookup.UNIQUE([[1, 2, 1, 3]], true, 0)).to.deep.equal([[1, 2, 3]])
+    expect(lookup.UNIQUE([[1, 2, 1, 3]], true, 'false')).to.deep.equal([[1, 2, 3]])
+    expect(lookup.UNIQUE([[1, 2, 1, 3]], true, '1')).to.equal(error.value)
+    expect(lookup.UNIQUE([[1, 2, 1, 3]], true, null)).to.deep.equal([[1, 2, 3]])
+
+    expect(lookup.UNIQUE()).to.equal(error.na)
+    expect(
+      lookup.UNIQUE(
+        [
+          [1, 2],
+          [3, 4]
+        ],
+        false,
+        false,
+        true
+      )
+    ).to.equal(error.na)
+
+    Object.values(error).forEach((err) => {
+      expect(lookup.UNIQUE(err)).to.equal(err)
+      expect(lookup.UNIQUE([[1, 2, 1, 3]], err)).to.equal(err)
+      expect(lookup.UNIQUE([[1, 2, 1, 3]], true, err)).to.equal(err)
+    })
   })
 
   it('VLOOKUP', () => {
