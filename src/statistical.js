@@ -880,7 +880,56 @@ export function COUNTIFS() {
 }
 
 export function COUNTUNIQUE() {
-  return lookup.UNIQUE.apply(null, utils.flatten(arguments)).length
+  const numOfArguments = arguments.length
+
+  if (numOfArguments === 0) {
+    return error.na
+  }
+
+  const uniqueValues = []
+
+  for (let i = 0; i < numOfArguments; i++) {
+    let arg = arguments[i]
+
+    if (typeof arg === 'undefined') {
+      continue
+    }
+
+    let uniqueValueIndex
+
+    if (!Array.isArray(arg)) {
+      arg = [[arg]]
+    }
+
+    const numOfRows = arg.length
+    const numOfColumns = arg[0].length
+
+    for (let y = 0; y < numOfRows; y++) {
+      const row = arg[y]
+
+      for (let x = 0; x < numOfColumns; x++) {
+        const value = row[x]
+
+        if (value === null) {
+          continue
+        }
+
+        const numOfUniqueValues = uniqueValues.length
+
+        for (uniqueValueIndex = 0; uniqueValueIndex < numOfUniqueValues; uniqueValueIndex++) {
+          if (uniqueValues[uniqueValueIndex] === value) {
+            break
+          }
+        }
+
+        if (uniqueValueIndex === numOfUniqueValues) {
+          uniqueValues.push(value)
+        }
+      }
+    }
+  }
+
+  return uniqueValues.length
 }
 
 export const COVARIANCE = {}

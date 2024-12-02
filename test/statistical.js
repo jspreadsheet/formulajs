@@ -1411,10 +1411,9 @@ describe('Statistical', () => {
   })
 
   it('COUNTUNIQUE', () => {
-    expect(statistical.COUNTUNIQUE()).to.equal(0)
     expect(statistical.COUNTUNIQUE(1, 1, 2, 2, 3, 3)).to.equal(3)
-    expect(statistical.COUNTUNIQUE([1, 1, 2, 2, 3, 3])).to.equal(3)
-    expect(statistical.COUNTUNIQUE([1, 1, 2], [2, 3, 3])).to.equal(3)
+    expect(statistical.COUNTUNIQUE([[1, 1, 2, 2, 3, 3]])).to.equal(3)
+    expect(statistical.COUNTUNIQUE([[1, 1, 2]], [[2, 3, 3]])).to.equal(3)
     expect(
       statistical.COUNTUNIQUE(
         [
@@ -1427,6 +1426,34 @@ describe('Statistical', () => {
         ]
       )
     ).to.equal(5)
+
+    expect(
+      statistical.COUNTUNIQUE([
+        [1, 2, 3],
+        ['1', true, false],
+        ['0', 0, 'teste'],
+        [error.na, error.div0, error.nil],
+        [error.value, error.ref, error.name],
+        [error.num, 'true', 'false']
+      ])
+    ).to.equal(18)
+
+    expect(statistical.COUNTUNIQUE(0, 0)).to.equal(1)
+    expect(statistical.COUNTUNIQUE(1, 1)).to.equal(1)
+    expect(statistical.COUNTUNIQUE('1', '1')).to.equal(1)
+    expect(statistical.COUNTUNIQUE(true, true)).to.equal(1)
+    expect(statistical.COUNTUNIQUE('true', 'true')).to.equal(1)
+    expect(statistical.COUNTUNIQUE(false, false)).to.equal(1)
+    expect(statistical.COUNTUNIQUE('false', 'false')).to.equal(1)
+
+    expect(statistical.COUNTUNIQUE(null, null)).to.equal(0)
+    expect(statistical.COUNTUNIQUE(undefined, undefined)).to.equal(0)
+
+    Object.values(error).forEach((err) => {
+      expect(statistical.COUNTUNIQUE(err, err)).to.equal(1)
+    })
+
+    expect(statistical.COUNTUNIQUE()).to.equal(error.na)
   })
 
   it('COVARIANCE.P', () => {
