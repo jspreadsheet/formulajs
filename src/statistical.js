@@ -2562,6 +2562,10 @@ const floor = (number, significance = 0) => {
  * @returns
  */
 PERCENTRANK.EXC = function (array, x, significance = 3) {
+  if (arguments.length < 2 || arguments.length > 3) {
+    return error.na
+  }
+
   if (typeof array === 'undefined') {
     array = [[0]]
   } else if (!Array.isArray(array)) {

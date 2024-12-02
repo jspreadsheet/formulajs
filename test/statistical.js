@@ -2644,6 +2644,10 @@ describe('Statistical', () => {
       expect(statistical.PERCENTRANK.EXC([[1, 2, 3, 4]], err, 2)).to.equal(err)
       expect(statistical.PERCENTRANK.EXC([[1, 2, 3, 4]], 3, err)).to.equal(err)
     })
+
+    expect(statistical.PERCENTRANK.EXC()).to.equal(error.na)
+    expect(statistical.PERCENTRANK.EXC([[1, 2, 3, 4]])).to.equal(error.na)
+    expect(statistical.PERCENTRANK.EXC([[1, 2, 3, 4]], 3, 2, true)).to.equal(error.na)
   })
 
   it('PERCENTRANK.INC', () => {
