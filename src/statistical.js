@@ -2508,6 +2508,49 @@ PERCENTILE.INC = (array, k) => {
 
 export const PERCENTRANK = {}
 
+function addNumberToSortedArray(arr, num) {
+  let left = 0
+  let right = arr.length - 1
+
+  while (left <= right) {
+    const mid = Math.floor((left + right) / 2)
+
+    if (arr[mid] === num) {
+      arr.splice(mid, 0, num)
+      return arr
+    }
+
+    if (arr[mid] < num) {
+      left = mid + 1
+    } else {
+      right = mid - 1
+    }
+  }
+
+  arr.splice(left, 0, num)
+  return arr
+}
+
+const getRankAsPercentage = (index, total) => {
+  return (index + 1) / (total + 1)
+}
+
+const linearInterpolation = (x, x1, y1, x2, y2) => {
+  return y1 + ((x - x1) / (x2 - x1)) * (y2 - y1)
+}
+
+const floor = (number, significance = 0) => {
+  if (significance === 0) {
+    return Math.trunc(number)
+  }
+
+  const decimals = number % 1
+
+  const targetDecimals = Math.trunc(decimals * 10 ** significance) / 10 ** significance
+
+  return Math.trunc(number) + targetDecimals
+}
+
 /**
  * Returns the rank of a value in a data set as a percentage (0..1, exclusive) of the data set.
  *
@@ -2518,38 +2561,80 @@ export const PERCENTRANK = {}
  * @param {*} significance Optional. A value that identifies the number of significant digits for the returned percentage value. If omitted, PERCENTRANK.EXC uses three digits (0.xxx).
  * @returns
  */
-PERCENTRANK.EXC = (array, x, significance) => {
-  significance = significance === undefined ? 3 : significance
-  array = utils.parseNumberArray(utils.flatten(array))
-  x = utils.parseNumber(x)
-  significance = utils.parseNumber(significance)
-
-  if (utils.anyIsError(array, x, significance)) {
-    return error.value
+PERCENTRANK.EXC = function (array, x, significance = 3) {
+  if (typeof array === 'undefined') {
+    array = [[0]]
+  } else if (!Array.isArray(array)) {
+    array = [[array]]
   }
 
-  array = array.sort((a, b) => a - b)
-  const uniques = lookup.UNIQUE.apply(null, array)
-  const n = array.length
-  const m = uniques.length
-  const power = Math.pow(10, significance)
-  let result = 0
-  let match = false
-  let i = 0
+  x = utils.parseNumber(x)
+  if (typeof x !== 'number') {
+    return x
+  }
 
-  while (!match && i < m) {
-    if (x === uniques[i]) {
-      result = (array.indexOf(uniques[i]) + 1) / (n + 1)
-      match = true
-    } else if (x >= uniques[i] && (x < uniques[i + 1] || i === m - 1)) {
-      result = (array.indexOf(uniques[i]) + 1 + (x - uniques[i]) / (uniques[i + 1] - uniques[i])) / (n + 1)
-      match = true
+  significance = utils.parseNumber(significance)
+  if (typeof significance !== 'number') {
+    return significance
+  }
+
+  if (significance < 1) {
+    return error.num
+  }
+
+  significance = Math.trunc(significance)
+
+  const sortedArray = []
+
+  const numOfRows = array.length
+  const numOfColumns = array[0].length
+
+  for (let rowIndex = 0; rowIndex < numOfRows; rowIndex++) {
+    const row = array[rowIndex]
+
+    for (let columnIndex = 0; columnIndex < numOfColumns; columnIndex++) {
+      const cellValue = row[columnIndex]
+
+      if (typeof cellValue !== 'number') {
+        if (cellValue instanceof Error) {
+          return cellValue
+        }
+
+        continue
+      }
+
+      addNumberToSortedArray(sortedArray, cellValue)
+    }
+  }
+
+  if (sortedArray.length === 0 || x < sortedArray[0] || x > sortedArray[sortedArray.length - 1]) {
+    return error.na
+  }
+
+  let index = 0
+  while (index < sortedArray.length && sortedArray[index] < x) {
+    index++
+  }
+
+  if (sortedArray[index] === x) {
+    if (sortedArray.length === 1) {
+      return 1
     }
 
-    i++
+    const rank = getRankAsPercentage(index, sortedArray.length)
+
+    return floor(rank, significance)
   }
 
-  return Math.floor(result * power) / power
+  const lowerValue = sortedArray[index - 1]
+  const upperValue = sortedArray[index]
+
+  const lowerValueRank = getRankAsPercentage(index - 1, sortedArray.length)
+  const upperValueRank = getRankAsPercentage(index, sortedArray.length)
+
+  const result = linearInterpolation(x, lowerValue, lowerValueRank, upperValue, upperValueRank)
+
+  return floor(result, significance)
 }
 
 /**
