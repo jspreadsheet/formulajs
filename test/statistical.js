@@ -2598,6 +2598,23 @@ describe('Statistical', () => {
     expect(statistical.PERCENTRANK.EXC([[0, 1, 2, 3]], undefined)).to.approximately(0.2, 1e-9)
     expect(statistical.PERCENTRANK.EXC([[0, 1, 2, 3]], [[0, 1]])).to.equal(error.value)
 
+    expect(
+      statistical.PERCENTRANK.EXC(
+        [
+          [1, 2, 3, 4, 5],
+          [6, 7, 8, 9, 10],
+          [11, 12, 13, 14, 15],
+          [16, 17, 18, 19, 20],
+          [21, 22, 23, 24, 25],
+          [26, 27, 28, 29, 30],
+          [31, 32, 33, 34, 35],
+          [36, 37, 38, 39, 40]
+        ],
+        21,
+        8
+      )
+    ).to.approximately(0.51219512, 1e-9)
+
     expect(statistical.PERCENTRANK.EXC([[0, 1, 2, 3]], 2.4, 1)).to.approximately(0.6, 1e-9)
     expect(statistical.PERCENTRANK.EXC([[0, 1, 2, 3]], 2.4, 1.9)).to.approximately(0.6, 1e-9)
 
@@ -2678,18 +2695,124 @@ describe('Statistical', () => {
   })
 
   it('PERCENTRANK.INC', () => {
-    expect(statistical.PERCENTRANK.INC([1, 2, 3, 4], 1)).to.equal(0)
-    expect(statistical.PERCENTRANK.INC([1, 2, 3, 4], 2)).to.approximately(0.333, 1e-9)
-    expect(statistical.PERCENTRANK.INC([1, 2, 3, 4], 3)).to.approximately(0.666, 1e-9)
-    expect(statistical.PERCENTRANK.INC([1, 2, 3, 4], 4)).to.equal(1)
-    expect(statistical.PERCENTRANK.INC([1, 2, 3, 4], 1.25)).to.approximately(0.083, 1e-9)
-    expect(statistical.PERCENTRANK.INC([1, 2, 3, 4], 2.5)).to.approximately(0.5, 1e-9)
-    expect(statistical.PERCENTRANK.INC([1, 2, 3, 4], 3.75)).to.approximately(0.916, 1e-9)
-    expect(statistical.PERCENTRANK.INC([1, 2, 3, 4], 1, 2)).to.equal(0)
-    expect(statistical.PERCENTRANK.INC([1, 2, 3, 4], 2, 2)).to.approximately(0.33, 1e-9)
-    expect(statistical.PERCENTRANK.INC([1, 2, 3, 4], 3, 2)).to.approximately(0.66, 1e-9)
-    expect(statistical.PERCENTRANK.INC([1, 2, 3, 4], 4, 2)).to.equal(1)
-    expect(statistical.PERCENTRANK.INC([1, 2, 3, 4], 'invalid', 2)).to.equal(error.value)
+    expect(statistical.PERCENTRANK.INC([[1, 2, 3, 4]], 1)).to.approximately(0, 1e-9)
+    expect(statistical.PERCENTRANK.INC([[1, 2, 3, 4]], 2)).to.approximately(0.333, 1e-9)
+    expect(statistical.PERCENTRANK.INC([[1, 2, 3, 4]], 3)).to.approximately(0.666, 1e-9)
+    expect(statistical.PERCENTRANK.INC([[1, 2, 3, 4]], 4)).to.approximately(1, 1e-9)
+    expect(statistical.PERCENTRANK.INC([[1, 2, 3, 4]], 1.25)).to.approximately(0.083, 1e-9)
+    expect(statistical.PERCENTRANK.INC([[1, 2, 3, 4]], 2.5)).to.approximately(0.5, 1e-9)
+    expect(statistical.PERCENTRANK.INC([[1, 2, 3, 4]], 3.75)).to.approximately(0.916, 1e-9)
+    expect(statistical.PERCENTRANK.INC([[1, 2, 3, 4]], 1, 2)).to.approximately(0, 1e-9)
+    expect(statistical.PERCENTRANK.INC([[1, 2, 3, 4]], 2, 2)).to.approximately(0.33, 1e-9)
+    expect(statistical.PERCENTRANK.INC([[1, 2, 3, 4]], 3, 2)).to.approximately(0.66, 1e-9)
+    expect(statistical.PERCENTRANK.INC([[1, 2, 3, 4]], 4, 2)).to.approximately(1, 1e-9)
+    expect(statistical.PERCENTRANK.INC([[1, 2, 'invalid', 4]], 3, 2)).to.approximately(0.75, 1e-9)
+
+    expect(statistical.PERCENTRANK.INC([[0, 1, 2, 3]], true)).to.approximately(0.333, 1e-9)
+    expect(statistical.PERCENTRANK.INC([[0, 1, 2, 3]], 'true')).to.equal(error.value)
+    expect(statistical.PERCENTRANK.INC([[0, 1, 2, 3]], false)).to.approximately(0, 1e-9)
+    expect(statistical.PERCENTRANK.INC([[0, 1, 2, 3]], 'false')).to.equal(error.value)
+    expect(statistical.PERCENTRANK.INC([[0, 1, 2, 3]], '1')).to.approximately(0.333, 1e-9)
+    expect(statistical.PERCENTRANK.INC([[0, 1, 2, 3]], '0')).to.approximately(0, 1e-9)
+    expect(statistical.PERCENTRANK.INC([[0, 1, 2, 3]], null)).to.approximately(0, 1e-9)
+    expect(statistical.PERCENTRANK.INC([[0, 1, 2, 3]], 'test')).to.equal(error.value)
+    expect(statistical.PERCENTRANK.INC([[0, 1, 2, 3]], undefined)).to.approximately(0, 1e-9)
+    expect(statistical.PERCENTRANK.INC([[0, 1, 2, 3]], [[0, 1]])).to.equal(error.value)
+
+    expect(
+      statistical.PERCENTRANK.INC(
+        [
+          [1, 2, 3, 4, 5],
+          [6, 7, 8, 9, 10],
+          [11, 12, 13, 14, 15],
+          [16, 17, 18, 19, 20],
+          [21, 22, 23, 24, 25],
+          [26, 27, 28, 29, 30],
+          [31, 32, 33, 34, 35],
+          [36, 37, 38, 39, 40]
+        ],
+        21,
+        8
+      )
+    ).to.approximately(0.51282051, 1e-9)
+
+    // expect(statistical.PERCENTRANK.INC([[0, 1, 2, 3]], 2.4)).to.approximately(0.8, 1e-9)
+    // expect(statistical.PERCENTRANK.INC([[0, 1, 2, 3]], 2.4, 1.9)).to.approximately(0.8, 1e-9)
+
+    expect(statistical.PERCENTRANK.INC([[0, 1, 2, 3]], 1, true)).to.approximately(0.3, 1e-9)
+    expect(statistical.PERCENTRANK.INC([[0, 1, 2, 3]], 1, 'true')).to.equal(error.value)
+    expect(statistical.PERCENTRANK.INC([[0, 1, 2, 3]], 1, false)).to.equal(error.num)
+    expect(statistical.PERCENTRANK.INC([[0, 1, 2, 3]], 1, 'false')).to.equal(error.value)
+    expect(statistical.PERCENTRANK.INC([[0, 1, 2, 3]], 1, -1)).to.equal(error.num)
+    expect(statistical.PERCENTRANK.INC([[0, 1, 2, 3]], 1, 0)).to.equal(error.num)
+    expect(statistical.PERCENTRANK.INC([[0, 1, 2, 3]], 1, '0')).to.equal(error.num)
+    expect(statistical.PERCENTRANK.INC([[0, 1, 2, 3]], 1, null)).to.equal(error.num)
+    expect(statistical.PERCENTRANK.INC([[0, 1, 2, 3]], 1, 'test')).to.equal(error.value)
+    expect(statistical.PERCENTRANK.INC([[0, 1, 2, 3]], 1, undefined)).to.approximately(0.333, 1e-9)
+    expect(statistical.PERCENTRANK.INC([[0, 1, 2, 3]], 1, [[0, 1]])).to.equal(error.value)
+
+    expect(statistical.PERCENTRANK.INC(true, true)).to.equal(error.na)
+    expect(statistical.PERCENTRANK.INC('true', 'true')).to.equal(error.value)
+    expect(statistical.PERCENTRANK.INC('true', 1)).to.equal(error.na)
+    expect(statistical.PERCENTRANK.INC(false, false)).to.equal(error.na)
+    expect(statistical.PERCENTRANK.INC('false', 'false')).to.equal(error.value)
+    expect(statistical.PERCENTRANK.INC('false', 0)).to.equal(error.na)
+    expect(statistical.PERCENTRANK.INC(-1, -1)).to.approximately(1, 1e-9)
+    expect(statistical.PERCENTRANK.INC('1', '1')).to.equal(error.na)
+    expect(statistical.PERCENTRANK.INC('1', 1)).to.equal(error.na)
+    expect(statistical.PERCENTRANK.INC('0', '0')).to.equal(error.na)
+    expect(statistical.PERCENTRANK.INC('0', 0)).to.equal(error.na)
+    expect(statistical.PERCENTRANK.INC(null, null)).to.equal(error.na)
+    expect(statistical.PERCENTRANK.INC(null, 0)).to.equal(error.na)
+    expect(statistical.PERCENTRANK.INC('test', 'test')).to.equal(error.value)
+    expect(statistical.PERCENTRANK.INC('test', 1)).to.equal(error.na)
+    expect(statistical.PERCENTRANK.INC(undefined, undefined)).to.approximately(1, 1e-9)
+    expect(statistical.PERCENTRANK.INC(undefined, 0)).to.approximately(1, 1e-9)
+
+    expect(
+      statistical.PERCENTRANK.INC(
+        [
+          [1, 1.2, 3.9],
+          [4, 5, 6],
+          [7, 8, 9],
+          ['test', true, false],
+          ['1', 'true', 'false'],
+          [null, 2.5, 4.3]
+        ],
+        4,
+        2
+      )
+    ).to.approximately(0.4, 1e-9)
+
+    expect(statistical.PERCENTRANK.INC([[1, 2, 3, 4]], 0)).to.equal(error.na)
+    expect(statistical.PERCENTRANK.INC([[1, 2, 3, 4]], 0.5)).to.equal(error.na)
+    expect(statistical.PERCENTRANK.INC([[1, 2, 3, 4]], 4.5)).to.equal(error.na)
+    expect(statistical.PERCENTRANK.INC([[1, 2, 3, 4]], 5)).to.equal(error.na)
+
+    Object.values(error).forEach((err) => {
+      expect(
+        statistical.PERCENTRANK.INC(
+          [
+            [1, 1.2, 3.9],
+            [4, 5, 6],
+            [7, 8, 9],
+            ['test', true, false],
+            ['1', 'true', 'false'],
+            [null, err, 4.3]
+          ],
+          4,
+          2
+        )
+      ).to.equal(err)
+
+      expect(statistical.PERCENTRANK.INC(err, 3, 2)).to.equal(err)
+      expect(statistical.PERCENTRANK.INC([[1, 2, 3, 4]], err, 2)).to.equal(err)
+      expect(statistical.PERCENTRANK.INC([[1, 2, 3, 4]], 3, err)).to.equal(err)
+    })
+
+    expect(statistical.PERCENTRANK.INC()).to.equal(error.na)
+    expect(statistical.PERCENTRANK.INC([[1, 2, 3, 4]])).to.equal(error.na)
+    expect(statistical.PERCENTRANK.INC([[1, 2, 3, 4]], 3, 2, true)).to.equal(error.na)
   })
 
   it('PERMUT', () => {
