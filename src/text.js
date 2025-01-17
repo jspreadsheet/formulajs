@@ -889,51 +889,66 @@ export function SUBSTITUTE(text, old_text, new_text, instance_num) {
     return error.na
   }
 
-  if (new_text === null) {
-    new_text = ''
+  const anyError = utils.anyError(text, old_text, new_text, instance_num)
+  if (anyError) {
+    return anyError
   }
 
-  if (text === null) {
-    text = ''
+  if (typeof new_text === 'boolean') {
+    new_text = new_text.toString().toUpperCase()
+  } else if (typeof new_text === 'number') {
+    new_text = new_text.toString()
+  } else if (typeof new_text === 'undefined' || new_text === null) {
+    new_text = ''
   }
 
   if (typeof text === 'boolean') {
     text = text.toString().toUpperCase()
+  } else if (typeof text === 'number') {
+    text = text.toString()
+  } else if (typeof text === 'undefined' || text === null) {
+    text = ''
   }
 
-  if (typeof new_text === 'boolean') {
-    return text
+  if (typeof old_text === 'boolean') {
+    old_text = old_text.toString().toUpperCase()
+  } else if (typeof old_text === 'number') {
+    old_text = old_text.toString()
   }
 
-  if (typeof instance_num === 'boolean') {
-    return error.value
-  }
+  if (arguments.length === 4) {
+    if (typeof instance_num === 'boolean') {
+      return error.value
+    }
 
-  if (!text || !old_text) {
-    return text
-  } else if (instance_num === undefined) {
-    return text.split(old_text).join(new_text)
-  } else {
     instance_num = Math.floor(Number(instance_num))
 
     if (Number.isNaN(instance_num) || instance_num <= 0) {
       return error.value
     }
+  }
 
-    let index = text.indexOf(old_text)
-    let i = 0
-
-    while (index > -1) {
-      i++
-
-      if (i === instance_num) {
-        return text.substring(0, index) + new_text + text.substring(index + old_text.length)
-      }
-      index = text.indexOf(old_text, index + 1)
-    }
-
+  if (!text || !old_text) {
     return text
   }
+
+  if (instance_num === undefined) {
+    return text.split(old_text).join(new_text)
+  }
+
+  let index = text.indexOf(old_text)
+  let i = 0
+
+  while (index > -1) {
+    i++
+
+    if (i === instance_num) {
+      return text.substring(0, index) + new_text + text.substring(index + old_text.length)
+    }
+    index = text.indexOf(old_text, index + 1)
+  }
+
+  return text
 }
 
 /**

@@ -956,13 +956,12 @@ describe('Text', () => {
       expect(text.SUBSTITUTE(true, 'T', 'b')).to.equal('bRUE')
       expect(text.SUBSTITUTE(false, 'F', 'b')).to.equal('bALSE')
       expect(text.SUBSTITUTE('tuttle', true, 'b')).to.equal('tuttle')
-      expect(text.SUBSTITUTE('tuttle', 't', true)).to.equal('tuttle')
+      expect(text.SUBSTITUTE('tuttle', 't', true)).to.equal('TRUEuTRUETRUEle')
 
       expect(text.SUBSTITUTE('Jim Alateras', '', 'ames')).to.equal('Jim Alateras')
       expect(text.SUBSTITUTE('Jim Alateras', undefined, 'ames')).to.equal('Jim Alateras')
       expect(text.SUBSTITUTE('Jim, Alateras, Sr.', ',', '')).to.equal('Jim Alateras Sr.')
       expect(text.SUBSTITUTE('', 'im', 'ames')).to.equal('')
-      expect(text.SUBSTITUTE(undefined, 'im', 'ames')).to.not.exist
     })
 
     it('should substitute regex meta-characters without interpretation', () => {
@@ -985,7 +984,8 @@ describe('Text', () => {
       expect(text.SUBSTITUTE('tuttle', 'P', 'b', 1)).to.equal('tuttle')
       expect(text.SUBSTITUTE('tuttle', 'T', 'b', 1)).to.equal('tuttle')
       expect(text.SUBSTITUTE('tuttle', 't', 'b', 1)).to.equal('buttle')
-      expect(text.SUBSTITUTE('tuttle', 't', 'b', 1)).to.equal('buttle')
+      expect(text.SUBSTITUTE('tuttle', 't', 'b', '     1')).to.equal('buttle')
+      expect(text.SUBSTITUTE('tuttle', 't', 'b', '1    ')).to.equal('buttle')
       expect(text.SUBSTITUTE('tuttle', 't', 'b', 2)).to.equal('tubtle')
       expect(text.SUBSTITUTE('tuttle', 't', 'b', 3)).to.equal('tutble')
       expect(text.SUBSTITUTE('tuttle', 't', 'b', 4)).to.equal('tuttle')
@@ -996,12 +996,17 @@ describe('Text', () => {
       expect(text.SUBSTITUTE('a-a-a', '-', ':', 2)).to.equal('a-a:a')
       expect(text.SUBSTITUTE('a-a-a', '-', ':', 2.5)).to.equal('a-a:a')
       expect(text.SUBSTITUTE('a-a-a', '-', ':', 3)).to.equal('a-a-a')
+
+      expect(text.SUBSTITUTE('aldldlda', 'ldld', '9', 1)).to.equal('a9lda')
+      expect(text.SUBSTITUTE('aldldlda', 'ldld', '9', 2)).to.equal('ald9a')
     })
 
     it('should return a #VALUE! error if occurrence is not a number greater than or equal to 1', () => {
       expect(text.SUBSTITUTE('tuttle', 't', 'b', 'text')).to.equal(error.value)
       expect(text.SUBSTITUTE('tuttle', 't', 'b', null)).to.equal(error.value)
+      expect(text.SUBSTITUTE('tuttle', 't', 'b', undefined)).to.equal(error.value)
       expect(text.SUBSTITUTE('tuttle', 't', 'b', true)).to.equal(error.value)
+      expect(text.SUBSTITUTE('tuttle', 't', 'b', false)).to.equal(error.value)
 
       expect(text.SUBSTITUTE('a-a-a', '-', ':', '')).to.equal(error.value)
       expect(text.SUBSTITUTE('a-a-a', '-', ':', 'x')).to.equal(error.value)
@@ -1010,6 +1015,32 @@ describe('Text', () => {
       expect(text.SUBSTITUTE('a-a-a', '-', ':', -1)).to.equal(error.value)
       expect(text.SUBSTITUTE('a-a-a', '-', ':', 0)).to.equal(error.value)
       expect(text.SUBSTITUTE('a-a-a', '-', ':', 0.5)).to.equal(error.value)
+      expect(text.SUBSTITUTE('a-a-a', '-', ':', '1a')).to.equal(error.value)
+      expect(text.SUBSTITUTE('a-a-a', '-', ':', 'a1')).to.equal(error.value)
+    })
+
+    it('Non-textual arguments', () => {
+      expect(text.SUBSTITUTE(5000, 0, 4)).to.equal('5444')
+
+      expect(text.SUBSTITUTE('the text is true', true, false)).to.equal('the text is true')
+      expect(text.SUBSTITUTE('the text is TRUE', true, false)).to.equal('the text is FALSE')
+      expect(text.SUBSTITUTE('the text is false', false, true)).to.equal('the text is false')
+      expect(text.SUBSTITUTE('the text is FALSE', false, true)).to.equal('the text is TRUE')
+    })
+
+    it('Omitted arguments', () => {
+      expect(text.SUBSTITUTE(undefined, 'e', '9')).to.equal('')
+      expect(text.SUBSTITUTE('test', undefined, '9')).to.equal('test')
+      expect(text.SUBSTITUTE('test', 'e', undefined)).to.equal('tst')
+    })
+
+    it('Errors', () => {
+      Object.values(error).forEach((err) => {
+        expect(text.SUBSTITUTE(err, '0', 'a')).to.equal(err)
+        expect(text.SUBSTITUTE('test', err, 'a')).to.equal(err)
+        expect(text.SUBSTITUTE('test', 'e', err)).to.equal(err)
+        expect(text.SUBSTITUTE('test', 'e', ',', err)).to.equal(err)
+      })
     })
   })
 
