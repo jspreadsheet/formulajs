@@ -2500,12 +2500,11 @@ export function PEARSON(array1, array2) {
 }
 
 export const PERCENTILE = (array, k) => {
-  
   if (utils.anyIsBoolean(array, k)) {
     return error.value
   }
 
-  return PERCENTILE.INC.call(this, array, k)
+  return PERCENTILE.INC.call({}, array, k)
 }
 
 /**
