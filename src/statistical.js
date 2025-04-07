@@ -2499,7 +2499,14 @@ export function PEARSON(array1, array2) {
   return num / Math.sqrt(den1 * den2)
 }
 
-export const PERCENTILE = {}
+export const PERCENTILE = (array, k) => {
+  
+  if (utils.anyIsBoolean(array, k)) {
+    return error.value
+  }
+
+  return PERCENTILE.INC.call(this, array, k)
+}
 
 /**
  * Returns the k-th percentile of values in a range, where k is in the range 0..1, exclusive.
@@ -2551,7 +2558,13 @@ PERCENTILE.INC = (array, k) => {
   const l = k * (n - 1)
   const fl = Math.floor(l)
 
-  return utils.cleanFloat(l === fl ? array[l] : array[fl] + (l - fl) * (array[fl + 1] - array[fl]))
+  const result = utils.cleanFloat(l === fl ? array[l] : array[fl] + (l - fl) * (array[fl + 1] - array[fl]))
+
+  if (isNaN(result)) {
+    return error.num
+  }
+
+  return result
 }
 
 export const PERCENTRANK = {}

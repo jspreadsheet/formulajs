@@ -2554,6 +2554,24 @@ describe('Statistical', () => {
     expect(statistical.PERCENTILE.EXC([1, 2, 3, 4], 0.9)).to.equal(error.num)
     expect(statistical.PERCENTILE.EXC([1, 2, 3, 4], 1)).to.equal(error.num)
     expect(statistical.PERCENTILE.EXC([1, 'invalid', 3, 4], 1)).to.equal(error.value)
+
+    expect(statistical.PERCENTILE.EXC([1, 2, 3, 4], 0.25)).to.approximately(1.25, 1e-9);
+    expect(statistical.PERCENTILE.EXC([1, 2, 3, 4], 0.5)).to.approximately(2.5, 1e-9);
+    expect(statistical.PERCENTILE.EXC([1, 2, 3, 4], 0.75)).to.approximately(3.75, 1e-9);
+
+    expect(statistical.PERCENTILE.EXC([], 0.5)).to.equal(error.value);
+    expect(statistical.PERCENTILE.EXC([1, 2], 0.5)).to.approximately(1.5, 1e-9);
+
+    expect(statistical.PERCENTILE.EXC([-2, -1, 0, 1, 2], 0.5)).to.approximately(0, 1e-9);
+    expect(statistical.PERCENTILE.EXC([1.5, 2.5, 3.5, 4.5], 0.5)).to.approximately(3, 1e-9);
+    expect(statistical.PERCENTILE.EXC([[1, 2], [3, 4]], 0.5)).to.approximately(2.5, 1e-9);
+
+    expect(statistical.PERCENTILE.EXC([1, 2, 3], 0.25)).to.approximately(1, 1e-9);
+    expect(statistical.PERCENTILE.EXC([1, 2, 3], 0.75)).to.approximately(3, 1e-9);
+    expect(statistical.PERCENTILE.EXC([1, 2, 3], 0)).to.equal(error.num);
+    expect(statistical.PERCENTILE.EXC([1, 2, 3], 1)).to.equal(error.num);
+
+    expect(statistical.PERCENTILE.EXC([1, 'invalid', 3], 0.5)).to.equal(error.value);
   })
 
   it('PERCENTILE.INC', () => {
@@ -2571,6 +2589,61 @@ describe('Statistical', () => {
     expect(statistical.PERCENTILE.INC([1, 2, 3, 4], 0.9)).to.approximately(3.7, 1e-9)
     expect(statistical.PERCENTILE.INC([1, 2, 3, 4], 1)).to.equal(4)
     expect(statistical.PERCENTILE.INC([1, 2, 'invalid', 4], 1)).to.equal(error.value)
+
+    expect(statistical.PERCENTILE.INC([], 0.5)).to.equal(error.value); // Empty array
+    expect(statistical.PERCENTILE.INC([5], 0.5)).to.equal(5); // Single value
+    expect(statistical.PERCENTILE.INC([1, 2], 0.5)).to.approximately(1.5, 1e-9); // Two values
+
+    expect(statistical.PERCENTILE.INC([-2, -1, 0, 1, 2], 0.5)).to.equal(0); // Negative numbers
+    expect(statistical.PERCENTILE.INC([1.5, 2.5, 3.5], 0.5)).to.approximately(2.5, 1e-9); // Decimals
+    expect(statistical.PERCENTILE.INC([[1, 2], [3, 4]], 0.5)).to.approximately(2.5, 1e-9); // Nested array
+
+    expect(statistical.PERCENTILE.INC([1, 'invalid', 3], 0.5)).to.equal(error.value);
+    expect(statistical.PERCENTILE.INC([1, 2, 3], -0.1)).to.equal(error.num);
+    expect(statistical.PERCENTILE.INC([1, 2, 3], 1.1)).to.equal(error.num);
+  })
+
+  it('PERCENTILE', () => {
+    expect(statistical.PERCENTILE([1, 2, 3, 4], 0)).to.equal(1)
+    expect(statistical.PERCENTILE([[1, 2, 3, 4]], 0)).to.equal(1)
+    expect(statistical.PERCENTILE([[1, 2, 3, 4]], 0.1)).to.approximately(1.3, 1e-9)
+    expect(statistical.PERCENTILE([[1, 2, 3, 4]], 0.2)).to.approximately(1.6, 1e-9)
+    expect(statistical.PERCENTILE([[1, 2, 3, 4]], 0.25)).to.approximately(1.75, 1e-9)
+    expect(statistical.PERCENTILE([[1, 2, 3, 4]], 0.3)).to.approximately(1.9, 1e-9)
+    expect(statistical.PERCENTILE([[1, 2, 3, 4]], 0.4)).to.approximately(2.2, 1e-9)
+    expect(statistical.PERCENTILE([[1, 2, 3, 4]], 0.5)).to.approximately(2.5, 1e-9)
+    expect(statistical.PERCENTILE([[1, 2, 3, 4]], 0.6)).to.approximately(2.8, 1e-9)
+    expect(statistical.PERCENTILE([[1, 2, 3, 4]], 0.7)).to.approximately(3.1, 1e-9)
+    expect(statistical.PERCENTILE([[1, 2, 3, 4]], 0.75)).to.approximately(3.25, 1e-9)
+    expect(statistical.PERCENTILE([[1, 2, 3, 4]], 0.8)).to.approximately(3.4, 1e-9)
+    expect(statistical.PERCENTILE([[1, 2, 3, 4]], 0.9)).to.approximately(3.7, 1e-9)
+    expect(statistical.PERCENTILE([[1, 2, 3, 4]], 1)).to.equal(4)
+    expect(statistical.PERCENTILE([1, 2, 'invalid', 4], 1)).to.equal(error.value)
+
+    expect(statistical.PERCENTILE([], 0.5)).to.equal(error.value); // Empty array
+    expect(statistical.PERCENTILE([5], 0.5)).to.equal(5); // Single value
+    expect(statistical.PERCENTILE([1, 2], 0.5)).to.approximately(1.5, 1e-9); // Two values
+
+    expect(statistical.PERCENTILE([[-2, -1, 0, 1, 2]], 0.5)).to.equal(0); // Negative numbers
+    expect(statistical.PERCENTILE([[1.5, 2.5, 3.5]], 0.5)).to.approximately(2.5, 1e-9); // Decimals
+    expect(statistical.PERCENTILE([[1, 2], [3, 4]], 0.5)).to.approximately(2.5, 1e-9); // Nested array
+
+    expect(statistical.PERCENTILE([1, 'invalid', 3], 0.5)).to.equal(error.value);
+    expect(statistical.PERCENTILE([1, 2, 3], -0.1)).to.equal(error.num);
+    expect(statistical.PERCENTILE([1, 2, 3], 1.1)).to.equal(error.num);
+
+    expect(statistical.PERCENTILE('not an array', 0.5)).to.equal(error.value); // String as array
+    expect(statistical.PERCENTILE(true, 0.5)).to.equal(error.value); // Boolean as array
+    expect(statistical.PERCENTILE(null, 0.5)).to.equal(0); // null as array
+    expect(statistical.PERCENTILE(undefined, 0.5)).to.equal(0); // undefined as array
+
+    expect(statistical.PERCENTILE([1, 2, 3], '0.5')).to.equal(2); // String as k
+    expect(statistical.PERCENTILE([1, 2, 3], true)).to.equal(error.value); // Boolean true as k
+    expect(statistical.PERCENTILE([1, 2, 3], false)).to.equal(error.value); // Boolean false as k
+    expect(statistical.PERCENTILE([1, 2, 3], null)).to.equal(1); // null as k
+    expect(statistical.PERCENTILE([1, 2, 3], undefined)).to.equal(1); // undefined as k
+    expect(statistical.PERCENTILE([1, 2, 3], { value: 0.5 })).to.equal(error.value); // Object as k
+    expect(statistical.PERCENTILE([1, 2, 3], [0.5])).to.equal(2); // Array as k
   })
 
   it('PERCENTRANK.EXC', () => {
