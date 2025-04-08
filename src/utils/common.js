@@ -591,6 +591,31 @@ export const getVariableType = function (variable) {
   return 'column'
 }
 
+/**
+ * Returns the type of the sent variable.
+ * @param {any|any[][]} variable - Analyzed variable.
+ * @returns {string}
+ */
+export const getVariableType2 = function (variable) {
+  if (typeof variable !== 'object' || !variable || typeof variable.length === 'undefined') {
+    return 'single'
+  }
+
+  if (variable.length === 1) {
+    if (variable[0].length === 1) {
+      return 'fake-matrix'
+    }
+
+    return 'line'
+  }
+
+  if (variable[0].length !== 1) {
+    return 'matrix'
+  }
+
+  return 'column'
+}
+
 export function getColumnAsMatrix(matrix, columnIndex) {
   const columnMatrix = []
   for (let i = 0; i < matrix.length; i++) {

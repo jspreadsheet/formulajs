@@ -136,45 +136,813 @@ describe('Logical', () => {
     expect(logical.FALSE(1)).to.equal(error.na)
   })
 
-  it('IF', () => {
-    expect(logical.IF(undefined, undefined, undefined)).to.equal(0)
-    expect(logical.IF(undefined, 1, 2)).to.equal(2)
-    expect(logical.IF(error.na, undefined)).to.equal(error.na)
+  describe('IF', () => {
+    it('First argument is not a range', () => {
+      expect(logical.IF(undefined, undefined, undefined)).to.equal(0)
+      expect(logical.IF(undefined, 1, 2)).to.equal(2)
+      expect(logical.IF(error.na, undefined)).to.equal(error.na)
 
-    expect(logical.IF(true, error.na)).to.equal(error.na)
+      expect(logical.IF(true, error.na)).to.equal(error.na)
 
-    expect(logical.IF(null, 1, 2)).to.equal(2)
-    expect(logical.IF(true, null, 2)).to.equal(0)
-    expect(logical.IF(false, 1, null)).to.equal(0)
+      expect(logical.IF(null, 1, 2)).to.equal(2)
+      expect(logical.IF(true, null, 2)).to.equal(0)
+      expect(logical.IF(false, 1, null)).to.equal(0)
 
-    expect(logical.IF(1, 1, 2)).to.equal(1)
-    expect(logical.IF(0, 1, 2)).to.equal(2)
-    expect(logical.IF(-4, 1, 2)).to.equal(1)
-    expect(logical.IF(0.4, 1, 2)).to.equal(1)
+      expect(logical.IF(1, 1, 2)).to.equal(1)
+      expect(logical.IF(0, 1, 2)).to.equal(2)
+      expect(logical.IF(-4, 1, 2)).to.equal(1)
+      expect(logical.IF(0.4, 1, 2)).to.equal(1)
 
-    expect(logical.IF(true, 1, 2)).to.equal(1)
-    expect(logical.IF(false, 1, 2)).to.equal(2)
-    expect(logical.IF(true, 1)).to.equal(1)
-    expect(logical.IF(false, 1)).to.equal(false)
+      expect(logical.IF(true, 1, 2)).to.equal(1)
+      expect(logical.IF(false, 1, 2)).to.equal(2)
+      expect(logical.IF(true, 1)).to.equal(1)
+      expect(logical.IF(false, 1)).to.equal(false)
 
-    expect(logical.IF('true', 1, 2)).to.equal(1)
-    expect(logical.IF('false', 1, 2)).to.equal(2)
+      expect(logical.IF('true', 1, 2)).to.equal(1)
+      expect(logical.IF('TRUE', 1, 2)).to.equal(1)
+      expect(logical.IF('false', 1, 2)).to.equal(2)
+      expect(logical.IF('FALSE', 1, 2)).to.equal(2)
 
-    expect(logical.IF('  true', 1, 2)).to.equal(error.value)
-    expect(logical.IF('text', 1, 2)).to.equal(error.value)
-    expect(logical.IF('', 1, 2)).to.equal(error.value)
-    expect(logical.IF('   ', 1, 2)).to.equal(error.value)
-    expect(logical.IF('1', 1, 2)).to.equal(error.value)
-    expect(logical.IF('1900-02-01', 1, 2)).to.equal(error.value)
-    expect(logical.IF('08:45 AM', 1, 2)).to.equal(error.value)
+      expect(logical.IF('  true', 1, 2)).to.equal(error.value)
+      expect(logical.IF('text', 1, 2)).to.equal(error.value)
+      expect(logical.IF('', 1, 2)).to.equal(error.value)
+      expect(logical.IF('   ', 1, 2)).to.equal(error.value)
+      expect(logical.IF('1', 1, 2)).to.equal(error.value)
+      expect(logical.IF('1900-02-01', 1, 2)).to.equal(error.value)
+      expect(logical.IF('08:45 AM', 1, 2)).to.equal(error.value)
 
-    Object.values(error).forEach((err) => {
-      expect(logical.IF(err, 1, 2)).to.equal(err)
+      expect(
+        logical.IF(
+          true,
+          [
+            [1, 2],
+            [3, 4]
+          ],
+          [[5, 6]]
+        )
+      ).to.eql([
+        [1, 2],
+        [3, 4]
+      ])
+      expect(
+        logical.IF(
+          false,
+          [
+            [1, 2],
+            [3, 4]
+          ],
+          [[5, 6]]
+        )
+      ).to.eql([[5, 6]])
+
+      Object.values(error).forEach((err) => {
+        expect(logical.IF(err, 1, 2)).to.equal(err)
+      })
     })
 
-    expect(logical.IF()).to.equal(error.na)
-    expect(logical.IF(true)).to.equal(error.na)
-    expect(logical.IF(true, 1, 2, 3)).to.equal(error.na)
+    it('First argument is a false range', () => {
+      expect(logical.IF([[true]], 1, 2)).to.equal(1)
+      expect(logical.IF([[false]], 1, 2)).to.equal(2)
+
+      expect(
+        logical.IF(
+          [[true]],
+          [
+            [1, 2],
+            [3, 4]
+          ],
+          [[5, 6]]
+        )
+      ).to.eql([
+        [1, 2],
+        [3, 4]
+      ])
+      expect(
+        logical.IF(
+          [[false]],
+          [
+            [1, 2],
+            [3, 4]
+          ],
+          [[5, 6]]
+        )
+      ).to.eql([[5, 6]])
+
+      Object.values(error).forEach((err) => {
+        expect(logical.IF([[err]], 1, 2)).to.equal(err)
+      })
+    })
+
+    it('First argument is a column', () => {
+      expect(
+        logical.IF(
+          [[false], [true], [false]],
+          [
+            [1, 4],
+            [2, 5],
+            [3, 6]
+          ],
+          'test'
+        )
+      ).to.eql([
+        ['test', 'test'],
+        [2, 5],
+        ['test', 'test']
+      ])
+
+      expect(
+        logical.IF([[false], [true], [false]], 'test', [
+          [1, 4],
+          [2, 5],
+          [3, 6]
+        ])
+      ).to.eql([
+        [1, 4],
+        ['test', 'test'],
+        [3, 6]
+      ])
+
+      expect(
+        logical.IF(
+          [[false], [true], [false]],
+          [
+            [1, 4],
+            [2, 5],
+            [3, 6]
+          ],
+          'test'
+        )
+      ).to.eql([
+        ['test', 'test'],
+        [2, 5],
+        ['test', 'test']
+      ])
+
+      expect(
+        logical.IF(
+          [[false], [true], [false]],
+          [['test']],
+          [
+            [1, 4],
+            [2, 5],
+            [3, 6]
+          ]
+        )
+      ).to.eql([
+        [1, 4],
+        ['test', 'test'],
+        [3, 6]
+      ])
+
+      expect(
+        logical.IF(
+          [[false], [true], [false]],
+          [
+            [1, 4],
+            [2, 5],
+            [3, 6]
+          ],
+          [['test']]
+        )
+      ).to.eql([
+        ['test', 'test'],
+        [2, 5],
+        ['test', 'test']
+      ])
+
+      expect(
+        logical.IF(
+          [[false], [true], [false]],
+          [
+            [10, 20],
+            [11, 21],
+            [12, 22]
+          ],
+          [
+            [110, 120, 130, 140],
+            [111, 121, 131, 141],
+            [112, 122, 132, 142]
+          ]
+        )
+      ).to.eql([
+        [110, 120, 130, 140],
+        [11, 21, error.na, error.na],
+        [112, 122, 132, 142]
+      ])
+
+      expect(
+        logical.IF(
+          [[false], [true], [false]],
+          [
+            [10, 20, 30, 40],
+            [11, 21, 31, 41],
+            [12, 22, 32, 42]
+          ],
+          [
+            [110, 120],
+            [111, 121],
+            [112, 122]
+          ]
+        )
+      ).to.eql([
+        [110, 120, error.na, error.na],
+        [11, 21, 31, 41],
+        [112, 122, error.na, error.na]
+      ])
+
+      expect(
+        logical.IF(
+          [[false], [true], [false]],
+          [[10], [11], [12]],
+          [
+            [110, 120, 130],
+            [111, 121, 131],
+            [112, 122, 132]
+          ]
+        )
+      ).to.eql([
+        [110, 120, 130],
+        [11, 11, 11],
+        [112, 122, 132]
+      ])
+
+      expect(
+        logical.IF(
+          [[false], [true], [false]],
+          [
+            [10, 20, 30, 40],
+            [11, 21, 31, 41],
+            [12, 22, 32, 42]
+          ],
+          [[110], [111], [112]]
+        )
+      ).to.eql([
+        [110, 110, 110, 110],
+        [11, 21, 31, 41],
+        [112, 112, 112, 112]
+      ])
+
+      expect(
+        logical.IF(
+          [[false], [true], [false]],
+          [[10], [11], [12], [13]],
+          [
+            [110, 120, 130],
+            [111, 121, 131],
+            [112, 122, 132]
+          ]
+        )
+      ).to.eql([
+        [110, 120, 130],
+        [11, 11, 11],
+        [112, 122, 132],
+        [error.na, error.na, error.na]
+      ])
+
+      expect(
+        logical.IF(
+          [[false], [true], [false]],
+          [
+            [10, 20, 30, 40],
+            [11, 21, 31, 41],
+            [12, 22, 32, 42]
+          ],
+          [[110], [111], [112], [113]]
+        )
+      ).to.eql([
+        [110, 110, 110, 110],
+        [11, 21, 31, 41],
+        [112, 112, 112, 112],
+        [error.na, error.na, error.na, error.na]
+      ])
+
+      expect(
+        logical.IF(
+          [[false], [true], [false]],
+          [[10], [11], [12]],
+          [
+            [110, 120, 130],
+            [111, 121, 131]
+          ]
+        )
+      ).to.eql([
+        [110, 120, 130],
+        [11, 11, 11],
+        [error.na, error.na, error.na]
+      ])
+
+      expect(
+        logical.IF(
+          [[false], [true], [false]],
+          [[10], [11]],
+          [
+            [110, 120, 130],
+            [111, 121, 131],
+            [112, 122, 132]
+          ]
+        )
+      ).to.eql([
+        [110, 120, 130],
+        [11, 11, 11],
+        [112, 122, 132]
+      ])
+
+      expect(logical.IF([[false], [true], [false]], [[10], [11], [12]], [[110, 120, 130]])).to.eql([
+        [110, 120, 130],
+        [11, 11, 11],
+        [110, 120, 130]
+      ])
+
+      expect(
+        logical.IF(
+          [[false], [true], [true]],
+          [[10], [11], [12]],
+          [
+            [110, 120, 130],
+            [111, 121, 131]
+          ]
+        )
+      ).to.eql([
+        [110, 120, 130],
+        [11, 11, 11],
+        [12, 12, 12]
+      ])
+
+      expect(
+        logical.IF(
+          [[false], [true], [true]],
+          [[10], [11]],
+          [
+            [110, 120, 130],
+            [111, 121, 131],
+            [112, 122, 132]
+          ]
+        )
+      ).to.eql([
+        [110, 120, 130],
+        [11, 11, 11],
+        [error.na, error.na, error.na]
+      ])
+
+      expect(
+        logical.IF(
+          [[false], [error.data], [true]],
+          [[10], [11], [12]],
+          [
+            [110, 120, 130],
+            [111, 121, 131],
+            [112, 122, 132]
+          ]
+        )
+      ).to.eql([
+        [110, 120, 130],
+        [error.data, error.data, error.data],
+        [12, 12, 12]
+      ])
+    })
+
+    it('First argument is a row', () => {
+      expect(
+        logical.IF(
+          [[false, true, false]],
+          [
+            [1, 2, 3],
+            [4, 5, 6]
+          ],
+          'test'
+        )
+      ).to.eql([
+        ['test', 2, 'test'],
+        ['test', 5, 'test']
+      ])
+
+      expect(
+        logical.IF([[false, true, false]], 'test', [
+          [1, 2, 3],
+          [4, 5, 6]
+        ])
+      ).to.eql([
+        [1, 'test', 3],
+        [4, 'test', 6]
+      ])
+
+      expect(
+        logical.IF(
+          [[false, true, false]],
+          [
+            [1, 2, 3],
+            [4, 5, 6]
+          ],
+          'test'
+        )
+      ).to.eql([
+        ['test', 2, 'test'],
+        ['test', 5, 'test']
+      ])
+
+      expect(
+        logical.IF(
+          [[false, true, false]],
+          [['test']],
+          [
+            [1, 2, 3],
+            [4, 5, 6]
+          ]
+        )
+      ).to.eql([
+        [1, 'test', 3],
+        [4, 'test', 6]
+      ])
+
+      expect(
+        logical.IF(
+          [[false, true, false]],
+          [
+            [1, 2, 3],
+            [4, 5, 6]
+          ],
+          [['test']]
+        )
+      ).to.eql([
+        ['test', 2, 'test'],
+        ['test', 5, 'test']
+      ])
+
+      expect(
+        logical.IF(
+          [[false, true, false]],
+          [
+            [10, 11, 12],
+            [20, 21, 22]
+          ],
+          [
+            [110, 111, 112],
+            [120, 121, 122],
+            [130, 131, 132],
+            [140, 141, 142]
+          ]
+        )
+      ).to.eql([
+        [110, 11, 112],
+        [120, 21, 122],
+        [130, error.na, 132],
+        [140, error.na, 142]
+      ])
+
+      expect(
+        logical.IF(
+          [[false, true, false]],
+          [
+            [10, 11, 12],
+            [20, 21, 22],
+            [30, 31, 32],
+            [40, 41, 42]
+          ],
+          [
+            [110, 111, 112],
+            [120, 121, 122]
+          ]
+        )
+      ).to.eql([
+        [110, 11, 112],
+        [120, 21, 122],
+        [error.na, 31, error.na],
+        [error.na, 41, error.na]
+      ])
+
+      expect(
+        logical.IF(
+          [[false, true, false]],
+          [[10, 11, 12]],
+          [
+            [110, 111, 112],
+            [120, 121, 122],
+            [130, 131, 132]
+          ]
+        )
+      ).to.eql([
+        [110, 11, 112],
+        [120, 11, 122],
+        [130, 11, 132]
+      ])
+
+      expect(
+        logical.IF(
+          [[false, true, false]],
+          [
+            [10, 11, 12],
+            [20, 21, 22],
+            [30, 31, 32],
+            [40, 41, 42]
+          ],
+          [[110, 111, 112]]
+        )
+      ).to.eql([
+        [110, 11, 112],
+        [110, 21, 112],
+        [110, 31, 112],
+        [110, 41, 112]
+      ])
+
+      expect(
+        logical.IF(
+          [[false, true, false]],
+          [[10, 11, 12, 13]],
+          [
+            [110, 111, 112],
+            [120, 121, 122],
+            [130, 131, 132]
+          ]
+        )
+      ).to.eql([
+        [110, 11, 112, error.na],
+        [120, 11, 122, error.na],
+        [130, 11, 132, error.na]
+      ])
+
+      expect(
+        logical.IF(
+          [[false, true, false]],
+          [
+            [10, 11, 12],
+            [20, 21, 22],
+            [30, 31, 32],
+            [40, 41, 42]
+          ],
+          [[110, 111, 112, 113]]
+        )
+      ).to.eql([
+        [110, 11, 112, error.na],
+        [110, 21, 112, error.na],
+        [110, 31, 112, error.na],
+        [110, 41, 112, error.na]
+      ])
+
+      expect(
+        logical.IF(
+          [[false, true, false]],
+          [[10, 11, 12]],
+          [
+            [110, 111],
+            [120, 121],
+            [130, 131]
+          ]
+        )
+      ).to.eql([
+        [110, 11, error.na],
+        [120, 11, error.na],
+        [130, 11, error.na]
+      ])
+
+      expect(
+        logical.IF(
+          [[false, true, false]],
+          [[10, 11]],
+          [
+            [110, 111, 112],
+            [120, 121, 122],
+            [130, 131, 132]
+          ]
+        )
+      ).to.eql([
+        [110, 11, 112],
+        [120, 11, 122],
+        [130, 11, 132]
+      ])
+
+      expect(logical.IF([[false, true, false]], [[10, 11, 12]], [[110], [120], [130]])).to.eql([
+        [110, 11, 110],
+        [120, 11, 120],
+        [130, 11, 130]
+      ])
+
+      expect(
+        logical.IF(
+          [[false, true, true]],
+          [[10, 11, 12]],
+          [
+            [110, 111],
+            [120, 121],
+            [130, 131]
+          ]
+        )
+      ).to.eql([
+        [110, 11, 12],
+        [120, 11, 12],
+        [130, 11, 12]
+      ])
+
+      expect(
+        logical.IF(
+          [[false, true, true]],
+          [[10, 11]],
+          [
+            [110, 111, 112],
+            [120, 121, 122],
+            [130, 131, 132]
+          ]
+        )
+      ).to.eql([
+        [110, 11, error.na],
+        [120, 11, error.na],
+        [130, 11, error.na]
+      ])
+
+      expect(
+        logical.IF(
+          [[false, error.data, true]],
+          [[10, 11, 12]],
+          [
+            [110, 111, 112],
+            [120, 121, 122],
+            [130, 131, 132]
+          ]
+        )
+      ).to.eql([
+        [110, error.data, 12],
+        [120, error.data, 12],
+        [130, error.data, 12]
+      ])
+    })
+
+    it('First argument is a range that is not a row or column', () => {
+      expect(
+        logical.IF(
+          [
+            [true, false, false],
+            [false, false, true]
+          ],
+          10,
+          [
+            [110, 111, 112],
+            [120, 121, 122]
+          ]
+        )
+      ).to.eql([
+        [10, 111, 112],
+        [120, 121, 10]
+      ])
+      expect(
+        logical.IF(
+          [
+            [true, false, false],
+            [false, false, true]
+          ],
+          [
+            [10, 11, 12],
+            [20, 21, 22]
+          ],
+          110
+        )
+      ).to.eql([
+        [10, 110, 110],
+        [110, 110, 22]
+      ])
+
+      expect(
+        logical.IF(
+          [
+            [true, false, false],
+            [false, false, true]
+          ],
+          [[10]],
+          [
+            [110, 111, 112],
+            [120, 121, 122]
+          ]
+        )
+      ).to.eql([
+        [10, 111, 112],
+        [120, 121, 10]
+      ])
+      expect(
+        logical.IF(
+          [
+            [true, false, false],
+            [false, false, true]
+          ],
+          [
+            [10, 11, 12],
+            [20, 21, 22]
+          ],
+          [[110]]
+        )
+      ).to.eql([
+        [10, 110, 110],
+        [110, 110, 22]
+      ])
+
+      expect(
+        logical.IF(
+          [
+            [true, false, false],
+            [false, false, true]
+          ],
+          [
+            [10, 11, 12],
+            [20, 21, 22]
+          ],
+          [
+            [110, 111, 112],
+            [120, 121, 122]
+          ]
+        )
+      ).to.eql([
+        [10, 111, 112],
+        [120, 121, 22]
+      ])
+
+      expect(
+        logical.IF(
+          [
+            [true, false, false],
+            [false, false, true]
+          ],
+          [[10, 11, 12]],
+          [[110], [120]]
+        )
+      ).to.eql([
+        [10, 110, 110],
+        [120, 120, 12]
+      ])
+      expect(
+        logical.IF(
+          [
+            [true, false, false],
+            [false, false, true]
+          ],
+          [[10], [20]],
+          [[110, 111, 112]]
+        )
+      ).to.eql([
+        [10, 111, 112],
+        [110, 111, 20]
+      ])
+
+      expect(
+        logical.IF(
+          [
+            [true, false, false],
+            [false, false, true]
+          ],
+          [[10], [20], [30]],
+          [[110, 111, 112, 113]]
+        )
+      ).to.eql([
+        [10, 111, 112, error.na],
+        [110, 111, 20, error.na],
+        [error.na, error.na, error.na, error.na]
+      ])
+
+      expect(
+        logical.IF(
+          [
+            [false, false, true],
+            [true, false, false],
+            [false, true, false]
+          ],
+          [
+            [10, 11, 12],
+            [20, 21, 22]
+          ],
+          [
+            [100, 101],
+            [110, 111],
+            [120, 121]
+          ]
+        )
+      ).to.eql([
+        [100, 101, 12],
+        [20, 111, error.na],
+        [120, error.na, error.na]
+      ])
+
+      expect(
+        logical.IF(
+          [
+            [true, false, error.num],
+            [false, false, true]
+          ],
+          [
+            [10, 11, 12],
+            [20, 21, 22]
+          ],
+          [
+            [110, 111, 112],
+            [120, 121, 122]
+          ]
+        )
+      ).to.eql([
+        [10, 111, error.num],
+        [120, 121, 22]
+      ])
+    })
+
+    it('Incorrect number of arguments', () => {
+      expect(logical.IF()).to.equal(error.na)
+      expect(logical.IF(true)).to.equal(error.na)
+      expect(logical.IF(true, 1, 2, 3)).to.equal(error.na)
+    })
   })
 
   it('IFS', () => {

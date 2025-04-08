@@ -53,6 +53,60 @@ export function FALSE() {
   return false
 }
 
+function getBooleanValueFromLogicalTest(logicalTest) {
+  if (logicalTest instanceof Error) {
+    return logicalTest
+  }
+
+  const type = typeof logicalTest
+
+  if (type === 'string') {
+    if (logicalTest.length === 4) {
+      if (logicalTest.toLowerCase() === 'true') {
+        return true
+      }
+    } else if (logicalTest.length === 5 && logicalTest.toLowerCase() === 'false') {
+      return false
+    }
+
+    return error.value
+  }
+
+  return type === 'boolean' ? logicalTest : Boolean(logicalTest)
+}
+
+function getValueFromSource(source, rowIndex, columnIndex, sourceType) {
+  if (sourceType === 'single') {
+    return source
+  }
+
+  if (sourceType === 'line') {
+    return columnIndex < source[0].length ? source[0][columnIndex] : error.na
+  }
+
+  if (sourceType === 'column') {
+    return rowIndex < source.length ? source[rowIndex][0] : error.na
+  }
+
+  return rowIndex < source.length && columnIndex < source[rowIndex].length ? source[rowIndex][columnIndex] : error.na
+}
+
+function addColumnToResult(source, sourceType, columnIndex, result, numOfRows) {
+  for (let rowIndex = 0; rowIndex < numOfRows; rowIndex++) {
+    result[rowIndex].push(getValueFromSource(source, rowIndex, columnIndex, sourceType))
+  }
+}
+
+function addRowToResult(source, sourceType, rowIndex, result, numOfColumns) {
+  for (let columnIndex = 0; columnIndex < numOfColumns; columnIndex++) {
+    result[rowIndex].push(getValueFromSource(source, rowIndex, columnIndex, sourceType))
+  }
+}
+
+function addItemToResult(source, sourceType, rowIndex, columnIndex, result) {
+  result[rowIndex].push(getValueFromSource(source, rowIndex, columnIndex, sourceType))
+}
+
 /**
  * Specifies a logical test to perform.
  *
@@ -69,37 +123,130 @@ export function IF(logical_test, value_if_true, value_if_false) {
     return error.na
   }
 
-  if (logical_test instanceof Error) {
-    return logical_test
-  }
-
-  if (typeof logical_test === 'string') {
-    if (logical_test === 'true') {
-      logical_test = true
-    } else if (logical_test === 'false') {
-      logical_test = false
-    } else {
-      return error.value
-    }
-  }
-
   if (value_if_true === undefined || value_if_true === null) {
     value_if_true = 0
   }
 
   if (arguments.length !== 3) {
     value_if_false = false
-  }
-
-  if (value_if_false === undefined || value_if_false === null) {
+  } else if (value_if_false === undefined || value_if_false === null) {
     value_if_false = 0
   }
 
-  if (Array.isArray(logical_test)) {
-    return logical_test.map((item) => IF(item, value_if_true, value_if_false))
+  let logicalTestVariableType = utils.getVariableType2(logical_test)
+
+  let valueIfTrueVariableType = utils.getVariableType2(value_if_true)
+  if (valueIfTrueVariableType === 'fake-matrix') {
+    valueIfTrueVariableType = 'single'
+    value_if_true = value_if_true[0][0]
   }
 
-  return logical_test ? value_if_true : value_if_false
+  let valueIfFalseVariableType = utils.getVariableType2(value_if_false)
+  if (valueIfFalseVariableType === 'fake-matrix') {
+    valueIfFalseVariableType = 'single'
+    value_if_false = value_if_false[0][0]
+  }
+
+  const getCorrectArgument = (testValue) => {
+    if (typeof testValue === 'undefined') {
+      return {
+        source: error.na,
+        type: 'single'
+      }
+    }
+
+    if (testValue instanceof Error) {
+      return {
+        source: testValue,
+        type: 'single'
+      }
+    }
+
+    if (testValue) {
+      return {
+        source: value_if_true,
+        type: valueIfTrueVariableType
+      }
+    }
+
+    return {
+      source: value_if_false,
+      type: valueIfFalseVariableType
+    }
+  }
+
+  if (logicalTestVariableType === 'fake-matrix') {
+    logical_test = logical_test[0][0]
+    logicalTestVariableType = 'single'
+  }
+
+  if (logicalTestVariableType === 'single') {
+    const handledTestValue = getBooleanValueFromLogicalTest(logical_test)
+
+    const { source } = getCorrectArgument(handledTestValue)
+
+    return source
+  }
+
+  const numOfRowsInTheResult = Math.max(
+    logical_test.length,
+    valueIfTrueVariableType !== 'single' ? value_if_true.length : 1,
+    valueIfFalseVariableType !== 'single' ? value_if_false.length : 1
+  )
+
+  const numOfColumnsInTheResult = Math.max(
+    logical_test[0].length,
+    valueIfTrueVariableType !== 'single' ? value_if_true[0].length : 1,
+    valueIfFalseVariableType !== 'single' ? value_if_false[0].length : 1
+  )
+
+  const result = []
+  for (let rowIndex = 0; rowIndex < numOfRowsInTheResult; rowIndex++) {
+    result.push([])
+  }
+
+  if (logicalTestVariableType === 'line') {
+    const testRow = logical_test[0]
+
+    for (let columnIndex = 0; columnIndex < numOfColumnsInTheResult; columnIndex++) {
+      const handledTestValue =
+        columnIndex >= testRow.length ? undefined : getBooleanValueFromLogicalTest(testRow[columnIndex])
+
+      const { source, type } = getCorrectArgument(handledTestValue)
+
+      addColumnToResult(source, type, columnIndex, result, numOfRowsInTheResult)
+    }
+
+    return result
+  }
+
+  if (logicalTestVariableType === 'column') {
+    for (let rowIndex = 0; rowIndex < numOfRowsInTheResult; rowIndex++) {
+      const handledTestValue =
+        rowIndex >= logical_test.length ? undefined : getBooleanValueFromLogicalTest(logical_test[rowIndex][0])
+
+      const { source, type } = getCorrectArgument(handledTestValue)
+
+      addRowToResult(source, type, rowIndex, result, numOfColumnsInTheResult)
+    }
+
+    return result
+  }
+
+  for (let rowIndex = 0; rowIndex < numOfRowsInTheResult; rowIndex++) {
+    for (let columnIndex = 0; columnIndex < numOfColumnsInTheResult; columnIndex++) {
+      const handledTestValue =
+        rowIndex >= logical_test.length || columnIndex >= logical_test[rowIndex].length
+          ? undefined
+          : getBooleanValueFromLogicalTest(logical_test[rowIndex][columnIndex])
+
+      const { source, type } = getCorrectArgument(handledTestValue)
+
+      addItemToResult(source, type, rowIndex, columnIndex, result)
+    }
+  }
+
+  return result
 }
 
 /**
