@@ -105,6 +105,8 @@ describe('Math & Trig', () => {
   it('ATAN2', () => {
     expect(mathTrig.ATAN2(undefined)).to.equal(0)
     expect(mathTrig.ATAN2(error.na)).to.equal(error.na)
+    expect(mathTrig.ATAN2(0, 1)).to.approximately(1.5707963267949, 1e-9)
+    expect(mathTrig.ATAN2(1, 0)).to.equal(0)
     expect(mathTrig.ATAN2(1, 1)).to.approximately(0.7853981633974483, 1e-9)
     expect(mathTrig.ATAN2(1, 'invalid')).to.equal(error.value)
   })

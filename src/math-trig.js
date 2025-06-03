@@ -251,7 +251,7 @@ export function ATAN2(x_num, y_num) {
     return anyError
   }
 
-  return Math.atan2(x_num, y_num)
+  return Math.atan2(y_num, x_num)
 }
 
 /**
