@@ -61,6 +61,7 @@ describe('Math & Trig', () => {
     expect(mathTrig.ACOT(undefined)).to.equal(mathTrig.ACOT(0))
     expect(mathTrig.ACOT(error.na)).to.equal(error.na)
     expect(mathTrig.ACOT(1)).to.approximately(0.7853981633974483, 1e-9)
+    expect(mathTrig.ACOT(-31)).to.approximately(3.10934577115454, 1e-9)
     expect(mathTrig.ACOT('invalid')).to.equal(error.value)
   })
 

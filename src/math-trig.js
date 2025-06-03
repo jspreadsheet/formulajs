@@ -100,7 +100,11 @@ export function ACOT(number) {
     return number
   }
 
-  const result = Math.atan(1 / number)
+  let result = Math.atan(1 / number)
+
+  if (number < 0) {
+    result += Math.PI
+  }
 
   return result
 }
