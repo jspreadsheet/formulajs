@@ -175,7 +175,10 @@ describe('Math & Trig', () => {
     expect(mathTrig.CEILING(-1.234, -0.1)).to.approximately(-1.3, 1e-9)
     expect(mathTrig.CEILING(-1.234, -0.01)).to.approximately(-1.24, 1e-9)
     expect(mathTrig.CEILING(-1.234, -0.001)).to.approximately(-1.234, 1e-9)
-    expect(mathTrig.CEILING(1.234, -0.001)).to.approximately(1.234, 1e-9)
+    expect(mathTrig.CEILING(1.234, -0.001)).to.equal(error.num)
+    expect(mathTrig.CEILING(7.1, 3.6)).to.equal(7.2)
+    expect(mathTrig.CEILING(52, 52)).to.equal(52)
+    expect(mathTrig.CEILING(1, -1)).to.equal(error.num)
   })
 
   it('CEILING.MATH', () => {

@@ -377,11 +377,21 @@ export function CEILING(number, significance) {
     return 0
   }
 
-  if (number > 0 && significance > 0 && number < significance) {
-    return significance
+  if (number > 0) {
+    if (significance < 0) {
+      return error.num
+    }
+
+    if (number < significance) {
+      return significance
+    }
   }
 
-  const precision = -Math.floor(Math.log(Math.abs(significance)) / Math.log(10))
+  const decimalPartOfSignificance = Math.abs(significance) % 1
+
+  const precision = decimalPartOfSignificance !== 0
+    ? -Math.floor(Math.log10(decimalPartOfSignificance))
+    : 0
 
   return ROUND(Math.ceil(number / significance) * significance, precision)
 }
