@@ -312,12 +312,82 @@ export function parseDate(date) {
   return error.value
 }
 
+export function parseDateUTC(date) {
+  // Handle numeric dates (Excel serial numbers)
+  if (!isNaN(date)) {
+    const d = parseFloat(date);
+    
+    if (d < 0 || d >= 2958466) {
+      return error.num;
+    }
+    
+    return serialNumberToDate(d);
+  }
+  
+  // Handle string dates
+  if (typeof date === 'string') {
+    // Trim whitespace
+    date = date.trim();
+    
+    // Parse the date components manually
+    let year, month, day;
+    
+    // Try different date formats
+    // MM/DD/YYYY or MM-DD-YYYY
+    let match = date.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+    if (match) {
+      month = parseInt(match[1]);
+      day = parseInt(match[2]);
+      year = parseInt(match[3]);
+    }
+    
+    // YYYY/MM/DD or YYYY-MM-DD
+    if (!match) {
+      match = date.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
+      if (match) {
+        year = parseInt(match[1]);
+        month = parseInt(match[2]);
+        day = parseInt(match[3]);
+      }
+    }
+    
+    // If we successfully parsed the date components
+    if (year && month && day) {
+      // Create a UTC date at 00:00:00 UTC
+      // This ensures the ISO string shows the correct date
+      const utcDate = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
+      
+      // Validate the date
+      if (!isNaN(utcDate) && 
+          utcDate.getUTCFullYear() === year && 
+          utcDate.getUTCMonth() === month - 1 && 
+          utcDate.getUTCDate() === day) {
+        return utcDate;
+      }
+    }
+    
+    // Fallback: try to parse with Date constructor and adjust to UTC
+    const localDate = new Date(date);
+    if (!isNaN(localDate)) {
+      // Get the local date components
+      const year = localDate.getFullYear();
+      const month = localDate.getMonth();
+      const day = localDate.getDate();
+      
+      // Create a UTC date with those components at 00:00:00 UTC
+      return new Date(Date.UTC(year, month, day, 0, 0, 0, 0));
+    }
+  }
+  
+  return error.value;
+}
+
 export function parseDateArray(arr) {
   let len = arr.length
   let parsed
 
   while (len--) {
-    parsed = parseDate(arr[len])
+    parsed = parseDateUTC(arr[len])
 
     if (parsed === error.value) {
       return parsed

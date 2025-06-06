@@ -29,9 +29,9 @@ export function ACCRINT(issue, first_interest, settlement, rate, par, frequency,
   }
 
   // Return error if either date is invalid
-  issue = utils.parseDate(issue)
-  first_interest = utils.parseDate(first_interest)
-  settlement = utils.parseDate(settlement)
+  issue = utils.parseDateUTC(issue)
+  first_interest = utils.parseDateUTC(first_interest)
+  settlement = utils.parseDateUTC(settlement)
   rate = utils.parseNumber(rate)
   par = utils.parseNumber(par)
   frequency = utils.parseNumber(frequency)
@@ -341,8 +341,8 @@ export function COUPDAYBS(settlement, maturity, frequency, basis = 0) {
     return error.value
   }
 
-  settlement = utils.parseDate(settlement)
-  maturity = utils.parseDate(maturity)
+  settlement = utils.parseDateUTC(settlement)
+  maturity = utils.parseDateUTC(maturity)
 
   frequency = utils.parseNumber(frequency)
   basis = utils.parseNumber(basis)
@@ -386,8 +386,8 @@ export function COUPDAYS(settlement, maturity, frequency, basis = 0) {
     return error.value
   }
 
-  settlement = utils.parseDate(settlement)
-  maturity = utils.parseDate(maturity)
+  settlement = utils.parseDateUTC(settlement)
+  maturity = utils.parseDateUTC(maturity)
   frequency = utils.parseNumber(frequency)
   basis = utils.parseNumber(basis)
 
@@ -399,7 +399,7 @@ export function COUPDAYS(settlement, maturity, frequency, basis = 0) {
   maturity = utils.dateToSerialNumber(maturity)
 
   if (basis === 1) {
-    let pcd = utils.parseDate(COUPPCD(settlement, maturity, frequency))
+    let pcd = utils.parseDateUTC(COUPPCD(settlement, maturity, frequency))
 
     let nextDate = utils.subMonthsKeepDayFixed(pcd, -12 / frequency, pcd.getUTCDate())
 
@@ -451,8 +451,8 @@ export function COUPDAYSNC(settlement, maturity, frequency, basis = 0) {
     return error.value
   }
 
-  settlement = utils.parseDate(settlement)
-  maturity = utils.parseDate(maturity)
+  settlement = utils.parseDateUTC(settlement)
+  maturity = utils.parseDateUTC(maturity)
   frequency = utils.parseNumber(frequency)
   basis = utils.parseNumber(basis)
 
@@ -494,8 +494,8 @@ export function COUPNCD(settlement, maturity, frequency, basis) {
     return error.value
   }
 
-  settlement = utils.parseDate(settlement)
-  maturity = utils.parseDate(maturity)
+  settlement = utils.parseDateUTC(settlement)
+  maturity = utils.parseDateUTC(maturity)
   frequency = utils.parseNumber(frequency)
   basis = utils.parseNumber(basis)
 
@@ -541,8 +541,8 @@ export function COUPNUM(settlement, maturity, frequency, basis) {
     return error.value
   }
 
-  settlement = utils.parseDate(settlement)
-  maturity = utils.parseDate(maturity)
+  settlement = utils.parseDateUTC(settlement)
+  maturity = utils.parseDateUTC(maturity)
   frequency = utils.parseNumber(frequency)
   basis = utils.parseNumber(basis)
 
@@ -554,7 +554,7 @@ export function COUPNUM(settlement, maturity, frequency, basis) {
   const maturitySN = utils.dateToSerialNumber(maturity)
   let pcd = COUPPCD(settlementSN, maturitySN, frequency, basis)
 
-  pcd = utils.parseDate(pcd)
+  pcd = utils.parseDateUTC(pcd)
 
   const months = (maturity.getFullYear() - pcd.getFullYear()) * 12 + maturity.getMonth() - pcd.getMonth()
   return (months * frequency) / 12
@@ -581,8 +581,8 @@ export function COUPPCD(settlement, maturity, frequency, basis = 0) {
     return error.value
   }
 
-  settlement = utils.parseDate(settlement)
-  maturity = utils.parseDate(maturity)
+  settlement = utils.parseDateUTC(settlement)
+  maturity = utils.parseDateUTC(maturity)
   frequency = utils.parseNumber(frequency)
   basis = utils.parseNumber(basis)
 
@@ -976,8 +976,8 @@ export function DISC(settlement, maturity, pr, redemption, basis) {
     return anyError
   }
 
-  settlement = utils.parseDate(settlement)
-  maturity = utils.parseDate(maturity)
+  settlement = utils.parseDateUTC(settlement)
+  maturity = utils.parseDateUTC(maturity)
   pr = utils.parseNumber(pr)
   redemption = utils.parseNumber(redemption)
   basis = utils.parseNumber(basis)
@@ -1341,8 +1341,8 @@ export function INTRATE(settlement, maturity, investment, redemption, basis = 0)
     return error.value
   }
 
-  settlement = utils.parseDate(settlement)
-  maturity = utils.parseDate(maturity)
+  settlement = utils.parseDateUTC(settlement)
+  maturity = utils.parseDateUTC(maturity)
   investment = utils.parseNumber(investment)
   redemption = utils.parseNumber(redemption)
   basis = utils.parseNumber(basis)
@@ -2076,8 +2076,8 @@ export function PRICE(settlement, maturity, rate, yld, redemption, frequency, ba
     return anyError
   }
 
-  const sett = utils.parseDate(settlement)
-  const mat = utils.parseDate(maturity)
+  const sett = utils.parseDateUTC(settlement)
+  const mat = utils.parseDateUTC(maturity)
   rate = utils.parseNumber(rate)
   yld = utils.parseNumber(yld)
   redemption = utils.parseNumber(redemption)
@@ -2133,8 +2133,8 @@ export function PRICEDISC(settlement, maturity, discount, redemption, basis = 0)
     return anyError
   }
 
-  settlement = utils.parseDate(settlement)
-  maturity = utils.parseDate(maturity)
+  settlement = utils.parseDateUTC(settlement)
+  maturity = utils.parseDateUTC(maturity)
   discount = utils.parseNumber(discount)
   redemption = utils.parseNumber(redemption)
   basis = utils.parseNumber(basis)
@@ -2218,9 +2218,9 @@ export function PRICEMAT(settlement, maturity, issue, rate, yld, basis = 0) {
     return error.value
   }
 
-  settlement = utils.parseDate(settlement)
-  maturity = utils.parseDate(maturity)
-  issue = utils.parseDate(issue)
+  settlement = utils.parseDateUTC(settlement)
+  maturity = utils.parseDateUTC(maturity)
+  issue = utils.parseDateUTC(issue)
   rate = utils.parseNumber(rate)
   yld = utils.parseNumber(yld)
 
@@ -2557,8 +2557,8 @@ export function TBILLEQ(settlement, maturity, discount) {
     return anyError
   }
 
-  settlement = utils.parseDate(settlement)
-  maturity = utils.parseDate(maturity)
+  settlement = utils.parseDateUTC(settlement)
+  maturity = utils.parseDateUTC(maturity)
   discount = utils.parseNumber(discount)
 
   if (utils.anyIsError(settlement, maturity, discount)) {
@@ -2612,8 +2612,8 @@ export function TBILLPRICE(settlement, maturity, discount) {
     return anyError
   }
 
-  settlement = utils.parseDate(settlement)
-  maturity = utils.parseDate(maturity)
+  settlement = utils.parseDateUTC(settlement)
+  maturity = utils.parseDateUTC(maturity)
   discount = utils.parseNumber(discount)
 
   if (utils.anyIsError(settlement, maturity, discount)) {
@@ -2667,8 +2667,8 @@ export function TBILLYIELD(settlement, maturity, pr) {
     return anyError
   }
 
-  settlement = utils.parseDate(settlement)
-  maturity = utils.parseDate(maturity)
+  settlement = utils.parseDateUTC(settlement)
+  maturity = utils.parseDateUTC(maturity)
   pr = utils.parseNumber(pr)
 
   if (utils.anyIsError(settlement, maturity, pr)) {
@@ -2922,8 +2922,8 @@ export function YIELD(settlement, maturity, rate, pr, redemption, frequency, bas
     return anyError
   }
 
-  const sett = utils.parseDate(settlement)
-  const mat = utils.parseDate(maturity)
+  const sett = utils.parseDateUTC(settlement)
+  const mat = utils.parseDateUTC(maturity)
   rate = utils.parseNumber(rate)
   pr = utils.parseNumber(pr)
   redemption = utils.parseNumber(redemption)
@@ -2995,8 +2995,8 @@ export function YIELDDISC(settlement, maturity, pr, redemption, basis = 0) {
     return anyError
   }
 
-  let sett = utils.parseDate(settlement)
-  let mat = utils.parseDate(maturity)
+  let sett = utils.parseDateUTC(settlement)
+  let mat = utils.parseDateUTC(maturity)
   pr = utils.parseNumber(pr)
   redemption = utils.parseNumber(redemption)
   basis = utils.parseNumber(basis)
@@ -3040,9 +3040,9 @@ export function YIELDMAT(settlement, maturity, issue, rate, pr, basis = 0) {
     return anyError
   }
 
-  let sett = utils.parseDate(settlement)
-  let mat = utils.parseDate(maturity)
-  let iss = utils.parseDate(issue)
+  let sett = utils.parseDateUTC(settlement)
+  let mat = utils.parseDateUTC(maturity)
+  let iss = utils.parseDateUTC(issue)
   rate = utils.parseNumber(rate)
   pr = utils.parseNumber(pr)
   basis = utils.parseNumber(basis)
