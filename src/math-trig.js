@@ -387,11 +387,7 @@ export function CEILING(number, significance) {
     }
   }
 
-  const decimalPartOfSignificance = Math.abs(significance) % 1
-
-  const precision = decimalPartOfSignificance !== 0 ? -Math.floor(Math.log10(decimalPartOfSignificance)) : 0
-
-  return ROUND(Math.ceil(number / significance) * significance, precision)
+  return Math.ceil(number / significance) * significance
 }
 
 CEILING.MATH = ceiling

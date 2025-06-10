@@ -178,6 +178,7 @@ describe('Math & Trig', () => {
     expect(mathTrig.CEILING(1.234, -0.001)).to.equal(error.num)
     expect(mathTrig.CEILING(7.1, 3.6)).to.equal(7.2)
     expect(mathTrig.CEILING(52, 52)).to.equal(52)
+    expect(mathTrig.CEILING(-10.6, 0.18)).to.equal(-10.44)
     expect(mathTrig.CEILING(1, -1)).to.equal(error.num)
   })
 
