@@ -1915,31 +1915,162 @@ export function LARGE(array, k) {
  * @param {*} known_x Optional. A set of x-values that you may already know in the relationship y = mx + b.
  - The range of known_x's can include one or more sets of variables. If only one variable is used, known_y's and known_x's can be ranges of any shape, as long as they have equal dimensions. If more than one variable is used, known_y's must be a vector (that is, a range with a height of one row or a width of one column).
  - If known_x's is omitted, it is assumed to be the array {1,2,3,...} that is the same size as known_y's.
- * @returns
+ * @param {boolean} constant Optional. A logical value specifying whether to force the constant b to equal 0. If TRUE or omitted, b is calculated normally. If FALSE, b is set to 0 and the m-values are adjusted to fit y = mx.
+ * @param {boolean} stats Optional. A logical value specifying whether to return additional regression statistics. If TRUE, returns additional statistics. If FALSE or omitted, returns only the m-coefficients and the constant b.
+ * @returns {Array} Returns slope and intercept, or additional statistics if stats=true
  */
-export function LINEST(known_y, known_x) {
+export function LINEST(known_y, known_x, constant = true, stats = false) {
   known_y = utils.parseNumberArray(utils.flatten(known_y))
-  known_x = utils.parseNumberArray(utils.flatten(known_x))
+  
+  // If known_x is not provided, create sequential array [1, 2, 3, ...]
+  if (!known_x || known_x.length === 0) {
+    known_x = Array.from({length: known_y.length}, (_, i) => i + 1)
+  } else {
+    known_x = utils.parseNumberArray(utils.flatten(known_x))
+  }
 
   if (utils.anyIsError(known_y, known_x)) {
     return error.value
   }
 
-  const ymean = jStat.mean(known_y)
-  const xmean = jStat.mean(known_x)
-  const n = known_x.length
-  let num = 0
-  let den = 0
-
-  for (let i = 0; i < n; i++) {
-    num += (known_x[i] - xmean) * (known_y[i] - ymean)
-    den += Math.pow(known_x[i] - xmean, 2)
+  if (known_y.length !== known_x.length) {
+    return error.value
   }
 
-  const m = num / den
-  const b = ymean - m * xmean
+  const n = known_x.length
+  
+  if (n < 2) {
+    return error.value
+  }
 
-  return [m, b]
+  let m, b, r_squared, std_err_y, std_err_m, std_err_b, f_stat, df, ss_reg, ss_resid
+
+  if (constant) {
+    // Calculate with intercept (normal case)
+    const ymean = jStat.mean(known_y)
+    const xmean = jStat.mean(known_x)
+    
+    let num = 0
+    let den = 0
+
+    for (let i = 0; i < n; i++) {
+      num += (known_x[i] - xmean) * (known_y[i] - ymean)
+      den += Math.pow(known_x[i] - xmean, 2)
+    }
+
+    if (den === 0) {
+      return error.div0
+    }
+
+    m = num / den
+    b = ymean - m * xmean
+  } else {
+    // Force intercept to 0: y = mx
+    let num = 0
+    let den = 0
+
+    for (let i = 0; i < n; i++) {
+      num += known_x[i] * known_y[i]
+      den += Math.pow(known_x[i], 2)
+    }
+
+    if (den === 0) {
+      return error.div0
+    }
+
+    m = num / den
+    b = 0
+  }
+
+  // If stats is false, return only slope and intercept
+  if (!stats) {
+    return [[m, b]]
+  }
+
+  // Calculate additional statistics
+  let ss_tot = 0  // Total sum of squares
+  ss_reg = 0      // Regression sum of squares
+  ss_resid = 0    // Residual sum of squares
+  
+  if (constant) {
+    const ymean = jStat.mean(known_y)
+    
+    for (let i = 0; i < n; i++) {
+      const y_pred = m * known_x[i] + b
+      const residual = known_y[i] - y_pred
+      
+      ss_tot += Math.pow(known_y[i] - ymean, 2)
+      ss_resid += Math.pow(residual, 2)
+    }
+    ss_reg = ss_tot - ss_resid
+    df = n - 2  // Degrees of freedom
+  } else {
+    // When constant = false, total variation is around 0, not mean
+    for (let i = 0; i < n; i++) {
+      const y_pred = m * known_x[i]
+      const residual = known_y[i] - y_pred
+      
+      ss_tot += Math.pow(known_y[i], 2)
+      ss_resid += Math.pow(residual, 2)
+    }
+    ss_reg = ss_tot - ss_resid
+    df = n - 1  // Degrees of freedom (no intercept term)
+  }
+
+  // R-squared
+  r_squared = ss_tot > 0 ? ss_reg / ss_tot : 0
+
+  // Standard error of the estimate
+  std_err_y = df > 0 ? Math.sqrt(ss_resid / df) : 0
+
+  // Standard error of slope
+  if (constant) {
+    const xmean = jStat.mean(known_x)
+    let sum_x_dev_sq = 0
+    for (let i = 0; i < n; i++) {
+      sum_x_dev_sq += Math.pow(known_x[i] - xmean, 2)
+    }
+    std_err_m = sum_x_dev_sq > 0 ? std_err_y / Math.sqrt(sum_x_dev_sq) : 0
+    
+    // Standard error of intercept
+    let sum_x_sq = 0
+    for (let i = 0; i < n; i++) {
+      sum_x_sq += Math.pow(known_x[i], 2)
+    }
+    std_err_b = std_err_y * Math.sqrt(sum_x_sq / (n * sum_x_dev_sq))
+  } else {
+    let sum_x_sq = 0
+    for (let i = 0; i < n; i++) {
+      sum_x_sq += Math.pow(known_x[i], 2)
+    }
+    std_err_m = sum_x_sq > 0 ? std_err_y / Math.sqrt(sum_x_sq) : 0
+    std_err_b = 0  // No intercept when constant = false
+  }
+
+  // F-statistic
+  if (df > 0 && ss_resid > 0) {
+    f_stat = (ss_reg / 1) / (ss_resid / df)
+  } else if (df > 0 && ss_resid === 0 && ss_reg > 0) {
+    // Perfect fit case - F should be error.num (division by zero)
+    f_stat = error.num
+  } else {
+    f_stat = error.num
+  }
+
+  // Return statistics in Excel LINEST format:
+  // Row 1: slope(s), intercept
+  // Row 2: standard errors for slope(s), standard error for intercept  
+  // Row 3: R-squared, standard error of y estimate
+  // Row 4: F-statistic, degrees of freedom
+  // Row 5: regression sum of squares, residual sum of squares
+  
+  return [
+    [m, b],                           // coefficients
+    [std_err_m, std_err_b],          // standard errors
+    [r_squared, std_err_y],          // R-squared, standard error of estimate
+    [f_stat, df],                    // F-statistic, degrees of freedom
+    [ss_reg, ss_resid]               // regression SS, residual SS
+  ]
 }
 
 // According to Microsoft:
