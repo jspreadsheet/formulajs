@@ -1854,12 +1854,35 @@ describe('Statistical', () => {
   })
 
   it('LOGEST', () => {
-    const known_y = [1, 9, 5, 7]
-    const known_x = [0, 4, 2, 3]
-    expect(statistical.LOGEST(known_y, known_x)).to.deep.equal([1.751116, 1.194316])
+    const known_y = [[1], [9], [5], [7]]
+    const known_x = [[0], [4], [2], [3]]
+    expect(statistical.LOGEST(known_y, known_x)).to.deep.equal([[1.751116, 1.194316]])
     expect(statistical.LOGEST(known_y, 'invalid')).to.equal(error.value)
     expect(statistical.LOGEST(known_y, 1)).to.equal(error.value)
     expect(statistical.LOGEST(known_y, true)).to.equal(error.value)
+
+    const EX1 = statistical.LOGEST(
+      [[1], [9], [5], [7]],
+      [[0], [4], [2], [3]],
+      undefined,
+      true
+    );
+
+    const expectedEX1 = [
+      [1.751116, 1.194316],
+      [0.102858, 0.276954],
+      [0.936845, 0.304259],
+      [29.66814, 2],
+      [2.746483, 0.185147]
+    ];
+
+    const epsilonEX1 = 0.00001;
+
+    for (let i = 0; i < expectedEX1.length; i++) {
+      for (let j = 0; j < expectedEX1[i].length; j++) {
+        expect(EX1[i][j]).to.be.approximately(expectedEX1[i][j], epsilonEX1);
+      }
+    }
   })
 
   it('LOGNORM.DIST', () => {

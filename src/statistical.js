@@ -2073,26 +2073,26 @@ export function LINEST(known_y, known_x, constant = true, stats = false) {
   ]
 }
 
-// According to Microsoft:
-// http://office.microsoft.com/en-us/starter-help/logest-function-HP010342665.aspx
-// LOGEST returns are based on the following linear model:
-// ln y = x1 ln m1 + ... + xn ln mn + ln b
 /**
  * Returns the parameters of an exponential trend.
  *
  * Category: Statistical
  *
- * @param {*} known_y The set of y-values you already know in the relationship y = b*m^x.
- - If the array known_y's is in a single column, then each column of known_x's is interpreted as a separate variable.
- - If the array known_y's is in a single row, then each row of known_x's is interpreted as a separate variable.
- * @param {*} known_x Optional. An optional set of x-values that you may already know in the relationship y = b*m^x.
- - The array known_x's can include one or more sets of variables. If only one variable is used, known_y's and known_x's can be ranges of any shape, as long as they have equal dimensions. If more than one variable is used, known_y's must be a range of values with a height of one row or a width of one column (which is also known as a vector).
- - If known_x's is omitted, it is assumed to be the array {1,2,3,...} that is the same size as known_y's.
- * @returns
+ * @param {*} known_y The set of y-values that you already know in the relationship y = b*m^x.
+ * @param {*} known_x Optional. A set of x-values that you may already know in the relationship y = b*m^x.
+ * @param {boolean} constant Optional. A logical value specifying whether to force the constant b to equal 1. If TRUE or omitted, b is calculated normally. If FALSE, b is set to 1 and the m-values are adjusted to fit y = m^x.
+ * @param {boolean} stats Optional. A logical value specifying whether to return additional regression statistics.
+ * @returns {Array} Returns exponential coefficients, or additional statistics if stats=true
  */
-export function LOGEST(known_y, known_x) {
+export function LOGEST(known_y, known_x, constant = true, stats = false) {
   known_y = utils.parseNumberArray(utils.flatten(known_y))
-  known_x = utils.parseNumberArray(utils.flatten(known_x))
+  
+  // If known_x is not provided, create sequential array [1, 2, 3, ...]
+  if (!known_x || known_x.length === 0) {
+    known_x = Array.from({length: known_y.length}, (_, i) => i + 1)
+  } else {
+    known_x = utils.parseNumberArray(utils.flatten(known_x))
+  }
 
   if (utils.anyIsError(known_y, known_x)) {
     return error.value
@@ -2102,15 +2102,79 @@ export function LOGEST(known_y, known_x) {
     return error.value
   }
 
+  // Check for non-positive y values (can't take log)
   for (let i = 0; i < known_y.length; i++) {
-    known_y[i] = Math.log(known_y[i])
+    if (known_y[i] <= 0) {
+      return error.num
+    }
   }
 
-  const result = LINEST(known_y, known_x)
-  result[0] = Math.round(Math.exp(result[0]) * 1000000) / 1000000
-  result[1] = Math.round(Math.exp(result[1]) * 1000000) / 1000000
+  // Transform y values to natural log for linear regression
+  const log_y = known_y.map(y => Math.log(y))
 
-  return result
+  // Convert to matrix format that LINEST expects (array of arrays)
+  const log_y_matrix = log_y.map(y => [y])
+  const known_x_matrix = known_x.map(x => [x])
+
+  // Use LINEST on the log-transformed data
+  const linest_result = LINEST(log_y_matrix, known_x_matrix, constant, stats)
+
+  // Check if LINEST returned an error
+  if (linest_result.formulaError) {
+    return linest_result
+  }
+
+  // Validate LINEST result structure
+  if (!Array.isArray(linest_result)) {
+    return error.value
+  }
+
+  if (!stats) {
+    // Simple case: LINEST should return [slope, intercept]
+    if (linest_result[0].length < 2) {
+      return error.value
+    }
+    
+    const slope = linest_result[0][0]
+    const intercept = linest_result[0][1]
+    
+    // Check if slope and intercept are valid numbers
+    if (typeof slope !== 'number' || typeof intercept !== 'number' || isNaN(slope) || isNaN(intercept)) {
+      return error.num
+    }
+    
+    const exp_slope = Math.exp(slope)
+    const exp_intercept = Math.exp(intercept)
+    
+    return [[
+      Math.round(exp_slope * 1000000) / 1000000,      // m coefficient
+      Math.round(exp_intercept * 1000000) / 1000000   // b coefficient
+    ]]
+  } else {
+    // Complex case: transform the statistical results appropriately
+    const coefficients = linest_result[0]
+    const std_errors = linest_result[1]
+    const r_squared_info = linest_result[2]
+    const f_stat_info = linest_result[3]
+    const ss_info = linest_result[4]
+
+    // Transform coefficients: exp(log-space coefficients)
+    const exp_slope = Math.round(Math.exp(coefficients[0]) * 1000000) / 1000000
+    const exp_intercept = Math.round(Math.exp(coefficients[1]) * 1000000) / 1000000
+
+    // For standard errors in LOGEST, Excel uses the same standard errors from LINEST
+    // without transformation (they remain in log space)
+    const std_err_slope = std_errors[0]
+    const std_err_intercept = std_errors[1]
+
+    return [
+      [exp_slope, exp_intercept],                           // exponential coefficients
+      [std_err_slope, std_err_intercept],                  // standard errors
+      [r_squared_info[0], r_squared_info[1]],              // R-squared, standard error of estimate
+      [f_stat_info[0], f_stat_info[1]],                    // F-statistic, degrees of freedom
+      [ss_info[0], ss_info[1]]                             // regression SS, residual SS
+    ]
+  }
 }
 
 export const LOGNORM = {}
