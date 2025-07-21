@@ -3279,7 +3279,10 @@ describe('Statistical', () => {
     const known_y = [1, 9, 5, 7]
     const known_x = [0, 4, 2, 3]
     const new_know_x = [5, 8]
-    expect(statistical.TREND(known_y, known_x, new_know_x)).to.deep.equal([11, 17])
+    expect(statistical.TREND([[1], [9], [5], [7]], [[0], [4], [2], [3]], [[5], [8]])).to.deep.equal([[11], [17]])
+    expect(statistical.TREND([[1], [9], [5], [7]], [[0], [4], [2], [3]], [[5, 8]])).to.deep.equal([[11, 17]])
+
+    expect(statistical.TREND(known_y, known_x, new_know_x)).to.deep.equal([[11], [17]])
     expect(statistical.TREND(known_y, known_x, 'invalid')).to.equal(error.value)
   })
 
