@@ -1820,16 +1820,24 @@ describe('Statistical', () => {
 
   it('LINEST', () => {
     expect(statistical.LINEST([[1], [9], [5], [7]], [[0], [4], [2], [3]])).to.deep.equal([[2, 1]])
-    expect(statistical.LINEST([[1], [9], [5], [7]], [[0], [4], [2], [3]], undefined, true)).to.deep.equal([[2, 1], [0, 0], [1, 0], [error.num, 2], [35, 0]])
+    expect(statistical.LINEST([[1], [9], [5], [7]], [[0], [4], [2], [3]], undefined, true)).to.deep.equal([
+      [2, 1],
+      [0, 0],
+      [1, 0],
+      [error.num, 2],
+      [35, 0]
+    ])
 
-    expect(statistical.LINEST([[3100], [4500], [4400], [5400], [7500], [8100]], [[1], [2], [3], [4], [5], [6]])).to.deep.equal([[1000, 2000]])
+    expect(
+      statistical.LINEST([[3100], [4500], [4400], [5400], [7500], [8100]], [[1], [2], [3], [4], [5], [6]])
+    ).to.deep.equal([[1000, 2000]])
 
     const EX1 = statistical.LINEST(
       [[3100], [4500], [4400], [5400], [7500], [8100]],
       [[1], [2], [3], [4], [5], [6]],
       true,
       true
-    );
+    )
 
     const expectedEX1 = [
       [1000, 2000],
@@ -1837,20 +1845,23 @@ describe('Statistical', () => {
       [0.933831, 556.7764],
       [56.45161, 4],
       [17500000, 1240000]
-    ];
+    ]
 
-    const epsilonEX1 = 0.001;
+    const epsilonEX1 = 0.001
 
     for (let i = 0; i < expectedEX1.length; i++) {
       for (let j = 0; j < expectedEX1[i].length; j++) {
-        expect(EX1[i][j]).to.be.approximately(expectedEX1[i][j], epsilonEX1);
+        expect(EX1[i][j]).to.be.approximately(expectedEX1[i][j], epsilonEX1)
       }
     }
 
-    const EX2 = statistical.LINEST([[15], [25], [17], [28], [41], [47], [50], [46], [37], [22], [20], [30]], [[45], [55], [47], [60], [90], [100], [100], [95], [88], [50], [45], [58]]);
+    const EX2 = statistical.LINEST(
+      [[15], [25], [17], [28], [41], [47], [50], [46], [37], [22], [20], [30]],
+      [[45], [55], [47], [60], [90], [100], [100], [95], [88], [50], [45], [58]]
+    )
 
-    expect(EX2[0][0]).to.approximately(0.52572826, 0.000001);
-    expect(EX2[0][1]).to.approximately(-4.994303388, 0.000001);
+    expect(EX2[0][0]).to.approximately(0.52572826, 0.000001)
+    expect(EX2[0][1]).to.approximately(-4.994303388, 0.000001)
   })
 
   it('LOGEST', () => {
@@ -1861,12 +1872,7 @@ describe('Statistical', () => {
     expect(statistical.LOGEST(known_y, 1)).to.equal(error.value)
     expect(statistical.LOGEST(known_y, true)).to.equal(error.value)
 
-    const EX1 = statistical.LOGEST(
-      [[1], [9], [5], [7]],
-      [[0], [4], [2], [3]],
-      undefined,
-      true
-    );
+    const EX1 = statistical.LOGEST([[1], [9], [5], [7]], [[0], [4], [2], [3]], undefined, true)
 
     const expectedEX1 = [
       [1.751116, 1.194316],
@@ -1874,13 +1880,13 @@ describe('Statistical', () => {
       [0.936845, 0.304259],
       [29.66814, 2],
       [2.746483, 0.185147]
-    ];
+    ]
 
-    const epsilonEX1 = 0.00001;
+    const epsilonEX1 = 0.00001
 
     for (let i = 0; i < expectedEX1.length; i++) {
       for (let j = 0; j < expectedEX1[i].length; j++) {
-        expect(EX1[i][j]).to.be.approximately(expectedEX1[i][j], epsilonEX1);
+        expect(EX1[i][j]).to.be.approximately(expectedEX1[i][j], epsilonEX1)
       }
     }
   })
