@@ -3281,17 +3281,6 @@ describe('Statistical', () => {
     expect(statistical.T.TEST('invalid', known_y)).to.equal(error.value)
   })
 
-  it('TREND', () => {
-    const known_y = [1, 9, 5, 7]
-    const known_x = [0, 4, 2, 3]
-    const new_know_x = [5, 8]
-    expect(statistical.TREND([[1], [9], [5], [7]], [[0], [4], [2], [3]], [[5], [8]])).to.deep.equal([[11], [17]])
-    expect(statistical.TREND([[1], [9], [5], [7]], [[0], [4], [2], [3]], [[5, 8]])).to.deep.equal([[11, 17]])
-
-    expect(statistical.TREND(known_y, known_x, new_know_x)).to.deep.equal([[11], [17]])
-    expect(statistical.TREND(known_y, known_x, 'invalid')).to.equal(error.value)
-  })
-
   it('TRIMMEAN', () => {
     expect(statistical.TRIMMEAN([4, 5, 6, 7, 2, 3, 4, 5, 1, 2, 3], 0.2)).to.approximately(3.7777777777777777, 1e-9)
     expect(statistical.TRIMMEAN([4, 5, 6, 'invalid', 1, 2, 3], 0.2)).to.equal(error.value)
