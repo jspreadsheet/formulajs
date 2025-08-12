@@ -1317,27 +1317,66 @@ export function FISHERINV(y) {
  * @returns
  */
 export function FORECAST(x, known_ys, known_xs) {
+  if (arguments.length !== 3) {
+    return error.na
+  }
+
   x = utils.parseNumber(x)
-  known_ys = utils.parseNumberArray(utils.flatten(known_ys))
-  known_xs = utils.parseNumberArray(utils.flatten(known_xs))
+  if (x instanceof Error) {
+    return x
+  }
 
-  if (utils.anyIsError(x, known_ys, known_xs)) {
+  if (typeof known_ys == 'undefined' || typeof known_xs == 'undefined') {
     return error.value
   }
 
-  if (known_xs.length !== known_ys.length) {
-    return error.value
+  known_ys = utils.flatten(known_ys)
+  known_xs = utils.flatten(known_xs)
+
+  const numOfItems = known_ys.length
+
+  if (numOfItems !== known_xs.length) {
+    return error.na
   }
 
-  const xmean = jStat.mean(known_xs)
-  const ymean = jStat.mean(known_ys)
-  const n = known_xs.length
+  const validY = []
+  const validX = []
+
+  for (let i = 0; i < numOfItems; i++) {
+    const y = known_ys[i]
+    const x = known_xs[i]
+
+    if (y instanceof Error) {
+      return y
+    }
+
+    if (x instanceof Error) {
+      return x
+    }
+
+    if (typeof y !== 'number' || typeof x !== 'number') {
+      continue
+    }
+
+    validY.push(y)
+    validX.push(x)
+  }
+
+  const xmean = jStat.mean(validX)
+  const ymean = jStat.mean(validY)
+
+  const numOfValidItems = validY.length
+
   let num = 0
   let den = 0
 
-  for (let i = 0; i < n; i++) {
-    num += (known_xs[i] - xmean) * (known_ys[i] - ymean)
-    den += Math.pow(known_xs[i] - xmean, 2)
+  for (let i = 0; i < numOfValidItems; i++) {
+    num += (validX[i] - xmean) * (validY[i] - ymean)
+    den += Math.pow(validX[i] - xmean, 2)
+  }
+
+  if (den === 0) {
+    return error.div0
   }
 
   const b = num / den
@@ -1809,14 +1848,7 @@ HYPGEOM.DIST = (sample_s, number_sample, population_s, number_pop, cumulative) =
  * @returns
  */
 export function INTERCEPT(known_y, known_x) {
-  known_y = utils.parseNumberArray(known_y)
-  known_x = utils.parseNumberArray(known_x)
-
-  if (utils.anyIsError(known_y, known_x)) {
-    return error.value
-  }
-
-  if (known_y.length !== known_x.length) {
+  if (arguments.length !== 2) {
     return error.na
   }
 

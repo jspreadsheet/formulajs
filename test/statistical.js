@@ -1582,10 +1582,167 @@ describe('Statistical', () => {
     expect(statistical.FISHERINV('invalid')).to.equal(error.value)
   })
 
-  it('FORECAST', () => {
-    expect(statistical.FORECAST(30, [6, 7, 9, 15, 21], [20, 28, 31, 38, 40])).to.approximately(10.607253086419755, 1e-9)
-    expect(statistical.FORECAST(30, [9, 15, 21], [20, 28, 31, 38, 40])).to.equal(error.value)
-    expect(statistical.FORECAST(30, [6, 7, 'invalid', 15, 21], [20, 28, 31, 38, 40])).to.equal(error.value)
+  describe('FORECAST', () => {
+    it('FORECAST', () => {
+      expect(statistical.FORECAST(20, [2, 3, 9, 1, 8], [6, 5, 11, 7, 5])).to.approximately(13.4354838709677, 1e-9)
+
+      expect(statistical.FORECAST(-4, [[3], [10], [18], [35]], [[1], [2], [3], [4]])).to.equal(-51.1)
+
+      expect(statistical.FORECAST(4, 1, 5)).to.equal(error.div0)
+    })
+
+    describe('First argument', () => {
+      it('Empty cell', () => {
+        expect(statistical.FORECAST(null, [[1], [2]], [[5], [17]])).to.approximately(0.583333333333333, 1e-15)
+      })
+
+      it('Argument explicitly omitted', () => {
+        expect(statistical.FORECAST(undefined, [[1], [2]], [[5], [17]])).to.approximately(0.583333333333333, 1e-15)
+      })
+
+      it('Number', () => {
+        expect(statistical.FORECAST(-1, [[1], [2]], [[5], [17]])).to.equal(0.5)
+
+        expect(statistical.FORECAST(0, [[1], [2]], [[5], [17]])).to.approximately(0.583333333333333, 1e-15)
+
+        expect(statistical.FORECAST(1, [[1], [2]], [[5], [17]])).to.approximately(0.666666666666667, 1e-15)
+
+        expect(statistical.FORECAST(1.1, [[1], [2]], [[5], [17]])).to.equal(0.675)
+      })
+
+      it('Boolean', () => {
+        expect(statistical.FORECAST(true, [[1], [2]], [[5], [17]])).to.approximately(0.666666666666667, 1e-15)
+
+        expect(statistical.FORECAST(false, [[1], [2]], [[5], [17]])).to.approximately(0.583333333333333, 1e-15)
+      })
+
+      it('String', () => {
+        expect(statistical.FORECAST('-1', [[1], [2]], [[5], [17]])).to.equal(0.5)
+
+        expect(statistical.FORECAST('0', [[1], [2]], [[5], [17]])).to.approximately(0.583333333333333, 1e-15)
+
+        expect(statistical.FORECAST('1', [[1], [2]], [[5], [17]])).to.approximately(0.666666666666667, 1e-15)
+
+        expect(statistical.FORECAST('1.1', [[1], [2]], [[5], [17]])).to.equal(0.675)
+
+        expect(statistical.FORECAST('true', [[1], [2]], [[5], [17]])).to.equal(error.value)
+
+        expect(statistical.FORECAST('false', [[1], [2]], [[5], [17]])).to.equal(error.value)
+
+        expect(statistical.FORECAST('test', [[1], [2]], [[5], [17]])).to.equal(error.value)
+
+        expect(statistical.FORECAST('', [[1], [2]], [[5], [17]])).to.equal(error.value)
+      })
+
+      it('Errors', () => {
+        Object.values(error).forEach((err) => {
+          expect(statistical.FORECAST(err, [[1], [2]], [[5], [17]])).to.equal(err)
+        })
+      })
+
+      it('Range', () => {
+        expect(statistical.FORECAST([1, 1], [[1], [2]], [[5], [17]])).to.equal(error.value)
+      })
+    })
+
+    it('Ranges of different dimensions but with the same number of items', () => {
+      expect(
+        statistical.FORECAST(
+          14,
+          [[3], [10], [18], [35], [null], [null], [null], [null]],
+          [
+            [1, null],
+            [2, null],
+            [3, null],
+            [4, null]
+          ]
+        )
+      ).to.equal(198)
+    })
+
+    it('Ranges with different number of items', () => {
+      expect(
+        statistical.FORECAST(
+          14,
+          [[3], [10], [18], [35], [null], [null], [null], [null], [null]],
+          [
+            [1, null],
+            [2, null],
+            [3, null],
+            [4, null]
+          ]
+        )
+      ).to.equal(error.na)
+    })
+
+    it('Second argument is a range with one non-numeric item', () => {
+      expect(statistical.FORECAST(14, [[null], [10], [18], [35]], [[1], [2], [3], [4]])).to.equal(158.5)
+
+      expect(statistical.FORECAST(14, [['3'], [10], [18], [35]], [[1], [2], [3], [4]])).to.equal(158.5)
+
+      expect(statistical.FORECAST(14, [[true], [10], [18], [35]], [[1], [2], [3], [4]])).to.equal(158.5)
+
+      expect(statistical.FORECAST(14, [['test'], [10], [18], [35]], [[1], [2], [3], [4]])).to.equal(158.5)
+
+      expect(
+        statistical.FORECAST(
+          14,
+          [[3], [10], [18], [35], [null], [null], [null], [error.num]],
+          [
+            [1, null],
+            [2, null],
+            [3, null],
+            [4, null]
+          ]
+        )
+      ).to.equal(error.num)
+    })
+
+    it('Third argument is a range with one non-numeric item', () => {
+      expect(statistical.FORECAST(14, [[3], [10], [18], [35]], [[null], [2], [3], [4]])).to.equal(158.5)
+
+      expect(statistical.FORECAST(14, [[3], [10], [18], [35]], [['1'], [2], [3], [4]])).to.equal(158.5)
+
+      expect(statistical.FORECAST(14, [[3], [10], [18], [35]], [[true], [2], [3], [4]])).to.equal(158.5)
+
+      expect(statistical.FORECAST(14, [[3], [10], [18], [35]], [['test'], [2], [3], [4]])).to.equal(158.5)
+
+      expect(
+        statistical.FORECAST(
+          14,
+          [[3], [10], [18], [35], [null], [null], [null], [null]],
+          [
+            [1, null],
+            [2, null],
+            [3, null],
+            [4, error.num]
+          ]
+        )
+      ).to.equal(error.num)
+    })
+
+    it('None of the items in the second argument are numeric', () => {
+      expect(statistical.FORECAST(14, [['1'], ['2']], [[5], [16]])).to.equal(error.div0)
+    })
+
+    it('None of the items in the third argument are numeric', () => {
+      expect(statistical.FORECAST(14, [[1], [2]], [['5'], ['16']])).to.equal(error.div0)
+    })
+
+    it('Argument omitted', () => {
+      expect(statistical.FORECAST(14, undefined, [[5], [16]])).to.equal(error.value)
+
+      expect(statistical.FORECAST(14, [[1], [2]], undefined)).to.equal(error.value)
+    })
+
+    it('Incorrect number of arguments', () => {
+      expect(statistical.FORECAST()).to.equal(error.na)
+      expect(statistical.FORECAST(3)).to.equal(error.na)
+
+      expect(statistical.FORECAST(3, [[1], [2]])).to.equal(error.na)
+
+      expect(statistical.FORECAST(3, [[1], [2]], [[5], [16]], 1)).to.equal(error.na)
+    })
   })
 
   it('FORECAST.LINEAR', () => {
@@ -1745,11 +1902,108 @@ describe('Statistical', () => {
     expect(statistical.HYPGEOM.DIST(1, 'invalid', 8, 20, false)).to.equal(error.value)
   })
 
-  it('INTERCEPT', () => {
-    expect(statistical.INTERCEPT([2, 3, 9, 1, 8], [6, 5, 11, 7, 5])).to.approximately(0.04838709677419217, 1e-9)
+  describe('INTERCEPT', () => {
+    it('INTERCEPT', () => {
+      expect(statistical.INTERCEPT([2, 3, 9, 1, 8], [6, 5, 11, 7, 5])).to.approximately(0.04838709677419217, 1e-9)
 
-    expect(statistical.INTERCEPT([1, 2, 3], [1, 2, 3, 4])).to.equal(error.na)
-    expect(statistical.INTERCEPT([1, 2, 3], [1, 'invalid', 3, 4])).to.equal(error.value)
+      expect(statistical.INTERCEPT([[3], [10], [18], [35]], [[1], [2], [3], [4]])).to.equal(-9.5)
+
+      expect(statistical.INTERCEPT(1, 5)).to.equal(error.div0)
+    })
+
+    it('Ranges of different dimensions but with the same number of items', () => {
+      expect(
+        statistical.INTERCEPT(
+          [[3], [10], [18], [35], [null], [null], [null], [null]],
+          [
+            [1, null],
+            [2, null],
+            [3, null],
+            [4, null]
+          ]
+        )
+      ).to.equal(-12)
+    })
+
+    it('Ranges with different number of items', () => {
+      expect(
+        statistical.INTERCEPT(
+          [[3], [10], [18], [35], [null], [null], [null], [null], [null]],
+          [
+            [1, null],
+            [2, null],
+            [3, null],
+            [4, null]
+          ]
+        )
+      ).to.equal(error.na)
+    })
+
+    it('First argument is a range with one non-numeric item', () => {
+      expect(statistical.INTERCEPT([[null], [10], [18], [35]], [[1], [2], [3], [4]])).to.equal(-16.5)
+
+      expect(statistical.INTERCEPT([['3'], [10], [18], [35]], [[1], [2], [3], [4]])).to.equal(-16.5)
+
+      expect(statistical.INTERCEPT([[true], [10], [18], [35]], [[1], [2], [3], [4]])).to.equal(-16.5)
+
+      expect(statistical.INTERCEPT([['test'], [10], [18], [35]], [[1], [2], [3], [4]])).to.equal(-16.5)
+
+      expect(
+        statistical.INTERCEPT(
+          [[3], [10], [18], [35], [null], [null], [null], [error.num]],
+          [
+            [1, null],
+            [2, null],
+            [3, null],
+            [4, null]
+          ]
+        )
+      ).to.equal(error.num)
+    })
+
+    it('Second argument is a range with one non-numeric item', () => {
+      expect(statistical.INTERCEPT([[3], [10], [18], [35]], [[null], [2], [3], [4]])).to.equal(-16.5)
+
+      expect(statistical.INTERCEPT([[3], [10], [18], [35]], [['1'], [2], [3], [4]])).to.equal(-16.5)
+
+      expect(statistical.INTERCEPT([[3], [10], [18], [35]], [[true], [2], [3], [4]])).to.equal(-16.5)
+
+      expect(statistical.INTERCEPT([[3], [10], [18], [35]], [['test'], [2], [3], [4]])).to.equal(-16.5)
+
+      expect(
+        statistical.INTERCEPT(
+          [[3], [10], [18], [35], [null], [null], [null], [null]],
+          [
+            [1, null],
+            [2, null],
+            [3, null],
+            [4, error.num]
+          ]
+        )
+      ).to.equal(error.num)
+    })
+
+    it('None of the items in the first argument are numeric', () => {
+      expect(statistical.INTERCEPT([['1'], ['2']], [[5], [16]])).to.equal(error.div0)
+    })
+
+    it('None of the items in the second argument are numeric', () => {
+      expect(statistical.INTERCEPT([[1], [2]], [['5'], ['16']])).to.equal(error.div0)
+    })
+
+    it('Argument omitted', () => {
+      expect(statistical.INTERCEPT(undefined, [[5], [16]])).to.equal(error.value)
+
+      expect(statistical.INTERCEPT([[1], [2]], undefined)).to.equal(error.value)
+    })
+
+    it('Incorrect number of arguments', () => {
+      expect(statistical.INTERCEPT()).to.equal(error.na)
+
+      expect(statistical.INTERCEPT([[3], [10], [18], [35]])).to.equal(error.na)
+
+      expect(statistical.INTERCEPT([[3], [10], [18], [35]], [[1], [2], [3], [4]], 1)).to.equal(error.na)
+    })
   })
 
   it('KURT', () => {
