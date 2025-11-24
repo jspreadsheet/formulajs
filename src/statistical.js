@@ -3398,23 +3398,63 @@ SKEW.P = function () {
  * @param {*} known_x The set of independent data points.
  * @returns
  */
-export function SLOPE(known_y, known_x) {
-  known_y = utils.parseNumberArray(utils.flatten(known_y))
-  known_x = utils.parseNumberArray(utils.flatten(known_x))
+export function SLOPE(known_y_arg, known_x_arg) {
+  if (arguments.length !== 2) {
+    return error.na
+  }
 
-  if (utils.anyIsError(known_y, known_x)) {
+  if (typeof known_y_arg === 'undefined' || typeof known_x_arg === 'undefined') {
     return error.value
+  }
+
+  const known_y_flat = utils.flatten(known_y_arg)
+  const known_x_flat = utils.flatten(known_x_arg)
+
+  if (known_y_flat.length !== known_x_flat.length) {
+    return error.na
+  }
+
+  const known_y = []
+  const known_x = []
+  const minLength = known_y_flat.length
+
+  for (let i = 0; i < minLength; i++) {
+    const val_y = known_y_flat[i]
+    const val_x = known_x_flat[i]
+
+    if (val_y instanceof Error) {
+      return val_y
+    }
+    if (val_x instanceof Error) {
+      return val_x
+    }
+
+    if (typeof val_y === 'number' && !isNaN(val_y) && typeof val_x === 'number' && !isNaN(val_x)) {
+      known_y.push(val_y)
+      known_x.push(val_x)
+    }
+  }
+
+  if (known_y.length < 2) {
+    return error.div0
   }
 
   const xmean = jStat.mean(known_x)
   const ymean = jStat.mean(known_y)
   const n = known_x.length
+
   let num = 0
   let den = 0
 
   for (let i = 0; i < n; i++) {
-    num += (known_x[i] - xmean) * (known_y[i] - ymean)
-    den += Math.pow(known_x[i] - xmean, 2)
+    const dx = known_x[i] - xmean
+    const dy = known_y[i] - ymean
+    num += dx * dy
+    den += dx * dx
+  }
+
+  if (den === 0) {
+    return error.div0
   }
 
   return num / den
