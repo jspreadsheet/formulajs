@@ -3380,38 +3380,38 @@ describe('Statistical', () => {
   })
 
   it('SLOPE', () => {
-      const data_y = [2, 3, 9, 1, 8, 7, 5]
-      const data_x = [6, 5, 11, 7, 5, 4, 4]
-      expect(statistical.SLOPE(data_y, data_x)).to.approximately(0.3055555555555556, 1e-9)
-  
-      expect(statistical.SLOPE([2, 3, 9, 1, 8], [6, 5, 11, 7, 5])).to.equal(0.6693548387096776)
-      expect(statistical.SLOPE([1, 2, 3, 4, 5], [1, 2, 3, 4, 5])).to.equal(1)
-      expect(statistical.SLOPE([10, 20, 30], [1, 2, 3])).to.equal(10)
-  
-      expect(statistical.SLOPE([1, 2, 3])).to.equal(error.na)
-      expect(statistical.SLOPE()).to.equal(error.na)
-      expect(statistical.SLOPE([1, 2, 3], [4, 5, 6], [7, 8, 9])).to.equal(error.na)
-  
-      expect(statistical.SLOPE([1, 2, 3], [4, 5])).to.equal(error.na)
-      expect(statistical.SLOPE([1], [2])).to.equal(error.div0)
-      expect(statistical.SLOPE([1, 2], [3, 4])).to.equal(1)
-  
-      expect(statistical.SLOPE([1, "text", 3], [4, 5, 6])).to.equal(1)
-      expect(statistical.SLOPE([1, true, 3], [4, 5, 6])).to.equal(1)
-      expect(statistical.SLOPE([1, false, 3], [4, 5, 6])).to.equal(1)
-      expect(statistical.SLOPE([1, 2, 3], [4, "text", 6])).to.equal(1)
-  
-      expect(statistical.SLOPE([error.div0, 2, 3], [1, 2, 3])).to.equal(error.div0)
-      expect(statistical.SLOPE([error.na, 2, 3], [1, 2, 3])).to.equal(error.na)
-      expect(statistical.SLOPE([error.value, 2, 3], [1, 2, 3])).to.equal(error.value)
-  
-      expect(statistical.SLOPE(["1", "2", "3"], [4, 5, 6])).to.equal(error.div0)
-      expect(statistical.SLOPE([1, 2, 3], ["4", "5", "6"])).to.equal(error.div0)
-      expect(statistical.SLOPE(["1", 2, 3], [4, "5", 6])).to.equal(error.div0)
-  
-      expect(statistical.SLOPE(undefined, [1, 2, 3])).to.equal(error.value)
-      expect(statistical.SLOPE([1, 2, 3], undefined)).to.equal(error.value)
-    })
+    const data_y = [2, 3, 9, 1, 8, 7, 5]
+    const data_x = [6, 5, 11, 7, 5, 4, 4]
+    expect(statistical.SLOPE(data_y, data_x)).to.approximately(0.3055555555555556, 1e-9)
+
+    expect(statistical.SLOPE([2, 3, 9, 1, 8], [6, 5, 11, 7, 5])).to.equal(0.6693548387096776)
+    expect(statistical.SLOPE([1, 2, 3, 4, 5], [1, 2, 3, 4, 5])).to.equal(1)
+    expect(statistical.SLOPE([10, 20, 30], [1, 2, 3])).to.equal(10)
+
+    expect(statistical.SLOPE([1, 2, 3])).to.equal(error.na)
+    expect(statistical.SLOPE()).to.equal(error.na)
+    expect(statistical.SLOPE([1, 2, 3], [4, 5, 6], [7, 8, 9])).to.equal(error.na)
+
+    expect(statistical.SLOPE([1, 2, 3], [4, 5])).to.equal(error.na)
+    expect(statistical.SLOPE([1], [2])).to.equal(error.div0)
+    expect(statistical.SLOPE([1, 2], [3, 4])).to.equal(1)
+
+    expect(statistical.SLOPE([1, 'text', 3], [4, 5, 6])).to.equal(1)
+    expect(statistical.SLOPE([1, true, 3], [4, 5, 6])).to.equal(1)
+    expect(statistical.SLOPE([1, false, 3], [4, 5, 6])).to.equal(1)
+    expect(statistical.SLOPE([1, 2, 3], [4, 'text', 6])).to.equal(1)
+
+    expect(statistical.SLOPE([error.div0, 2, 3], [1, 2, 3])).to.equal(error.div0)
+    expect(statistical.SLOPE([error.na, 2, 3], [1, 2, 3])).to.equal(error.na)
+    expect(statistical.SLOPE([error.value, 2, 3], [1, 2, 3])).to.equal(error.value)
+
+    expect(statistical.SLOPE(['1', '2', '3'], [4, 5, 6])).to.equal(error.div0)
+    expect(statistical.SLOPE([1, 2, 3], ['4', '5', '6'])).to.equal(error.div0)
+    expect(statistical.SLOPE(['1', 2, 3], [4, '5', 6])).to.equal(error.div0)
+
+    expect(statistical.SLOPE(undefined, [1, 2, 3])).to.equal(error.value)
+    expect(statistical.SLOPE([1, 2, 3], undefined)).to.equal(error.value)
+  })
 
   it('SMALL', () => {
     expect(statistical.SMALL()).to.equal(error.na)
